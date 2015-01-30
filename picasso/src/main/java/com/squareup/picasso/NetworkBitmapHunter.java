@@ -18,6 +18,7 @@ package com.squareup.picasso;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.NetworkInfo;
+
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -26,101 +27,104 @@ import static com.squareup.picasso.Picasso.LoadedFrom.DISK;
 import static com.squareup.picasso.Picasso.LoadedFrom.NETWORK;
 
 class NetworkBitmapHunter extends BitmapHunter {
-  static final int DEFAULT_RETRY_COUNT = 2;
-  private static final int MARKER = 65536;
+    static final int DEFAULT_RETRY_COUNT = 2;
+    private static final int MARKER = 65536;
 
-  private final Downloader downloader;
+    private final Downloader downloader;
 
-  int retryCount;
+    int retryCount;
 
-  public NetworkBitmapHunter(Picasso picasso, Dispatcher dispatcher, Cache cache, Stats stats,
-      Action action, Downloader downloader) {
-    super(picasso, dispatcher, cache, stats, action);
-    this.downloader = downloader;
-    this.retryCount = DEFAULT_RETRY_COUNT;
-  }
-
-  @Override Bitmap decode(Request data) throws IOException {
-    boolean loadFromLocalCacheOnly = retryCount == 0;
-
-    Response response = downloader.load(data.uri, loadFromLocalCacheOnly);
-    if (response == null) {
-      return null;
+    public NetworkBitmapHunter(Picasso picasso, Dispatcher dispatcher, Cache cache, Stats stats,
+                               Action action, Downloader downloader) {
+        super(picasso, dispatcher, cache, stats, action);
+        this.downloader = downloader;
+        this.retryCount = DEFAULT_RETRY_COUNT;
     }
 
-    loadedFrom = response.cached ? DISK : NETWORK;
+    @Override
+    Bitmap decode(Request data) throws IOException {
+        boolean loadFromLocalCacheOnly = retryCount == 0;
 
-    Bitmap result = response.getBitmap();
-    if (result != null) {
-      return result;
+        Response response = downloader.load(data.uri, loadFromLocalCacheOnly);
+        if (response == null) {
+            return null;
+        }
+
+        loadedFrom = response.cached ? DISK : NETWORK;
+
+        Bitmap result = response.getBitmap();
+        if (result != null) {
+            return result;
+        }
+
+        InputStream is = response.getInputStream();
+        if (is == null) {
+            return null;
+        }
+        // Sometimes response content length is zero when requests are being replayed. Haven't found
+        // root cause to this but retrying the request seems safe to do so.
+        if (response.getContentLength() == 0) {
+            Utils.closeQuietly(is);
+            throw new IOException("Received response with 0 content-length header.");
+        }
+        if (loadedFrom == NETWORK && response.getContentLength() > 0) {
+            stats.dispatchDownloadFinished(response.getContentLength());
+        }
+        try {
+            return decodeStream(is, data);
+        } finally {
+            Utils.closeQuietly(is);
+        }
     }
 
-    InputStream is = response.getInputStream();
-    if (is == null) {
-      return null;
+    @Override
+    boolean shouldRetry(boolean airplaneMode, NetworkInfo info) {
+        boolean hasRetries = retryCount > 0;
+        if (!hasRetries) {
+            return false;
+        }
+        retryCount--;
+        return info == null || info.isConnected();
     }
-    // Sometimes response content length is zero when requests are being replayed. Haven't found
-    // root cause to this but retrying the request seems safe to do so.
-    if (response.getContentLength() == 0) {
-      Utils.closeQuietly(is);
-      throw new IOException("Received response with 0 content-length header.");
+
+    @Override
+    boolean supportsReplay() {
+        return true;
     }
-    if (loadedFrom == NETWORK && response.getContentLength() > 0) {
-      stats.dispatchDownloadFinished(response.getContentLength());
-    }
-    try {
-      return decodeStream(is, data);
-    } finally {
-      Utils.closeQuietly(is);
-    }
-  }
 
-  @Override boolean shouldRetry(boolean airplaneMode, NetworkInfo info) {
-    boolean hasRetries = retryCount > 0;
-    if (!hasRetries) {
-      return false;
-    }
-    retryCount--;
-    return info == null || info.isConnected();
-  }
+    private Bitmap decodeStream(InputStream stream, Request data) throws IOException {
+        MarkableInputStream markStream = new MarkableInputStream(stream);
+        stream = markStream;
 
-  @Override boolean supportsReplay() {
-    return true;
-  }
+        long mark = markStream.savePosition(MARKER);
 
-  private Bitmap decodeStream(InputStream stream, Request data) throws IOException {
-    MarkableInputStream markStream = new MarkableInputStream(stream);
-    stream = markStream;
+        final BitmapFactory.Options options = createBitmapOptions(data);
+        final boolean calculateSize = requiresInSampleSize(options);
 
-    long mark = markStream.savePosition(MARKER);
-
-    final BitmapFactory.Options options = createBitmapOptions(data);
-    final boolean calculateSize = requiresInSampleSize(options);
-
-    boolean isWebPFile = Utils.isWebPFile(stream);
-    markStream.reset(mark);
-    // When decode WebP network stream, BitmapFactory throw JNI Exception and make app crash.
-    // Decode byte array instead
-    if (isWebPFile) {
-      byte[] bytes = Utils.toByteArray(stream);
-      if (calculateSize) {
-        BitmapFactory.decodeByteArray(bytes, 0, bytes.length, options);
-        calculateInSampleSize(data.targetWidth, data.targetHeight, options);
-      }
-      return BitmapFactory.decodeByteArray(bytes, 0, bytes.length, options);
-    } else {
-      if (calculateSize) {
-        BitmapFactory.decodeStream(stream, null, options);
-        calculateInSampleSize(data.targetWidth, data.targetHeight, options);
-
+        boolean isWebPFile = Utils.isWebPFile(stream);
         markStream.reset(mark);
-      }
-      Bitmap bitmap = BitmapFactory.decodeStream(stream, null, options);
-      if (bitmap == null) {
-        // Treat null as an IO exception, we will eventually retry.
-        throw new IOException("Failed to decode stream.");
-      }
-      return bitmap;
+        // When decode WebP network stream, BitmapFactory throw JNI Exception and make app crash.
+        // Decode byte array instead
+        if (isWebPFile) {
+            byte[] bytes = Utils.toByteArray(stream);
+            if (calculateSize) {
+                BitmapFactory.decodeByteArray(bytes, 0, bytes.length, options);
+                calculateInSampleSize(data.targetWidth, data.targetHeight, options);
+            }
+            return BitmapFactory.decodeByteArray(bytes, 0, bytes.length, options);
+        } else {
+            if (calculateSize) {
+                BitmapFactory.decodeStream(stream, null, options);
+                calculateInSampleSize(data.targetWidth, data.targetHeight, options);
+
+                markStream.reset(mark);
+            }
+            Bitmap bitmap = BitmapFactory.decodeStream(stream, null, options);
+            if (bitmap == null) {
+                // Treat null as an IO exception, we will eventually retry.
+                throw new IOException("Failed to decode stream.");
+            }
+            return bitmap;
+        }
     }
-  }
 }

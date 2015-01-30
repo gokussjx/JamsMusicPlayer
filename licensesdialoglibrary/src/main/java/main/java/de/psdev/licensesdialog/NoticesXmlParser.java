@@ -16,17 +16,17 @@
 
 package main.java.de.psdev.licensesdialog;
 
+import android.util.Xml;
+
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+
 import java.io.IOException;
 import java.io.InputStream;
 
 import main.java.de.psdev.licensesdialog.licenses.License;
 import main.java.de.psdev.licensesdialog.model.Notice;
 import main.java.de.psdev.licensesdialog.model.Notices;
-
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-
-import android.util.Xml;
 
 public final class NoticesXmlParser {
 
@@ -64,7 +64,7 @@ public final class NoticesXmlParser {
     }
 
     private static Notice readNotice(final XmlPullParser parser) throws IOException,
-        XmlPullParserException {
+            XmlPullParserException {
         parser.require(XmlPullParser.START_TAG, null, "notice");
         String name = null;
         String url = null;
@@ -75,16 +75,22 @@ public final class NoticesXmlParser {
                 continue;
             }
             final String element = parser.getName();
-            if ("name".equals(element)) {
-                name = readName(parser);
-            } else if ("url".equals(element)) {
-                url = readUrl(parser);
-            } else if ("copyright".equals(element)) {
-                copyright = readCopyright(parser);
-            } else if ("license".equals(element)) {
-                license = readLicense(parser);
-            } else {
-                skip(parser);
+            switch (element) {
+                case "name":
+                    name = readName(parser);
+                    break;
+                case "url":
+                    url = readUrl(parser);
+                    break;
+                case "copyright":
+                    copyright = readCopyright(parser);
+                    break;
+                case "license":
+                    license = readLicense(parser);
+                    break;
+                default:
+                    skip(parser);
+                    break;
             }
         }
         return new Notice(name, url, copyright, license);

@@ -15,7 +15,6 @@
  */
 package com.jams.music.player.SettingsActivity;
 
-import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.preference.PreferenceFragment;
@@ -24,6 +23,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.jams.music.player.Utils.Common;
+
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Saravan Pantham
@@ -35,7 +36,7 @@ public class SettingsFragment extends PreferenceFragment {
     private View mRootView;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mContext = getActivity().getApplicationContext();
         mApp = (Common) mContext;
 

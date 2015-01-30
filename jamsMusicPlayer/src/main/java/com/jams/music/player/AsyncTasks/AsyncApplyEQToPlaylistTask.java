@@ -20,44 +20,43 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
-import com.jams.music.player.R;
 import com.jams.music.player.EqualizerActivity.EqualizerActivity;
+import com.jams.music.player.R;
 
 public class AsyncApplyEQToPlaylistTask extends AsyncTask<String, Void, Boolean> {
+    int max = 10000;
+    int progressIncrement;
+    int progress = 0;
+    String songTitle = "";
+    String songArtist = "";
+    String titlePlaylist = "";
+    String songAlbum = "";
     private Context mContext;
     private EqualizerActivity mEqualizerFragment;
     private ProgressDialog pd;
-    
-	int max = 10000;
-	int progressIncrement;
-	int progress = 0;
-	String songTitle = "";
-	String songArtist = "";
-	String titlePlaylist = "";
-    String songAlbum = "";
-	
+
     public AsyncApplyEQToPlaylistTask(Context context, EqualizerActivity fragment, String playlistName) {
-    	mContext = context;
-    	mEqualizerFragment = fragment;
-    	titlePlaylist = playlistName;
-    	
+        mContext = context;
+        mEqualizerFragment = fragment;
+        titlePlaylist = playlistName;
+
     }
-    
+
     protected void onPreExecute() {
-		pd = new ProgressDialog(mContext);
-		pd.setIndeterminate(false);
-		pd.setMax(max);
-		pd.setCancelable(false);
-		pd.setTitle(mContext.getResources().getString(R.string.applying_equalizer_to) + " " + titlePlaylist);
-		pd.show();
-    	
+        pd = new ProgressDialog(mContext);
+        pd.setIndeterminate(false);
+        pd.setMax(max);
+        pd.setCancelable(false);
+        pd.setTitle(mContext.getResources().getString(R.string.applying_equalizer_to) + " " + titlePlaylist);
+        pd.show();
+
     }
- 
+
     @Override
     protected Boolean doInBackground(String... params) {
-    	
+
     	/*int which = Integer.parseInt(params[0]);
-    	
+
         //Get a cursor with the list of all user-created playlists.
         DBAccessHelper dbHelper = new DBAccessHelper(mContext);
         final Cursor cursor = dbHelper.getAllUniqueUserPlaylists();
@@ -100,31 +99,31 @@ public class AsyncApplyEQToPlaylistTask extends AsyncTask<String, Void, Boolean>
 		}
     	
 		playlistCursor.close();*/
-    	return true;
-	    
+        return true;
+
     }
-    
+
     @Override
     protected void onProgressUpdate(Void... v) {
-		//Update the progress on the progress dialog.
-		progress = progress + progressIncrement;
-		pd.setProgress(progress);
-		pd.setMessage(mContext.getResources().getString(R.string.applying_to) + " " + songTitle);
-    	
+        //Update the progress on the progress dialog.
+        progress = progress + progressIncrement;
+        pd.setProgress(progress);
+        pd.setMessage(mContext.getResources().getString(R.string.applying_to) + " " + songTitle);
+
     }
 
     @Override
     protected void onPostExecute(Boolean successStatus) {
-    	pd.dismiss();
-    	
-    	if (successStatus==true) {
-        	Toast.makeText(mContext, 
-		 				   mContext.getResources().getString(R.string.equalizer_applied_to_songs_in) + " " + titlePlaylist + ".", 
-		 				   Toast.LENGTH_LONG).show();
-    	} else {
-        	Toast.makeText(mContext, R.string.error_occurred, Toast.LENGTH_LONG).show();
-    	}
-		
-	}
+        pd.dismiss();
+
+        if (successStatus == true) {
+            Toast.makeText(mContext,
+                    mContext.getResources().getString(R.string.equalizer_applied_to_songs_in) + " " + titlePlaylist + ".",
+                    Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(mContext, R.string.error_occurred, Toast.LENGTH_LONG).show();
+        }
+
+    }
 
 }

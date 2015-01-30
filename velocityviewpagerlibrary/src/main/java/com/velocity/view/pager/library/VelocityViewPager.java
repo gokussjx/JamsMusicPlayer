@@ -17,7 +17,6 @@
 package com.velocity.view.pager.library;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.database.DataSetObserver;
 import android.graphics.Canvas;
@@ -28,9 +27,16 @@ import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.os.SystemClock;
+import android.support.annotation.NonNull;
 import android.support.v4.os.ParcelableCompat;
 import android.support.v4.os.ParcelableCompatCreatorCallbacks;
-import android.support.v4.view.*;
+import android.support.v4.view.AccessibilityDelegateCompat;
+import android.support.v4.view.KeyEventCompat;
+import android.support.v4.view.MotionEventCompat;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.VelocityTrackerCompat;
+import android.support.v4.view.ViewCompat;
+import android.support.v4.view.ViewConfigurationCompat;
 import android.support.v4.view.accessibility.AccessibilityEventCompat;
 import android.support.v4.view.accessibility.AccessibilityNodeInfoCompat;
 import android.support.v4.view.accessibility.AccessibilityRecordCompat;
@@ -60,68 +66,86 @@ import java.util.Comparator;
  * Layout manager that allows the user to flip left and right
  * through pages of data.  You supply an implementation of a
  * {@link PagerAdapter} to generate the pages that the view shows.
- *
+ * <p/>
  * Based on the support library's ViewPager, this class includes
  * modifications that add support continuous scrolling fling
  * gestures and customised rendering logic to allow support for
  * carousel-like behaviour.
  */
 public class VelocityViewPager extends ViewGroup implements View.OnClickListener, View.OnLongClickListener {
-	
-    private static final String TAG = "VelocityViewPager";
-    private static final boolean DEBUG = false;
-
-    private static final boolean USE_CACHE = false;
-
-    private static final int DEFAULT_OFFSCREEN_PAGES = 1;
-    private static final int MAX_SETTLE_DURATION = 600; // ms
-    private static final int MIN_DISTANCE_FOR_FLING = 25; // dips
-
-    private static final int DEFAULT_GUTTER_SIZE = 16; // dips
-
-    private static final int MIN_FLING_VELOCITY = 400; // dips
-
-    private static final int[] LAYOUT_ATTRS = new int[] {
-            android.R.attr.layout_gravity
-    };
 
     /**
-     * Used to track what the expected number of items in the adapter should be.
-     * If the app changes this when we don't expect it, we'll throw a big obnoxious exception.
+     * Indicates that the pager is in an idle, settled state. The current page
+     * is fully in view and no animation is in progress.
      */
-    private int mExpectedAdapterCount;
-
-    static class ItemInfo {
-        Object object;
-        int position;
-        boolean scrolling;
-        float widthFactor;
-        float offset;
-    }
-
-    private static final Comparator<ItemInfo> COMPARATOR = new Comparator<ItemInfo>(){
+    public static final int SCROLL_STATE_IDLE = 0;
+    private final Runnable mEndScrollRunnable = new Runnable() {
+        public void run() {
+            setScrollState(SCROLL_STATE_IDLE);
+            populate();
+        }
+    };
+    private int mScrollState = SCROLL_STATE_IDLE;
+    /**
+     * Indicates that the pager is currently being dragged by the user.
+     */
+    public static final int SCROLL_STATE_DRAGGING = 1;
+    /**
+     * Indicates that the pager is in the process of settling to a final position.
+     */
+    public static final int SCROLL_STATE_SETTLING = 2;
+    private static final String TAG = "VelocityViewPager";
+    private static final boolean DEBUG = false;
+    private static final boolean USE_CACHE = false;
+    private static final int DEFAULT_OFFSCREEN_PAGES = 1;
+    private int mOffscreenPageLimit = DEFAULT_OFFSCREEN_PAGES;
+    private static final int MAX_SETTLE_DURATION = 600; // ms
+    private static final int MIN_DISTANCE_FOR_FLING = 25; // dips
+    private static final int DEFAULT_GUTTER_SIZE = 16; // dips
+    private static final int MIN_FLING_VELOCITY = 400; // dips
+    private static final int[] LAYOUT_ATTRS = new int[]{
+            android.R.attr.layout_gravity
+    };
+    private static final Comparator<ItemInfo> COMPARATOR = new Comparator<ItemInfo>() {
         @Override
         public int compare(ItemInfo lhs, ItemInfo rhs) {
             return lhs.position - rhs.position;
         }
     };
-
     private static final Interpolator sInterpolator = new Interpolator() {
         public float getInterpolation(float t) {
             t -= 1.0f;
             return t * t * t * t * t + 1.0f;
         }
     };
-
     private static final int FLINGING_STOPPED = 0;
     private static final int FLINGING_LEFT = 1;
     private static final int FLINGING_RIGHT = 2;
-
+    /**
+     * Sentinel value for no current active pointer.
+     * Used by {@link #mActivePointerId}.
+     */
+    private static final int INVALID_POINTER = -1;
+    /**
+     * ID of the active pointer. This is used to retain consistency during
+     * drags/flings if multiple pointers are used.
+     */
+    private int mActivePointerId = INVALID_POINTER;
+    // If the pager is at least this close to its final position, complete the scroll
+    // on touch down and let the user interact with the content inside instead of
+    // "catching" the flinging pager.
+    private static final int CLOSE_ENOUGH = 2; // dp
+    private static final int DRAW_ORDER_DEFAULT = 0;
+    private static final int DRAW_ORDER_FORWARD = 1;
+    private static final int DRAW_ORDER_REVERSE = 2;
     private final ArrayList<ItemInfo> mItems = new ArrayList<ItemInfo>();
     private final ItemInfo mTempItem = new ItemInfo();
-
     private final Rect mTempRect = new Rect();
-
+    /**
+     * Used to track what the expected number of items in the adapter should be.
+     * If the app changes this when we don't expect it, we'll throw a big obnoxious exception.
+     */
+    private int mExpectedAdapterCount;
     private PagerAdapter mAdapter;
     private int mCurItem;   // Index of currently displayed page.
     private int mRestoredCurItem = -1;
@@ -129,27 +153,20 @@ public class VelocityViewPager extends ViewGroup implements View.OnClickListener
     private ClassLoader mRestoredClassLoader = null;
     private VelocityScroller mScroller;
     private PagerObserver mObserver;
-
     private int mPageMargin;
     private Drawable mMarginDrawable;
     private int mTopPageBounds;
     private int mBottomPageBounds;
-
     // Offsets of the first and last items, if known.
     // Set during population, used to determine if we are at the beginning
     // or end of the pager data set during touch scrolling.
     private float mFirstOffset = -Float.MAX_VALUE;
     private float mLastOffset = Float.MAX_VALUE;
     private boolean mOffsetToLastPageAllowed = false;
-
     private int mChildWidthMeasureSpec;
     private int mChildHeightMeasureSpec;
     private boolean mInLayout;
-
     private boolean mScrollingCacheEnabled;
-
-    private int mOffscreenPageLimit = DEFAULT_OFFSCREEN_PAGES;
-
     private boolean mIsBeingDragged;
     private boolean mIsUnableToDrag;
     private boolean mIgnoreGutter;
@@ -164,17 +181,6 @@ public class VelocityViewPager extends ViewGroup implements View.OnClickListener
     private float mInitialMotionX;
     private float mInitialMotionY;
     /**
-     * ID of the active pointer. This is used to retain consistency during
-     * drags/flings if multiple pointers are used.
-     */
-    private int mActivePointerId = INVALID_POINTER;
-    /**
-     * Sentinel value for no current active pointer.
-     * Used by {@link #mActivePointerId}.
-     */
-    private static final int INVALID_POINTER = -1;
-
-    /**
      * Determines speed during touch scrolling
      */
     private VelocityTracker mVelocityTracker;
@@ -185,172 +191,24 @@ public class VelocityViewPager extends ViewGroup implements View.OnClickListener
     private long mScrollStartTime;
     private int mScrollDuration;
     private int mFlinging;
-
-    // If the pager is at least this close to its final position, complete the scroll
-    // on touch down and let the user interact with the content inside instead of
-    // "catching" the flinging pager.
-    private static final int CLOSE_ENOUGH = 2; // dp
-
     private boolean mFakeDragging;
     private long mFakeDragBeginTime;
-
     private EdgeEffectCompat mLeftEdge;
     private EdgeEffectCompat mRightEdge;
-
     private boolean mFirstLayout = true;
     private boolean mNeedCalculatePageOffsets = false;
     private boolean mCalledSuper;
     private int mDecorChildCount;
-
     private OnPageChangeListener mOnPageChangeListener;
     private OnPageChangeListener mInternalPageChangeListener;
     private OnAdapterChangeListener mAdapterChangeListener;
     private PageTransformer mPageTransformer;
     private Method mSetChildrenDrawingOrderEnabled;
-
-    private static final int DRAW_ORDER_DEFAULT = 0;
-    private static final int DRAW_ORDER_FORWARD = 1;
-    private static final int DRAW_ORDER_REVERSE = 2;
     private int mDrawingOrder;
     private ArrayList<View> mDrawingOrderedChildren;
     private Comparator<View> mDrawOrderComparator = new ViewPositionComparator();
-
     private OnItemClickListener mOnItemClickListener;
     private OnItemLongClickListener mOnItemLongClickListener;
-
-    /**
-     * Indicates that the pager is in an idle, settled state. The current page
-     * is fully in view and no animation is in progress.
-     */
-    public static final int SCROLL_STATE_IDLE = 0;
-
-    /**
-     * Indicates that the pager is currently being dragged by the user.
-     */
-    public static final int SCROLL_STATE_DRAGGING = 1;
-
-    /**
-     * Indicates that the pager is in the process of settling to a final position.
-     */
-    public static final int SCROLL_STATE_SETTLING = 2;
-
-    private final Runnable mEndScrollRunnable = new Runnable() {
-        public void run() {
-            setScrollState(SCROLL_STATE_IDLE);
-            populate();
-        }
-    };
-
-    private int mScrollState = SCROLL_STATE_IDLE;
-
-    /**
-     * Callback interface for responding to changing state of the selected page.
-     */
-    public interface OnPageChangeListener {
-
-        /**
-         * This method will be invoked when the current page is scrolled, either as part
-         * of a programmatically initiated smooth scroll or a user initiated touch scroll.
-         *
-         * @param position Position index of the first page currently being displayed.
-         *                 Page position+1 will be visible if positionOffset is nonzero.
-         * @param positionOffset Value from [0, 1) indicating the offset from the page at position.
-         * @param positionOffsetPixels Value in pixels indicating the offset from position.
-         */
-        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels);
-
-        /**
-         * This method will be invoked when a new page becomes selected. Animation is not
-         * necessarily complete.
-         *
-         * @param position Position index of the new selected page.
-         */
-        public void onPageSelected(int position);
-
-        /**
-         * Called when the scroll state changes. Useful for discovering when the user
-         * begins dragging, when the pager is automatically settling to the current page,
-         * or when it is fully stopped/idle.
-         *
-         * @param state The new scroll state.
-         * @see VelocityViewPager#SCROLL_STATE_IDLE
-         * @see VelocityViewPager#SCROLL_STATE_DRAGGING
-         * @see VelocityViewPager#SCROLL_STATE_SETTLING
-         */
-        public void onPageScrollStateChanged(int state);
-    }
-
-    /**
-     * Simple implementation of the {@link OnPageChangeListener} interface with stub
-     * implementations of each method. Extend this if you do not intend to override
-     * every method of {@link OnPageChangeListener}.
-     */
-    public static class SimpleOnPageChangeListener implements OnPageChangeListener {
-        @Override
-        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-            // This space for rent
-        }
-
-        @Override
-        public void onPageSelected(int position) {
-            // This space for rent
-        }
-
-        @Override
-        public void onPageScrollStateChanged(int state) {
-            // This space for rent
-        }
-    }
-
-    /**
-     * Default view rendering order comparator identical to that used in the
-     * support library's ViewPager.
-     */
-    public static class ViewPositionComparator implements Comparator<View> {
-        @Override
-        public int compare(View lhs, View rhs) {
-            final LayoutParams llp = (LayoutParams) lhs.getLayoutParams();
-            final LayoutParams rlp = (LayoutParams) rhs.getLayoutParams();
-            if (llp.isDecor != rlp.isDecor) {
-                return llp.isDecor ? 1 : -1;
-            }
-            return llp.position - rlp.position;
-        }
-    }
-
-    /**
-     * A PageTransformer is invoked whenever a visible/attached page is scrolled.
-     * This offers an opportunity for the application to apply a custom transformation
-     * to the page views using animation properties.
-     *
-     * <p>As property animation is only supported as of Android 3.0 and forward,
-     * setting a PageTransformer on a ViewPager on earlier platform versions will
-     * be ignored.</p>
-     */
-    public interface PageTransformer {
-        /**
-         * Apply a property transformation to the given page.
-         *
-         * @param page Apply the transformation to this page
-         * @param position Position of page relative to the current front-and-center
-         *                 position of the pager. 0 is front and center. 1 is one full
-         *                 page position to the right, and -1 is one page position to the left.
-         */
-        public void transformPage(View page, float position);
-    }
-
-    /**
-     * Used internally to monitor when adapters are switched.
-     */
-    interface OnAdapterChangeListener {
-        public void onAdapterChanged(PagerAdapter oldAdapter, PagerAdapter newAdapter);
-    }
-
-    /**
-     * Used internally to tag special types of child views that should be added as
-     * pager decorations by default.
-     */
-    interface Decor {}
 
     public VelocityViewPager(Context context) {
         super(context);
@@ -410,7 +268,28 @@ public class VelocityViewPager extends ViewGroup implements View.OnClickListener
             mOnPageChangeListener.onPageScrollStateChanged(newState);
         }
 
-}
+    }
+
+    private void removeNonDecorViews() {
+        for (int i = 0; i < getChildCount(); i++) {
+            final View child = getChildAt(i);
+            final LayoutParams lp = (LayoutParams) child.getLayoutParams();
+            if (!lp.isDecor) {
+                removeViewAt(i);
+                i--;
+            }
+        }
+    }
+
+    /**
+     * Retrieve the current adapter supplying pages.
+     *
+     * @return The currently registered PagerAdapter
+     */
+    public PagerAdapter getAdapter() {
+        return mAdapter;
+    }
+
     /**
      * Set a PagerAdapter that will supply views for this pager as needed.
      *
@@ -461,32 +340,26 @@ public class VelocityViewPager extends ViewGroup implements View.OnClickListener
         }
     }
 
-    private void removeNonDecorViews() {
-        for (int i = 0; i < getChildCount(); i++) {
-            final View child = getChildAt(i);
-            final LayoutParams lp = (LayoutParams) child.getLayoutParams();
-            if (!lp.isDecor) {
-                removeViewAt(i);
-                i--;
-            }
-        }
-    }
-
-    /**
-     * Retrieve the current adapter supplying pages.
-     *
-     * @return The currently registered PagerAdapter
-     */
-    public PagerAdapter getAdapter() {
-        return mAdapter;
-    }
-
     void setOnAdapterChangeListener(OnAdapterChangeListener listener) {
         mAdapterChangeListener = listener;
     }
 
     private int getClientWidth() {
         return getMeasuredWidth() - getPaddingLeft() - getPaddingRight();
+    }
+
+    /**
+     * Set the currently selected page.
+     *
+     * @param item         Item index to select
+     * @param smoothScroll True to smoothly scroll to the new item, false to transition immediately
+     */
+    public void setCurrentItem(int item, boolean smoothScroll) {
+        setCurrentItemInternal(item, smoothScroll, false);
+    }
+
+    public int getCurrentItem() {
+        return mCurItem;
     }
 
     /**
@@ -498,20 +371,6 @@ public class VelocityViewPager extends ViewGroup implements View.OnClickListener
      */
     public void setCurrentItem(int item) {
         setCurrentItemInternal(item, !mFirstLayout, false);
-    }
-
-    /**
-     * Set the currently selected page.
-     *
-     * @param item Item index to select
-     * @param smoothScroll True to smoothly scroll to the new item, false to transition immediately
-     */
-    public void setCurrentItem(int item, boolean smoothScroll) {
-        setCurrentItemInternal(item, smoothScroll, false);
-    }
-
-    public int getCurrentItem() {
-        return mCurItem;
     }
 
     void setCurrentItemInternal(int item, boolean smoothScroll, boolean always) {
@@ -538,7 +397,7 @@ public class VelocityViewPager extends ViewGroup implements View.OnClickListener
             // We are doing a jump by more than one page.  To avoid
             // glitches, we want to keep all current pages in the view
             // until the scroll ends.
-            for (int i=0; i<mItems.size(); i++) {
+            for (int i = 0; i < mItems.size(); i++) {
                 mItems.get(i).scrolling = true;
             }
         }
@@ -562,7 +421,7 @@ public class VelocityViewPager extends ViewGroup implements View.OnClickListener
     }
 
     public void scrollToItem(int item, boolean smoothScroll, int velocity,
-                              boolean dispatchSelected) {
+                             boolean dispatchSelected) {
         final ItemInfo curInfo = infoForPosition(item);
         int destX = 0;
         if (curInfo != null) {
@@ -605,13 +464,13 @@ public class VelocityViewPager extends ViewGroup implements View.OnClickListener
      * Set a {@link PageTransformer} that will be called for each attached page whenever
      * the scroll position is changed. This allows the application to apply custom property
      * transformations to each page, overriding the default sliding look and feel.
-     *
+     * <p/>
      * <p><em>Note:</em> Prior to Android 3.0 the property animation APIs did not exist.
      * As a result, setting a PageTransformer prior to Android 3.0 (API 11) will have no effect.</p>
      *
      * @param reverseDrawingOrder true if the supplied PageTransformer requires page views
      *                            to be drawn from last to first instead of first to last.
-     * @param transformer PageTransformer that will modify each page's animation properties
+     * @param transformer         PageTransformer that will modify each page's animation properties
      */
     public void setPageTransformer(boolean reverseDrawingOrder, PageTransformer transformer) {
         if (Build.VERSION.SDK_INT >= 11) {
@@ -641,7 +500,7 @@ public class VelocityViewPager extends ViewGroup implements View.OnClickListener
             if (mSetChildrenDrawingOrderEnabled == null) {
                 try {
                     mSetChildrenDrawingOrderEnabled = ViewGroup.class.getDeclaredMethod(
-                            "setChildrenDrawingOrderEnabled", new Class[] { Boolean.TYPE });
+                            "setChildrenDrawingOrderEnabled", new Class[]{Boolean.TYPE});
                 } catch (NoSuchMethodException e) {
                     Log.e(TAG, "Can't find setChildrenDrawingOrderEnabled", e);
                 }
@@ -688,14 +547,14 @@ public class VelocityViewPager extends ViewGroup implements View.OnClickListener
      * Set the number of pages that should be retained to either side of the
      * current page in the view hierarchy in an idle state. Pages beyond this
      * limit will be recreated from the adapter when needed.
-     *
+     * <p/>
      * <p>This is offered as an optimization. If you know in advance the number
      * of pages you will need to support or have lazy-loading mechanisms in place
      * on your pages, tweaking this setting can have benefits in perceived smoothness
      * of paging animations and interaction. If you have a small number of pages (3-4)
      * that you can keep active all at once, less time will be spent in layout for
      * newly created view subtrees as the user pages back and forth.</p>
-     *
+     * <p/>
      * <p>You should keep this limit low, especially if your pages have complex layouts.
      * This setting defaults to 1.</p>
      *
@@ -714,6 +573,15 @@ public class VelocityViewPager extends ViewGroup implements View.OnClickListener
     }
 
     /**
+     * Return the margin between pages.
+     *
+     * @return The size of the margin in pixels
+     */
+    public int getPageMargin() {
+        return mPageMargin;
+    }
+
+    /**
      * Set the margin between pages.
      *
      * @param marginPixels Distance between adjacent pages in pixels
@@ -729,15 +597,6 @@ public class VelocityViewPager extends ViewGroup implements View.OnClickListener
         recomputeScrollPosition(width, width, marginPixels, oldMargin);
 
         requestLayout();
-    }
-
-    /**
-     * Return the margin between pages.
-     *
-     * @return The size of the margin in pixels
-     */
-    public int getPageMargin() {
-        return mPageMargin;
     }
 
     /**
@@ -798,8 +657,8 @@ public class VelocityViewPager extends ViewGroup implements View.OnClickListener
     /**
      * Like {@link View#scrollBy}, but scroll smoothly instead of immediately.
      *
-     * @param x the number of pixels to scroll by on the X axis
-     * @param y the number of pixels to scroll by on the Y axis
+     * @param x        the number of pixels to scroll by on the X axis
+     * @param y        the number of pixels to scroll by on the Y axis
      * @param velocity the velocity associated with a fling, if applicable. (0 otherwise)
      */
     void smoothScrollTo(int x, int y, int velocity) {
@@ -962,7 +821,7 @@ public class VelocityViewPager extends ViewGroup implements View.OnClickListener
         final int pageLimit = mOffscreenPageLimit;
         final int startPos = Math.max(0, mCurItem - pageLimit);
         final int N = mAdapter.getCount();
-        final int endPos = Math.min(N-1, mCurItem + pageLimit);
+        final int endPos = Math.min(N - 1, mCurItem + pageLimit);
 
         if (N != mExpectedAdapterCount) {
 /*            String resName;
@@ -977,7 +836,7 @@ public class VelocityViewPager extends ViewGroup implements View.OnClickListener
                     " Pager id: " + resName +
                     " Pager class: " + getClass() +
                     " Problematic adapter: " + mAdapter.getClass());*/
-        	return;
+            return;
         }
 
         // Locate the currently focused item or add it if needed.
@@ -1071,7 +930,7 @@ public class VelocityViewPager extends ViewGroup implements View.OnClickListener
 
         if (DEBUG) {
             Log.i(TAG, "Current page list:");
-            for (int i=0; i<mItems.size(); i++) {
+            for (int i = 0; i < mItems.size(); i++) {
                 Log.i(TAG, "#" + i + ": page " + mItems.get(i).position);
             }
         }
@@ -1108,7 +967,7 @@ public class VelocityViewPager extends ViewGroup implements View.OnClickListener
             View currentFocused = findFocus();
             ItemInfo ii = currentFocused != null ? infoForAnyChild(currentFocused) : null;
             if (ii == null || ii.position != mCurItem) {
-                for (int i=0; i<getChildCount(); i++) {
+                for (int i = 0; i < getChildCount(); i++) {
                     View child = getChildAt(i);
                     ii = infoForChild(child);
                     if (ii != null && ii.position == mCurItem) {
@@ -1198,7 +1057,7 @@ public class VelocityViewPager extends ViewGroup implements View.OnClickListener
             mLastOffset = curItem.position == N - 1 ? curItem.offset : Float.MAX_VALUE;
         } else {
             mLastOffset = curItem.position == N - 1 ?
-                curItem.offset + curItem.widthFactor - 1 : Float.MAX_VALUE;
+                    curItem.offset + curItem.widthFactor - 1 : Float.MAX_VALUE;
         }
         // Previous pages
         for (int i = curIndex - 1; i >= 0; i--, pos--) {
@@ -1220,65 +1079,13 @@ public class VelocityViewPager extends ViewGroup implements View.OnClickListener
             }
             if (ii.position == N - 1) {
                 mLastOffset = (mOffsetToLastPageAllowed) ? offset :
-                    offset + curItem.widthFactor - 1;
+                        offset + curItem.widthFactor - 1;
             }
             ii.offset = offset;
             offset += ii.widthFactor + marginOffset;
         }
 
         mNeedCalculatePageOffsets = false;
-    }
-
-    /**
-     * This is the persistent state that is saved by ViewPager.  Only needed
-     * if you are creating a sublass of ViewPager that must save its own
-     * state, in which case it should implement a subclass of this which
-     * contains that state.
-     */
-    public static class SavedState extends BaseSavedState {
-        int position;
-        Parcelable adapterState;
-        ClassLoader loader;
-
-        public SavedState(Parcelable superState) {
-            super(superState);
-        }
-
-        @Override
-        public void writeToParcel(Parcel out, int flags) {
-            super.writeToParcel(out, flags);
-            out.writeInt(position);
-            out.writeParcelable(adapterState, flags);
-        }
-
-        @Override
-        public String toString() {
-            return "FragmentPager.SavedState{"
-                    + Integer.toHexString(System.identityHashCode(this))
-                    + " position=" + position + "}";
-        }
-
-        public static final Parcelable.Creator<SavedState> CREATOR
-                = ParcelableCompat.newCreator(new ParcelableCompatCreatorCallbacks<SavedState>() {
-            @Override
-            public SavedState createFromParcel(Parcel in, ClassLoader loader) {
-                return new SavedState(in, loader);
-            }
-            @Override
-            public SavedState[] newArray(int size) {
-                return new SavedState[size];
-            }
-        });
-
-        SavedState(Parcel in, ClassLoader loader) {
-            super(in);
-            if (loader == null) {
-                loader = getClass().getClassLoader();
-            }
-            position = in.readInt();
-            adapterState = in.readParcelable(loader);
-            this.loader = loader;
-        }
     }
 
     @Override
@@ -1299,7 +1106,7 @@ public class VelocityViewPager extends ViewGroup implements View.OnClickListener
             return;
         }
 
-        SavedState ss = (SavedState)state;
+        SavedState ss = (SavedState) state;
         super.onRestoreInstanceState(ss.getSuperState());
 
         if (mAdapter != null) {
@@ -1313,14 +1120,14 @@ public class VelocityViewPager extends ViewGroup implements View.OnClickListener
     }
 
     @Override
-    public void addView(View child, int index, ViewGroup.LayoutParams params) {
+    public void addView(@NonNull View child, int index, ViewGroup.LayoutParams params) {
         if (!checkLayoutParams(params)) {
             params = generateLayoutParams(params);
         }
         final LayoutParams lp = (LayoutParams) params;
         lp.isDecor |= child instanceof Decor;
         if (mInLayout) {
-            if (lp != null && lp.isDecor) {
+            if (lp.isDecor) {
                 throw new IllegalStateException("Cannot add pager decor view during layout");
             }
             lp.needsMeasure = true;
@@ -1339,7 +1146,7 @@ public class VelocityViewPager extends ViewGroup implements View.OnClickListener
     }
 
     @Override
-    public void removeView(View view) {
+    public void removeView(@NonNull View view) {
         if (mInLayout) {
             removeViewInLayout(view);
         } else {
@@ -1348,7 +1155,7 @@ public class VelocityViewPager extends ViewGroup implements View.OnClickListener
     }
 
     ItemInfo infoForChild(View child) {
-        for (int i=0; i<mItems.size(); i++) {
+        for (int i = 0; i < mItems.size(); i++) {
             ItemInfo ii = mItems.get(i);
             if (mAdapter.isViewFromObject(child, ii.object)) {
                 return ii;
@@ -1359,11 +1166,11 @@ public class VelocityViewPager extends ViewGroup implements View.OnClickListener
 
     ItemInfo infoForAnyChild(View child) {
         ViewParent parent;
-        while ((parent=child.getParent()) != this) {
+        while ((parent = child.getParent()) != this) {
             if (parent == null || !(parent instanceof View)) {
                 return null;
             }
-            child = (View)parent;
+            child = (View) parent;
         }
         return infoForChild(child);
     }
@@ -1418,7 +1225,7 @@ public class VelocityViewPager extends ViewGroup implements View.OnClickListener
                     int widthMode = MeasureSpec.AT_MOST;
                     int heightMode = MeasureSpec.AT_MOST;
                     boolean consumeVertical = vgrav == Gravity.TOP || vgrav == Gravity.BOTTOM;
-                    boolean consumeHorizontal = hgrav == Gravity.LEFT || hgrav == Gravity.RIGHT;
+                    boolean consumeHorizontal = hgrav == Gravity.START || hgrav == Gravity.END;
 
                     if (consumeVertical) {
                         widthMode = MeasureSpec.EXACTLY;
@@ -1550,7 +1357,7 @@ public class VelocityViewPager extends ViewGroup implements View.OnClickListener
                         default:
                             childLeft = paddingLeft;
                             break;
-                        case Gravity.LEFT:
+                        case Gravity.START:
                             childLeft = paddingLeft;
                             paddingLeft += child.getMeasuredWidth();
                             break;
@@ -1558,7 +1365,7 @@ public class VelocityViewPager extends ViewGroup implements View.OnClickListener
                             childLeft = Math.max((width - child.getMeasuredWidth()) / 2,
                                     paddingLeft);
                             break;
-                        case Gravity.RIGHT:
+                        case Gravity.END:
                             childLeft = width - paddingRight - child.getMeasuredWidth();
                             paddingRight += child.getMeasuredWidth();
                             break;
@@ -1796,9 +1603,9 @@ public class VelocityViewPager extends ViewGroup implements View.OnClickListener
      * (e.g. super.onPageScrolled(position, offset, offsetPixels)) before onPageScrolled
      * returns.
      *
-     * @param position Position index of the first page currently being displayed.
-     *                 Page position+1 will be visible if positionOffset is nonzero.
-     * @param offset Value from [0, 1) indicating the offset from the page at position.
+     * @param position     Position index of the first page currently being displayed.
+     *                     Page position+1 will be visible if positionOffset is nonzero.
+     * @param offset       Value from [0, 1) indicating the offset from the page at position.
      * @param offsetPixels Value in pixels indicating the offset from position.
      */
     protected void onPageScrolled(int position, float offset, int offsetPixels) {
@@ -1820,7 +1627,7 @@ public class VelocityViewPager extends ViewGroup implements View.OnClickListener
                     default:
                         childLeft = paddingLeft;
                         break;
-                    case Gravity.LEFT:
+                    case Gravity.START:
                         childLeft = paddingLeft;
                         paddingLeft += child.getWidth();
                         break;
@@ -1828,7 +1635,7 @@ public class VelocityViewPager extends ViewGroup implements View.OnClickListener
                         childLeft = Math.max((width - child.getMeasuredWidth()) / 2,
                                 paddingLeft);
                         break;
-                    case Gravity.RIGHT:
+                    case Gravity.END:
                         childLeft = width - paddingRight - child.getMeasuredWidth();
                         paddingRight += child.getMeasuredWidth();
                         break;
@@ -1868,7 +1675,7 @@ public class VelocityViewPager extends ViewGroup implements View.OnClickListener
                 scrollTo(x, y);
             }
         }
-        for (int i=0; i<mItems.size(); i++) {
+        for (int i = 0; i < mItems.size(); i++) {
             ItemInfo ii = mItems.get(i);
             if (ii.scrolling) {
                 needPopulate = true;
@@ -2041,7 +1848,7 @@ public class VelocityViewPager extends ViewGroup implements View.OnClickListener
     }
 
     @Override
-    public boolean onTouchEvent(MotionEvent ev) {
+    public boolean onTouchEvent(@NonNull MotionEvent ev) {
         if (mFakeDragging) {
             // A fake drag is in progress already, ignore this real one
             // but still eat the touch events.
@@ -2086,7 +1893,8 @@ public class VelocityViewPager extends ViewGroup implements View.OnClickListener
                     final float xDiff = Math.abs(x - mLastMotionX);
                     final float y = MotionEventCompat.getY(ev, pointerIndex);
                     final float yDiff = Math.abs(y - mLastMotionY);
-                    if (DEBUG) Log.v(TAG, "Moved x to " + x + "," + y + " diff=" + xDiff + "," + yDiff);
+                    if (DEBUG)
+                        Log.v(TAG, "Moved x to " + x + "," + y + " diff=" + xDiff + "," + yDiff);
                     if (xDiff > mTouchSlop && xDiff > yDiff) {
                         if (DEBUG) Log.v(TAG, "Starting drag!");
                         mIsBeingDragged = true;
@@ -2231,10 +2039,9 @@ public class VelocityViewPager extends ViewGroup implements View.OnClickListener
     }
 
     /**
-     *
      * @param x scroll position
      * @return Info about the page at the specified scroll position.
-     *         This can be synthetic for a missing middle page; the 'object' field can be null.
+     * This can be synthetic for a missing middle page; the 'object' field can be null.
      */
     private ItemInfo infoForScrollPosition(int x) {
         final int width = getClientWidth();
@@ -2280,7 +2087,7 @@ public class VelocityViewPager extends ViewGroup implements View.OnClickListener
 
     /**
      * @return Info about the page at the current scroll position.
-     *         This can be synthetic for a missing middle page; the 'object' field can be null.
+     * This can be synthetic for a missing middle page; the 'object' field can be null.
      */
     private ItemInfo infoForCurrentScrollPosition() {
         return infoForScrollPosition(getScrollX());
@@ -2317,7 +2124,7 @@ public class VelocityViewPager extends ViewGroup implements View.OnClickListener
     }
 
     @Override
-    public void draw(Canvas canvas) {
+    public void draw(@NonNull Canvas canvas) {
         super.draw(canvas);
         boolean needsInvalidate = false;
 
@@ -2404,18 +2211,17 @@ public class VelocityViewPager extends ViewGroup implements View.OnClickListener
 
     /**
      * Start a fake drag of the pager.
-     *
+     * <p/>
      * <p>A fake drag can be useful if you want to synchronize the motion of the ViewPager
      * with the touch scrolling of another view, while still letting the ViewPager
      * control the snapping motion and fling behavior. (e.g. parallax-scrolling tabs.)
      * Call {@link #fakeDragBy(float)} to simulate the actual drag motion. Call
      * {@link #endFakeDrag()} to complete the fake drag and fling as necessary.
-     *
+     * <p/>
      * <p>During a fake drag the ViewPager will ignore all touch events. If a real drag
      * is already in progress, this method will return false.
      *
      * @return true if the fake drag began successfully, false if it could not be started.
-     *
      * @see #fakeDragBy(float)
      * @see #endFakeDrag()
      */
@@ -2520,7 +2326,6 @@ public class VelocityViewPager extends ViewGroup implements View.OnClickListener
      * Returns true if a fake drag is in progress.
      *
      * @return true if currently in a fake drag, false otherwise.
-     *
      * @see #beginFakeDrag()
      * @see #fakeDragBy(float)
      * @see #endFakeDrag()
@@ -2588,12 +2393,12 @@ public class VelocityViewPager extends ViewGroup implements View.OnClickListener
     /**
      * Tests scrollability within child views of v given a delta of dx.
      *
-     * @param v View to test for horizontal scrollability
+     * @param v      View to test for horizontal scrollability
      * @param checkV Whether the view v passed should itself be checked for scrollability (true),
      *               or just its children (false).
-     * @param dx Delta scrolled in pixels
-     * @param x X coordinate of the active touch point
-     * @param y Y coordinate of the active touch point
+     * @param dx     Delta scrolled in pixels
+     * @param x      X coordinate of the active touch point
+     * @param y      Y coordinate of the active touch point
      * @return true if child views of v can be scrolled by delta of dx.
      */
     protected boolean canScroll(View v, boolean checkV, int dx, int x, int y) {
@@ -2620,7 +2425,7 @@ public class VelocityViewPager extends ViewGroup implements View.OnClickListener
     }
 
     @Override
-    public boolean dispatchKeyEvent(KeyEvent event) {
+    public boolean dispatchKeyEvent(@NonNull KeyEvent event) {
         // Let the focused view and/or our descendants get the key first
         return super.dispatchKeyEvent(event) || executeKeyEvent(event);
     }
@@ -2753,15 +2558,15 @@ public class VelocityViewPager extends ViewGroup implements View.OnClickListener
 
     boolean pageLeft() {
         if (mCurItem > 0) {
-            setCurrentItem(mCurItem-1, true);
+            setCurrentItem(mCurItem - 1, true);
             return true;
         }
         return false;
     }
 
     boolean pageRight() {
-        if (mAdapter != null && mCurItem < (mAdapter.getCount()-1)) {
-            setCurrentItem(mCurItem+1, true);
+        if (mAdapter != null && mCurItem < (mAdapter.getCount() - 1)) {
+            setCurrentItem(mCurItem + 1, true);
             return true;
         }
         return false;
@@ -2771,7 +2576,7 @@ public class VelocityViewPager extends ViewGroup implements View.OnClickListener
      * We only want the current page that is being shown to be focusable.
      */
     @Override
-    public void addFocusables(ArrayList<View> views, int direction, int focusableMode) {
+    public void addFocusables(@NonNull ArrayList<View> views, int direction, int focusableMode) {
         final int focusableCount = views.size();
 
         final int descendantFocusability = getDescendantFocusability();
@@ -2815,7 +2620,7 @@ public class VelocityViewPager extends ViewGroup implements View.OnClickListener
      * We only want the current page that is being shown to be touchable.
      */
     @Override
-    public void addTouchables(ArrayList<View> views) {
+    public void addTouchables(@NonNull ArrayList<View> views) {
         // Note that we don't call super.addTouchables(), which means that
         // we don't call View.addTouchables().  This is okay because a ViewPager
         // is itself not touchable.
@@ -2966,70 +2771,181 @@ public class VelocityViewPager extends ViewGroup implements View.OnClickListener
         }
     }
 
-    class MyAccessibilityDelegate extends AccessibilityDelegateCompat {
+    /**
+     * Callback interface for responding to changing state of the selected page.
+     */
+    public interface OnPageChangeListener {
 
+        /**
+         * This method will be invoked when the current page is scrolled, either as part
+         * of a programmatically initiated smooth scroll or a user initiated touch scroll.
+         *
+         * @param position             Position index of the first page currently being displayed.
+         *                             Page position+1 will be visible if positionOffset is nonzero.
+         * @param positionOffset       Value from [0, 1) indicating the offset from the page at position.
+         * @param positionOffsetPixels Value in pixels indicating the offset from position.
+         */
+        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels);
+
+        /**
+         * This method will be invoked when a new page becomes selected. Animation is not
+         * necessarily complete.
+         *
+         * @param position Position index of the new selected page.
+         */
+        public void onPageSelected(int position);
+
+        /**
+         * Called when the scroll state changes. Useful for discovering when the user
+         * begins dragging, when the pager is automatically settling to the current page,
+         * or when it is fully stopped/idle.
+         *
+         * @param state The new scroll state.
+         * @see VelocityViewPager#SCROLL_STATE_IDLE
+         * @see VelocityViewPager#SCROLL_STATE_DRAGGING
+         * @see VelocityViewPager#SCROLL_STATE_SETTLING
+         */
+        public void onPageScrollStateChanged(int state);
+    }
+
+    /**
+     * A PageTransformer is invoked whenever a visible/attached page is scrolled.
+     * This offers an opportunity for the application to apply a custom transformation
+     * to the page views using animation properties.
+     * <p/>
+     * <p>As property animation is only supported as of Android 3.0 and forward,
+     * setting a PageTransformer on a ViewPager on earlier platform versions will
+     * be ignored.</p>
+     */
+    public interface PageTransformer {
+        /**
+         * Apply a property transformation to the given page.
+         *
+         * @param page     Apply the transformation to this page
+         * @param position Position of page relative to the current front-and-center
+         *                 position of the pager. 0 is front and center. 1 is one full
+         *                 page position to the right, and -1 is one page position to the left.
+         */
+        public void transformPage(View page, float position);
+    }
+
+    /**
+     * Used internally to monitor when adapters are switched.
+     */
+    interface OnAdapterChangeListener {
+        public void onAdapterChanged(PagerAdapter oldAdapter, PagerAdapter newAdapter);
+    }
+
+    /**
+     * Used internally to tag special types of child views that should be added as
+     * pager decorations by default.
+     */
+    interface Decor {
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick(Object object, View view, int position);
+    }
+
+    public interface OnItemLongClickListener {
+        boolean onItemLongClick(Object object, View view, int position);
+    }
+
+    static class ItemInfo {
+        Object object;
+        int position;
+        boolean scrolling;
+        float widthFactor;
+        float offset;
+    }
+
+    /**
+     * Simple implementation of the {@link OnPageChangeListener} interface with stub
+     * implementations of each method. Extend this if you do not intend to override
+     * every method of {@link OnPageChangeListener}.
+     */
+    public static class SimpleOnPageChangeListener implements OnPageChangeListener {
         @Override
-        public void onInitializeAccessibilityEvent(View host, AccessibilityEvent event) {
-            super.onInitializeAccessibilityEvent(host, event);
-            event.setClassName(VelocityViewPager.class.getName());
-            final AccessibilityRecordCompat recordCompat = AccessibilityRecordCompat.obtain();
-            recordCompat.setScrollable(canScroll());
-            if (event.getEventType() == AccessibilityEventCompat.TYPE_VIEW_SCROLLED
-                    && mAdapter != null) {
-                recordCompat.setItemCount(mAdapter.getCount());
-                recordCompat.setFromIndex(mCurItem);
-                recordCompat.setToIndex(mCurItem);
-            }
+        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            // This space for rent
         }
 
         @Override
-        public void onInitializeAccessibilityNodeInfo(View host, AccessibilityNodeInfoCompat info) {
-            super.onInitializeAccessibilityNodeInfo(host, info);
-            info.setClassName(VelocityViewPager.class.getName());
-            info.setScrollable(canScroll());
-            if (canScrollHorizontally(1)) {
-                info.addAction(AccessibilityNodeInfoCompat.ACTION_SCROLL_FORWARD);
-            }
-            if (canScrollHorizontally(-1)) {
-                info.addAction(AccessibilityNodeInfoCompat.ACTION_SCROLL_BACKWARD);
-            }
+        public void onPageSelected(int position) {
+            // This space for rent
         }
 
         @Override
-        public boolean performAccessibilityAction(View host, int action, Bundle args) {
-            if (super.performAccessibilityAction(host, action, args)) {
-                return true;
-            }
-            switch (action) {
-                case AccessibilityNodeInfoCompat.ACTION_SCROLL_FORWARD: {
-                    if (canScrollHorizontally(1)) {
-                        setCurrentItem(mCurItem + 1);
-                        return true;
-                    }
-                } return false;
-                case AccessibilityNodeInfoCompat.ACTION_SCROLL_BACKWARD: {
-                    if (canScrollHorizontally(-1)) {
-                        setCurrentItem(mCurItem - 1);
-                        return true;
-                    }
-                } return false;
-            }
-            return false;
-        }
-
-        private boolean canScroll() {
-            return (mAdapter != null) && (mAdapter.getCount() > 1);
+        public void onPageScrollStateChanged(int state) {
+            // This space for rent
         }
     }
 
-    private class PagerObserver extends DataSetObserver {
+    /**
+     * Default view rendering order comparator identical to that used in the
+     * support library's ViewPager.
+     */
+    public static class ViewPositionComparator implements Comparator<View> {
         @Override
-        public void onChanged() {
-            dataSetChanged();
+        public int compare(View lhs, View rhs) {
+            final LayoutParams llp = (LayoutParams) lhs.getLayoutParams();
+            final LayoutParams rlp = (LayoutParams) rhs.getLayoutParams();
+            if (llp.isDecor != rlp.isDecor) {
+                return llp.isDecor ? 1 : -1;
+            }
+            return llp.position - rlp.position;
         }
+    }
+
+    /**
+     * This is the persistent state that is saved by ViewPager.  Only needed
+     * if you are creating a sublass of ViewPager that must save its own
+     * state, in which case it should implement a subclass of this which
+     * contains that state.
+     */
+    public static class SavedState extends BaseSavedState {
+        public static final Parcelable.Creator<SavedState> CREATOR
+                = ParcelableCompat.newCreator(new ParcelableCompatCreatorCallbacks<SavedState>() {
+            @Override
+            public SavedState createFromParcel(Parcel in, ClassLoader loader) {
+                return new SavedState(in, loader);
+            }
+
+            @Override
+            public SavedState[] newArray(int size) {
+                return new SavedState[size];
+            }
+        });
+        int position;
+        Parcelable adapterState;
+        ClassLoader loader;
+
+        public SavedState(Parcelable superState) {
+            super(superState);
+        }
+
+        SavedState(Parcel in, ClassLoader loader) {
+            super(in);
+            if (loader == null) {
+                loader = getClass().getClassLoader();
+            }
+            position = in.readInt();
+            adapterState = in.readParcelable(loader);
+            this.loader = loader;
+        }
+
         @Override
-        public void onInvalidated() {
-            dataSetChanged();
+        public void writeToParcel(@NonNull Parcel out, int flags) {
+            super.writeToParcel(out, flags);
+            out.writeInt(position);
+            out.writeParcelable(adapterState, flags);
+        }
+
+        @Override
+        public String toString() {
+            return "FragmentPager.SavedState{"
+                    + Integer.toHexString(System.identityHashCode(this))
+                    + " position=" + position + "}";
         }
     }
 
@@ -3085,11 +3001,73 @@ public class VelocityViewPager extends ViewGroup implements View.OnClickListener
         }
     }
 
-    public interface OnItemClickListener {
-        void onItemClick(Object object, View view, int position);
+    class MyAccessibilityDelegate extends AccessibilityDelegateCompat {
+
+        @Override
+        public void onInitializeAccessibilityEvent(View host, AccessibilityEvent event) {
+            super.onInitializeAccessibilityEvent(host, event);
+            event.setClassName(VelocityViewPager.class.getName());
+            final AccessibilityRecordCompat recordCompat = AccessibilityRecordCompat.obtain();
+            recordCompat.setScrollable(canScroll());
+            if (event.getEventType() == AccessibilityEventCompat.TYPE_VIEW_SCROLLED
+                    && mAdapter != null) {
+                recordCompat.setItemCount(mAdapter.getCount());
+                recordCompat.setFromIndex(mCurItem);
+                recordCompat.setToIndex(mCurItem);
+            }
+        }
+
+        @Override
+        public void onInitializeAccessibilityNodeInfo(View host, AccessibilityNodeInfoCompat info) {
+            super.onInitializeAccessibilityNodeInfo(host, info);
+            info.setClassName(VelocityViewPager.class.getName());
+            info.setScrollable(canScroll());
+            if (canScrollHorizontally(1)) {
+                info.addAction(AccessibilityNodeInfoCompat.ACTION_SCROLL_FORWARD);
+            }
+            if (canScrollHorizontally(-1)) {
+                info.addAction(AccessibilityNodeInfoCompat.ACTION_SCROLL_BACKWARD);
+            }
+        }
+
+        @Override
+        public boolean performAccessibilityAction(View host, int action, Bundle args) {
+            if (super.performAccessibilityAction(host, action, args)) {
+                return true;
+            }
+            switch (action) {
+                case AccessibilityNodeInfoCompat.ACTION_SCROLL_FORWARD: {
+                    if (canScrollHorizontally(1)) {
+                        setCurrentItem(mCurItem + 1);
+                        return true;
+                    }
+                }
+                return false;
+                case AccessibilityNodeInfoCompat.ACTION_SCROLL_BACKWARD: {
+                    if (canScrollHorizontally(-1)) {
+                        setCurrentItem(mCurItem - 1);
+                        return true;
+                    }
+                }
+                return false;
+            }
+            return false;
+        }
+
+        private boolean canScroll() {
+            return (mAdapter != null) && (mAdapter.getCount() > 1);
+        }
     }
 
-    public interface OnItemLongClickListener {
-        boolean onItemLongClick(Object object, View view, int position);
+    private class PagerObserver extends DataSetObserver {
+        @Override
+        public void onChanged() {
+            dataSetChanged();
+        }
+
+        @Override
+        public void onInvalidated() {
+            dataSetChanged();
+        }
     }
 }

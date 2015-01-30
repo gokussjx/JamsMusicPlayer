@@ -16,8 +16,6 @@
  */
 package com.velocityviewpagerindicator;
 
-import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
-import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 import android.content.Context;
 import android.support.v4.view.PagerAdapter;
 import android.util.AttributeSet;
@@ -30,31 +28,28 @@ import android.widget.TextView;
 import com.velocity.view.pager.library.VelocityViewPager;
 import com.velocity.view.pager.library.VelocityViewPager.OnPageChangeListener;
 
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
+
 /**
  * This widget implements the dynamic action bar tab behavior that can change
  * across different configurations or circumstances.
  */
 public class VelocityTabPageIndicator extends HorizontalScrollView implements VelocityPageIndicator {
-    /** Title text used when no title is provided by the adapter. */
-    private static final CharSequence EMPTY_TITLE = "";
-
     /**
-     * Interface for a callback when the selected tab has been reselected.
+     * Title text used when no title is provided by the adapter.
      */
-    public interface OnTabReselectedListener {
-        /**
-         * Callback when the selected tab has been reselected.
-         *
-         * @param position Position of the current center item.
-         */
-        void onTabReselected(int position);
-    }
-
+    private static final CharSequence EMPTY_TITLE = "";
+    private final VelocityIcsLinearLayout mTabLayout;
     private Runnable mTabSelector;
-
+    private VelocityViewPager mVelocityViewPager;
+    private VelocityViewPager.OnPageChangeListener mListener;
+    private int mMaxTabWidth;
+    private int mSelectedTabIndex;
+    private OnTabReselectedListener mTabReselectedListener;
     private final OnClickListener mTabClickListener = new OnClickListener() {
         public void onClick(View view) {
-            TabView tabView = (TabView)view;
+            TabView tabView = (TabView) view;
             final int oldSelected = mVelocityViewPager.getCurrentItem();
             final int newSelected = tabView.getIndex();
             mVelocityViewPager.setCurrentItem(newSelected);
@@ -63,16 +58,6 @@ public class VelocityTabPageIndicator extends HorizontalScrollView implements Ve
             }
         }
     };
-
-    private final VelocityIcsLinearLayout mTabLayout;
-
-    private VelocityViewPager mVelocityViewPager;
-    private VelocityViewPager.OnPageChangeListener mListener;
-
-    private int mMaxTabWidth;
-    private int mSelectedTabIndex;
-
-    private OnTabReselectedListener mTabReselectedListener;
 
     public VelocityTabPageIndicator(Context context) {
         this(context, null);
@@ -99,7 +84,7 @@ public class VelocityTabPageIndicator extends HorizontalScrollView implements Ve
         final int childCount = mTabLayout.getChildCount();
         if (childCount > 1 && (widthMode == MeasureSpec.EXACTLY || widthMode == MeasureSpec.AT_MOST)) {
             if (childCount > 2) {
-                mMaxTabWidth = (int)(MeasureSpec.getSize(widthMeasureSpec) * 0.4f);
+                mMaxTabWidth = (int) (MeasureSpec.getSize(widthMeasureSpec) * 0.4f);
             } else {
                 mMaxTabWidth = MeasureSpec.getSize(widthMeasureSpec) / 2;
             }
@@ -207,7 +192,7 @@ public class VelocityTabPageIndicator extends HorizontalScrollView implements Ve
         PagerAdapter adapter = mVelocityViewPager.getAdapter();
         VelocityIconPagerAdapter iconAdapter = null;
         if (adapter instanceof VelocityIconPagerAdapter) {
-            iconAdapter = (VelocityIconPagerAdapter)adapter;
+            iconAdapter = (VelocityIconPagerAdapter) adapter;
         }
         final int count = adapter.getCount();
         for (int i = 0; i < count; i++) {
@@ -256,6 +241,18 @@ public class VelocityTabPageIndicator extends HorizontalScrollView implements Ve
     @Override
     public void setOnPageChangeListener(OnPageChangeListener listener) {
         mListener = listener;
+    }
+
+    /**
+     * Interface for a callback when the selected tab has been reselected.
+     */
+    public interface OnTabReselectedListener {
+        /**
+         * Callback when the selected tab has been reselected.
+         *
+         * @param position Position of the current center item.
+         */
+        void onTabReselected(int position);
     }
 
     private class TabView extends TextView {

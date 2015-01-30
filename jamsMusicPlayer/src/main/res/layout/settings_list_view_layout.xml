@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content" >
+    android:layout_height="wrap_content">
 
     <ImageView
         android:id="@+id/settingIconListView"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_alignParentLeft="true"
-        android:layout_marginLeft="10dp"
         android:layout_centerVertical="true"
+        android:layout_marginLeft="10dp"
         android:scaleX="0.75"
         android:scaleY="0.75"
         android:src="@drawable/folders_settings_light" />
@@ -19,9 +19,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_toRightOf="@+id/settingIconListView"
-        android:layout_marginTop="20dp"
         android:layout_marginLeft="10dp"
+        android:layout_marginTop="20dp"
+        android:layout_toRightOf="@+id/settingIconListView"
         android:ellipsize="end"
         android:gravity="left"
         android:lines="1"
@@ -34,10 +34,10 @@
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/settingsNameListView"
         android:layout_below="@+id/settingsNameListView"
+        android:layout_marginRight="10dp"
         android:ellipsize="end"
         android:maxLines="2"
         android:text="Settings Description"
-        android:layout_marginRight="10dp"
         android:textAppearance="?android:attr/textAppearanceSmall" />
 
 </RelativeLayout>

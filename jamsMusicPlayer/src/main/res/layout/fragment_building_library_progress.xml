@@ -2,36 +2,36 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/now_playing_controls_background_light" >
+    android:background="@drawable/now_playing_controls_background_light">
 
     <RelativeLayout
         android:id="@+id/progress_elements_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
-        
-        <TextView
-	        android:id="@+id/building_library_task"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:layout_centerHorizontal="true"
-	        android:layout_centerVertical="true"
-	        android:text="@string/building_music_library"
-	        android:singleLine="true"
-	        android:ellipsize="marquee"
-	        android:textColor="#0099CC"
-	        android:textAppearance="?android:attr/textAppearanceLarge" />
+        android:layout_height="match_parent">
 
-    	<ProgressBar
-	        android:id="@+id/building_library_progress"
-	        style="?android:attr/progressBarStyleHorizontal"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:layout_alignLeft="@+id/building_library_task"
-	        android:layout_alignRight="@+id/building_library_task"
-	        android:layout_below="@+id/building_library_task"
-	        android:layout_marginLeft="-30dp"
-	        android:layout_marginRight="-30dp" />
-        
+        <TextView
+            android:id="@+id/building_library_task"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:ellipsize="marquee"
+            android:singleLine="true"
+            android:text="@string/building_music_library"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="#0099CC" />
+
+        <ProgressBar
+            android:id="@+id/building_library_progress"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/building_library_task"
+            android:layout_alignRight="@+id/building_library_task"
+            android:layout_below="@+id/building_library_task"
+            android:layout_marginLeft="-30dp"
+            android:layout_marginRight="-30dp" />
+
     </RelativeLayout>
 
 </RelativeLayout>

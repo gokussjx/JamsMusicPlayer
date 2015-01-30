@@ -24,45 +24,45 @@ import android.view.animation.Transformation;
 
 public class CardFlipAnimation extends Animation {
     private Camera camera;
- 
+
     private View fromView;
     private View toView;
- 
+
     private float centerX;
     private float centerY;
- 
+
     private boolean forward = true;
- 
+
     /**
      * Creates a 3D flip animation between two views.
      *
      * @param fromView First fragment in the transition.
-     * @param toView Second fragment in the transition.
+     * @param toView   Second fragment in the transition.
      */
     public CardFlipAnimation(View fromView, View toView) {
         this.fromView = fromView;
         this.toView = toView;
- 
+
         setDuration(400);
         setFillAfter(false);
         setInterpolator(new AccelerateDecelerateInterpolator());
     }
- 
+
     public void reverse() {
         forward = false;
         View switchView = toView;
         toView = fromView;
         fromView = switchView;
     }
- 
+
     @Override
     public void initialize(int width, int height, int parentWidth, int parentHeight) {
         super.initialize(width, height, parentWidth, parentHeight);
-        centerX = width/2;
-        centerY = height/2;
+        centerX = width / 2;
+        centerY = height / 2;
         camera = new Camera();
     }
- 
+
     @Override
     protected void applyTransformation(float interpolatedTime, Transformation t) {
         /* Angle around the y-axis of the rotation at the given time
@@ -80,13 +80,13 @@ public class CardFlipAnimation extends Animation {
             degrees -= 180.f;
             fromView.setVisibility(View.GONE);
             toView.setVisibility(View.VISIBLE);
-            
+
         }
- 
+
         if (forward) {
-        	degrees = -degrees; //Determines the direction of rotation when the flip begins.
+            degrees = -degrees; //Determines the direction of rotation when the flip begins.
         }
- 
+
         final Matrix matrix = t.getMatrix();
         camera.save();
         camera.rotateY(degrees);
@@ -95,5 +95,5 @@ public class CardFlipAnimation extends Animation {
         matrix.preTranslate(-centerX, -centerY);
         matrix.postTranslate(centerX, centerY);
     }
-    
+
 }

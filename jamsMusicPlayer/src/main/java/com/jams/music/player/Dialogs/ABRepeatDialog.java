@@ -39,41 +39,81 @@ import com.jams.music.player.Views.RangeSeekBar;
 import com.jams.music.player.Views.RangeSeekBar.OnRangeSeekBarChangeListener;
 
 public class ABRepeatDialog extends DialogFragment {
-	
-	private Context mContext;
-	private Common mApp;
-	
-	private int repeatPointA;
-	private int repeatPointB;
-	private int currentSongIndex;
-	private int currentSongDurationMillis;
+
+    private Context mContext;
+    private Common mApp;
+
+    private int repeatPointA;
+    private int repeatPointB;
+    private int currentSongIndex;
+    private int currentSongDurationMillis;
     private int currentSongDurationSecs;
-	private SharedPreferences sharedPreferences;
-	private BroadcastReceiver receiver;
-	
-	private TextView repeatSongATime;
-	private TextView repeatSongBTime;
-	private SeekBar seekBar;
-	private RangeSeekBar<Integer> rangeSeekBar;
-	private ViewGroup viewGroup;
-	
-	@Override
+    private SharedPreferences sharedPreferences;
+    private BroadcastReceiver receiver;
+
+    private TextView repeatSongATime;
+    private TextView repeatSongBTime;
+    private SeekBar seekBar;
+    private RangeSeekBar<Integer> rangeSeekBar;
+    private ViewGroup viewGroup;
+
+    //Convert millisseconds to hh:mm:ss format.
+    public static String convertMillisToMinsSecs(long milliseconds) {
+
+        int secondsValue = (int) (milliseconds / 1000) % 60;
+        int minutesValue = (int) ((milliseconds / (1000 * 60)) % 60);
+        int hoursValue = (int) ((milliseconds / (1000 * 60 * 60)) % 24);
+
+        String seconds = "";
+        String minutes = "";
+        String hours = "";
+
+        if (secondsValue < 10) {
+            seconds = "0" + secondsValue;
+        } else {
+            seconds = "" + secondsValue;
+        }
+
+        if (minutesValue < 10) {
+            minutes = "0" + minutesValue;
+        } else {
+            minutes = "" + minutesValue;
+        }
+
+        if (hoursValue < 10) {
+            hours = "0" + hoursValue;
+        } else {
+            hours = "" + hoursValue;
+        }
+
+        String output = "";
+
+        if (hoursValue != 0) {
+            output = hours + ":" + minutes + ":" + seconds;
+        } else {
+            output = minutes + ":" + seconds;
+        }
+
+        return output;
+    }
+
+    @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-		
-		mContext = getActivity().getApplicationContext();
-		mApp = (Common) mContext;
-		
+
+        mContext = getActivity().getApplicationContext();
+        mApp = (Common) mContext;
+
         receiver = new BroadcastReceiver() {
-        	
+
             @Override
             public void onReceive(Context context, Intent intent) {
-            	initRepeatSongRangeDialog();
-            	
+                initRepeatSongRangeDialog();
+
             }
-            
+
         };
-		
-		sharedPreferences = getActivity().getSharedPreferences("com.jams.music.player", Context.MODE_PRIVATE);
+
+        sharedPreferences = getActivity().getSharedPreferences("com.jams.music.player", Context.MODE_PRIVATE);
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         View view = getActivity().getLayoutInflater().inflate(R.layout.fragment_repeat_song_range_dialog, null);
         currentSongIndex = mApp.getService().getCurrentSongIndex();
@@ -82,174 +122,134 @@ public class ABRepeatDialog extends DialogFragment {
         repeatSongBTime = (TextView) view.findViewById(R.id.repeat_song_range_B_time);
 
         currentSongDurationMillis = (int) mApp.getService().getCurrentMediaPlayer().getDuration();
-        currentSongDurationSecs = (int) currentSongDurationMillis/1000;
-        
+        currentSongDurationSecs = (int) currentSongDurationMillis / 1000;
+
         //Remove the placeholder seekBar and replace it with the RangeSeekBar.
         seekBar = (SeekBar) view.findViewById(R.id.repeat_song_range_placeholder_seekbar);
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) seekBar.getLayoutParams();
         viewGroup = (ViewGroup) seekBar.getParent();
         viewGroup.removeView(seekBar);
-        
+
         rangeSeekBar = new RangeSeekBar<Integer>(0, currentSongDurationSecs, getActivity());
         rangeSeekBar.setLayoutParams(params);
         viewGroup.addView(rangeSeekBar);
-		
-        if (sharedPreferences.getInt(Common.REPEAT_MODE, Common.REPEAT_OFF)==Common.A_B_REPEAT) {
-        	repeatSongATime.setText(convertMillisToMinsSecs(mApp.getService().getRepeatSongRangePointA()));
-        	repeatSongBTime.setText(convertMillisToMinsSecs(mApp.getService().getRepeatSongRangePointB()));
 
-        	rangeSeekBar.setSelectedMinValue(mApp.getService().getRepeatSongRangePointA());
-        	rangeSeekBar.setSelectedMaxValue(mApp.getService().getRepeatSongRangePointB());
+        if (sharedPreferences.getInt(Common.REPEAT_MODE, Common.REPEAT_OFF) == Common.A_B_REPEAT) {
+            repeatSongATime.setText(convertMillisToMinsSecs(mApp.getService().getRepeatSongRangePointA()));
+            repeatSongBTime.setText(convertMillisToMinsSecs(mApp.getService().getRepeatSongRangePointB()));
+
+            rangeSeekBar.setSelectedMinValue(mApp.getService().getRepeatSongRangePointA());
+            rangeSeekBar.setSelectedMaxValue(mApp.getService().getRepeatSongRangePointB());
 
             repeatPointA = mApp.getService().getRepeatSongRangePointA();
-        	repeatPointB = mApp.getService().getRepeatSongRangePointB();
+            repeatPointB = mApp.getService().getRepeatSongRangePointB();
         } else {
-        	repeatSongATime.setText("0:00");
-        	repeatSongBTime.setText(convertMillisToMinsSecs(currentSongDurationMillis));
-        	repeatPointA = 0;
-        	repeatPointB = currentSongDurationMillis;
+            repeatSongATime.setText("0:00");
+            repeatSongBTime.setText(convertMillisToMinsSecs(currentSongDurationMillis));
+            repeatPointA = 0;
+            repeatPointB = currentSongDurationMillis;
         }
-        
+
         rangeSeekBar.setOnRangeSeekBarChangeListener(new OnRangeSeekBarChangeListener<Integer>() {
             @Override
             public void onRangeSeekBarValuesChanged(RangeSeekBar<?> bar, Integer minValue, Integer maxValue) {
-            	repeatPointA = minValue*1000;
-            	repeatPointB = maxValue*1000;
-            	repeatSongATime.setText(convertMillisToMinsSecs(minValue*1000));
-            	repeatSongBTime.setText(convertMillisToMinsSecs(maxValue*1000));
+                repeatPointA = minValue * 1000;
+                repeatPointB = maxValue * 1000;
+                repeatSongATime.setText(convertMillisToMinsSecs(minValue * 1000));
+                repeatSongBTime.setText(convertMillisToMinsSecs(maxValue * 1000));
             }
-            
+
         });
-        
+
         //Set the dialog title.
         builder.setTitle(R.string.a_b_repeat);
         builder.setView(view);
         builder.setNegativeButton(R.string.cancel, new OnClickListener() {
 
-			@Override
-			public void onClick(DialogInterface arg0, int arg1) {
-				// TODO Auto-generated method stub
-				
-			}
+            @Override
+            public void onClick(DialogInterface arg0, int arg1) {
+                // TODO Auto-generated method stub
+
+            }
 
         });
-        
+
         builder.setPositiveButton(R.string.repeat, new OnClickListener() {
 
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				if ((currentSongDurationSecs - repeatPointB) < mApp.getCrossfadeDuration()) {
-					//Remove the crossfade handler.
-					mApp.getService().getHandler().removeCallbacks(mApp.getService().startCrossFadeRunnable);
-					mApp.getService().getHandler().removeCallbacks(mApp.getService().crossFadeRunnable);
-				}
-				
-				mApp.broadcastUpdateUICommand(new String[] { Common.UPDATE_PLAYBACK_CONTROLS }, 
-											  new String[] { "" });
-				mApp.getService().setRepeatSongRange(repeatPointA, repeatPointB);
-				mApp.getService().setRepeatMode(Common.A_B_REPEAT);
-				
-			}
-        	
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if ((currentSongDurationSecs - repeatPointB) < mApp.getCrossfadeDuration()) {
+                    //Remove the crossfade handler.
+                    mApp.getService().getHandler().removeCallbacks(mApp.getService().startCrossFadeRunnable);
+                    mApp.getService().getHandler().removeCallbacks(mApp.getService().crossFadeRunnable);
+                }
+
+                mApp.broadcastUpdateUICommand(new String[]{Common.UPDATE_PLAYBACK_CONTROLS},
+                        new String[]{""});
+                mApp.getService().setRepeatSongRange(repeatPointA, repeatPointB);
+                mApp.getService().setRepeatMode(Common.A_B_REPEAT);
+
+            }
+
         });
 
         return builder.create();
     }
-	
-	public void initRepeatSongRangeDialog() {
+
+    public void initRepeatSongRangeDialog() {
 
         currentSongDurationMillis = (int) mApp.getService().getCurrentMediaPlayer().getDuration();
-        currentSongDurationSecs = (int) currentSongDurationMillis/1000;
-        
+        currentSongDurationSecs = (int) currentSongDurationMillis / 1000;
+
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) rangeSeekBar.getLayoutParams();
         viewGroup = (ViewGroup) rangeSeekBar.getParent();
         viewGroup.removeView(rangeSeekBar);
-        
+
         rangeSeekBar = new RangeSeekBar<Integer>(0, currentSongDurationSecs, getActivity());
         rangeSeekBar.setLayoutParams(params);
         viewGroup.addView(rangeSeekBar);
-		
-        if (sharedPreferences.getInt(Common.REPEAT_MODE, Common.REPEAT_OFF)==Common.A_B_REPEAT) {
-        	repeatSongATime.setText(convertMillisToMinsSecs(mApp.getService().getRepeatSongRangePointA()));
-        	repeatSongBTime.setText(convertMillisToMinsSecs(mApp.getService().getRepeatSongRangePointB()));
-        	rangeSeekBar.setSelectedMinValue(mApp.getService().getRepeatSongRangePointA());
-        	rangeSeekBar.setSelectedMaxValue(mApp.getService().getRepeatSongRangePointB());
-        	repeatPointA = mApp.getService().getRepeatSongRangePointA();
-        	repeatPointB = mApp.getService().getRepeatSongRangePointB();
+
+        if (sharedPreferences.getInt(Common.REPEAT_MODE, Common.REPEAT_OFF) == Common.A_B_REPEAT) {
+            repeatSongATime.setText(convertMillisToMinsSecs(mApp.getService().getRepeatSongRangePointA()));
+            repeatSongBTime.setText(convertMillisToMinsSecs(mApp.getService().getRepeatSongRangePointB()));
+            rangeSeekBar.setSelectedMinValue(mApp.getService().getRepeatSongRangePointA());
+            rangeSeekBar.setSelectedMaxValue(mApp.getService().getRepeatSongRangePointB());
+            repeatPointA = mApp.getService().getRepeatSongRangePointA();
+            repeatPointB = mApp.getService().getRepeatSongRangePointB();
         } else {
-        	repeatSongATime.setText("0:00");
-        	repeatSongBTime.setText(convertMillisToMinsSecs(currentSongDurationMillis));
-        	repeatPointA = 0;
-        	repeatPointB = currentSongDurationMillis;
+            repeatSongATime.setText("0:00");
+            repeatSongBTime.setText(convertMillisToMinsSecs(currentSongDurationMillis));
+            repeatPointA = 0;
+            repeatPointB = currentSongDurationMillis;
         }
-        
+
         rangeSeekBar.setOnRangeSeekBarChangeListener(new OnRangeSeekBarChangeListener<Integer>() {
 
             @Override
             public void onRangeSeekBarValuesChanged(RangeSeekBar<?> bar, Integer minValue, Integer maxValue) {
-            	repeatPointA = minValue*1000;
-            	repeatPointB = maxValue*1000;
-            	repeatSongATime.setText(convertMillisToMinsSecs(minValue*1000));
-            	repeatSongBTime.setText(convertMillisToMinsSecs(maxValue*1000));
+                repeatPointA = minValue * 1000;
+                repeatPointB = maxValue * 1000;
+                repeatSongATime.setText(convertMillisToMinsSecs(minValue * 1000));
+                repeatSongBTime.setText(convertMillisToMinsSecs(maxValue * 1000));
             }
-            
+
         });
-        
-	}
-	
-	//Convert millisseconds to hh:mm:ss format.
-    public static String convertMillisToMinsSecs(long milliseconds) {
-    	
-    	int secondsValue = (int) (milliseconds / 1000) % 60 ;
-    	int minutesValue = (int) ((milliseconds / (1000*60)) % 60);
-    	int hoursValue  = (int) ((milliseconds / (1000*60*60)) % 24);
-    	
-    	String seconds = "";
-    	String minutes = "";
-    	String hours = "";
-    	
-    	if (secondsValue < 10) {
-    		seconds = "0" + secondsValue;
-    	} else {
-    		seconds = "" + secondsValue;
-    	}
 
-    	if (minutesValue < 10) {
-    		minutes = "0" + minutesValue;
-    	} else {
-    		minutes = "" + minutesValue;
-    	}
-    	
-    	if (hoursValue < 10) {
-    		hours = "0" + hoursValue;
-    	} else {
-    		hours = "" + hoursValue;
-    	}
-    	
-    	String output = "";
-    	
-    	if (hoursValue!=0) {
-    		output = hours + ":" + minutes + ":" + seconds;
-    	} else {
-    		output = minutes + ":" + seconds;
-    	}
-    	
-    	return output;
     }
-    
-	@Override
-	public void onStart() {
-	    super.onStart();
-	    LocalBroadcastManager.getInstance(getActivity().getApplicationContext())
-	    					 .registerReceiver((receiver), new IntentFilter("com.jams.music.player.UPDATE_NOW_PLAYING"));
-	
-	}
 
-	@Override
-	public void onStop() {
-	    LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).unregisterReceiver(receiver);
-	    super.onStop();
-	    
-	}
-	
+    @Override
+    public void onStart() {
+        super.onStart();
+        LocalBroadcastManager.getInstance(getActivity().getApplicationContext())
+                .registerReceiver((receiver), new IntentFilter("com.jams.music.player.UPDATE_NOW_PLAYING"));
+
+    }
+
+    @Override
+    public void onStop() {
+        LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).unregisterReceiver(receiver);
+        super.onStop();
+
+    }
+
 }

@@ -53,6 +53,78 @@ public class SettingsAppearanceFragment extends PreferenceFragment {
     private Preference mColorPreference;
     private Preference mDefaultScreenPreference;
     private CheckBoxPreference mLockscreenControlsPreference;
+    /**
+     * Click listener for the app theme preference.
+     */
+    private Preference.OnPreferenceClickListener appThemeClickListener = new Preference.OnPreferenceClickListener() {
+
+        @Override
+        public boolean onPreferenceClick(Preference preference) {
+            FragmentTransaction ft = getChildFragmentManager().beginTransaction();
+            ApplicationThemeDialog appThemeDialog = new ApplicationThemeDialog();
+            appThemeDialog.show(ft, "appThemeDialog");
+
+            return false;
+        }
+
+    };
+    /**
+     * Click listener for the color preference.
+     */
+    private Preference.OnPreferenceClickListener colorClickListener = new Preference.OnPreferenceClickListener() {
+
+        @Override
+        public boolean onPreferenceClick(Preference preference) {
+            FragmentTransaction ft = getChildFragmentManager().beginTransaction();
+            NowPlayingColorSchemesDialog appThemeDialog = new NowPlayingColorSchemesDialog();
+            appThemeDialog.show(ft, "colorSchemesDialog");
+
+            return false;
+        }
+
+    };
+    /**
+     * Click listener for the default browser preference.
+     */
+    private Preference.OnPreferenceClickListener defaultScreenClickListener = new Preference.OnPreferenceClickListener() {
+
+        @Override
+        public boolean onPreferenceClick(Preference preference) {
+            //Get the current preference.
+            int currentPreference = mApp.getSharedPreferences().getInt(Common.STARTUP_BROWSER, 0);
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle(R.string.default_browser);
+            builder.setSingleChoiceItems(R.array.startup_screen_items, currentPreference, new DialogInterface.OnClickListener() {
+
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    mApp.getSharedPreferences().edit().putInt(Common.STARTUP_BROWSER, which).commit();
+                    dialog.dismiss();
+                    Toast.makeText(mContext, R.string.changes_saved, Toast.LENGTH_SHORT).show();
+
+                }
+
+            });
+
+            builder.create().show();
+            return false;
+        }
+
+    };
+    /**
+     * Checkbox click listener for the lockscreen controls preference.
+     */
+    private Preference.OnPreferenceChangeListener lockscreenControlsClickListener = new Preference.OnPreferenceChangeListener() {
+
+        @Override
+        public boolean onPreferenceChange(Preference preference, Object newValue) {
+            boolean value = (Boolean) newValue;
+            mApp.getSharedPreferences().edit().putBoolean(Common.SHOW_LOCKSCREEN_CONTROLS, value).commit();
+            ((CheckBoxPreference) preference).setChecked(value);
+            return false;
+        }
+    };
 
     @Override
     public void onCreate(Bundle onSavedInstanceState) {
@@ -94,7 +166,7 @@ public class SettingsAppearanceFragment extends PreferenceFragment {
      * Applies KitKat specific translucency.
      */
     private void applyKitKatTranslucency() {
-        if (Build.VERSION.SDK_INT==Build.VERSION_CODES.KITKAT) {
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
 
             //Calculate ActionBar and navigation bar height.
             TypedValue tv = new TypedValue();
@@ -104,9 +176,9 @@ public class SettingsAppearanceFragment extends PreferenceFragment {
             }
 
             mListView.setBackgroundColor(0xFFEEEEEE);
-            mRootView.setPadding(0, actionBarHeight + mApp.getStatusBarHeight(mContext),
-                                 0, 0);
-            mListView.setPadding(10, 0, 10, mApp.getNavigationBarHeight(mContext));
+            mRootView.setPadding(0, actionBarHeight + Common.getStatusBarHeight(mContext),
+                    0, 0);
+            mListView.setPadding(10, 0, 10, Common.getNavigationBarHeight(mContext));
             mListView.setClipToPadding(false);
 
             //Set the window color.
@@ -116,87 +188,11 @@ public class SettingsAppearanceFragment extends PreferenceFragment {
 
     }
 
-    /**
-     * Click listener for the app theme preference.
-     */
-    private Preference.OnPreferenceClickListener appThemeClickListener = new Preference.OnPreferenceClickListener() {
-
-        @Override
-        public boolean onPreferenceClick(Preference preference) {
-            FragmentTransaction ft = getChildFragmentManager().beginTransaction();
-            ApplicationThemeDialog appThemeDialog = new ApplicationThemeDialog();
-            appThemeDialog.show(ft, "appThemeDialog");
-
-            return false;
-        }
-
-    };
-
-    /**
-     * Click listener for the color preference.
-     */
-    private Preference.OnPreferenceClickListener colorClickListener = new Preference.OnPreferenceClickListener() {
-
-        @Override
-        public boolean onPreferenceClick(Preference preference) {
-            FragmentTransaction ft = getChildFragmentManager().beginTransaction();
-            NowPlayingColorSchemesDialog appThemeDialog = new NowPlayingColorSchemesDialog();
-            appThemeDialog.show(ft, "colorSchemesDialog");
-
-            return false;
-        }
-
-    };
-
-    /**
-     * Click listener for the default browser preference.
-     */
-    private Preference.OnPreferenceClickListener defaultScreenClickListener = new Preference.OnPreferenceClickListener() {
-
-        @Override
-        public boolean onPreferenceClick(Preference preference) {
-            //Get the current preference.
-            int currentPreference = mApp.getSharedPreferences().getInt(Common.STARTUP_BROWSER, 0);
-
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setTitle(R.string.default_browser);
-            builder.setSingleChoiceItems(R.array.startup_screen_items, currentPreference, new DialogInterface.OnClickListener() {
-
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    mApp.getSharedPreferences().edit().putInt(Common.STARTUP_BROWSER, which).commit();
-                    dialog.dismiss();
-                    Toast.makeText(mContext, R.string.changes_saved, Toast.LENGTH_SHORT).show();
-
-                }
-
-            });
-
-            builder.create().show();
-            return false;
-        }
-
-    };
-
-    /**
-     * Checkbox click listener for the lockscreen controls preference.
-     */
-    private Preference.OnPreferenceChangeListener lockscreenControlsClickListener = new Preference.OnPreferenceChangeListener() {
-
-        @Override
-        public boolean onPreferenceChange(Preference preference, Object newValue) {
-            boolean value = (Boolean) newValue;
-            mApp.getSharedPreferences().edit().putBoolean(Common.SHOW_LOCKSCREEN_CONTROLS, value).commit();
-            ((CheckBoxPreference) preference).setChecked(value);
-            return false;
-        }
-    };
-
     @Override
     public void onResume() {
         super.onResume();
 
-        if (Build.VERSION.SDK_INT==Build.VERSION_CODES.KITKAT)
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT)
             getActivity().getActionBar().setBackgroundDrawable(UIElementsHelper.getGeneralActionBarBackground(mContext));
 
     }

@@ -1,7 +1,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/artist_card_layout"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:id="@+id/artist_card_layout" >
+    android:layout_height="fill_parent">
 
     <ImageView
         android:id="@+id/artistsGridViewImage"
@@ -11,73 +11,73 @@
         android:layout_centerVertical="true"
         android:adjustViewBounds="true"
         android:scaleType="centerCrop" />
-    
+
     <RelativeLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/transparent_black_patch"
-        android:layout_alignParentBottom="true">
-        
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/transparent_black_patch">
+
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
-            
+
             <RelativeLayout
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="8">
-                
+
                 <ImageButton
-			        android:id="@+id/overflow_icon"
-			        android:layout_width="wrap_content"
-			        android:layout_height="wrap_content"
-			        android:layout_centerHorizontal="true"
-			        android:layout_centerVertical="true"
-			        android:background="?android:selectableItemBackground"
-			        android:src="@drawable/ic_action_overflow_universal"
-			        android:padding="6dp"
-			        android:scaleX="0.75"
-			        android:scaleY="0.75" />
-                
+                    android:id="@+id/overflow_icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:background="?android:selectableItemBackground"
+                    android:padding="6dp"
+                    android:scaleX="0.75"
+                    android:scaleY="0.75"
+                    android:src="@drawable/ic_action_overflow_universal" />
+
             </RelativeLayout>
-            
+
             <RelativeLayout
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:layout_weight="3">
-                
+
                 <TextView
-			        android:id="@+id/artistName"
-			        android:layout_width="fill_parent"
-			        android:layout_height="wrap_content"
-			        android:layout_centerVertical="true"
-			        android:layout_centerHorizontal="true"
-			        android:gravity="center"
-			        android:text="Artist Name"
-			        android:textColor="#FFFFFF"
-					android:lines="1" 
-			      	android:ellipsize="end" 
-			        android:textAppearance="?android:attr/textAppearanceMedium" />
-                
+                    android:id="@+id/artistName"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:ellipsize="end"
+                    android:gravity="center"
+                    android:lines="1"
+                    android:text="Artist Name"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="#FFFFFF" />
+
             </RelativeLayout>
-            
+
             <RelativeLayout
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="8">
-                
+
             </RelativeLayout>
-            
+
         </LinearLayout>
-        
+
     </RelativeLayout>
-    
+
     <RelativeLayout
         android:id="@+id/selector"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone"
-        android:background="#00000000" />
-    
+        android:background="#00000000"
+        android:visibility="gone" />
+
 </RelativeLayout>

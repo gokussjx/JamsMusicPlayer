@@ -33,7 +33,6 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.DrawerLayout.DrawerListener;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.HapticFeedbackConstants;
 import android.view.View;
@@ -42,9 +41,7 @@ import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
-import android.view.animation.AnimationSet;
 import android.view.animation.DecelerateInterpolator;
-import android.view.animation.RotateAnimation;
 import android.view.animation.ScaleAnimation;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -56,14 +53,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.jams.music.player.Animations.FadeAnimation;
-import com.jams.music.player.Animations.TranslateAnimation;
-import com.jams.music.player.AsyncTasks.AsyncRemovePinnedSongsTask;
-import com.jams.music.player.DBHelpers.DBAccessHelper;
 import com.jams.music.player.Drawers.QueueDrawerFragment;
 import com.jams.music.player.Helpers.TypefaceHelper;
 import com.jams.music.player.Helpers.UIElementsHelper;
 import com.jams.music.player.R;
-import com.jams.music.player.Services.AudioPlaybackService;
 import com.jams.music.player.Utils.Common;
 import com.velocity.view.pager.library.VelocityViewPager;
 
@@ -71,177 +64,160 @@ import java.util.HashMap;
 
 public class NowPlayingActivity extends FragmentActivity {
 
+    public static final String START_SERVICE = "StartService";
+    private static final int SEEKBAR_STROBE_ANIM_REPEAT = Animation.INFINITE;
     //Common objects.
-	private Context mContext;
-    private Common mApp;
+    private Context mContext;
+    /**
+     * Repeat button click listener.
+     */
+    private OnClickListener repeatButtonClickListener = new OnClickListener() {
 
+        @Override
+        public void onClick(View arg0) {
+
+            mApp.getService().clearABRepeatRange();
+            if (mApp.getService().getRepeatMode() == Common.REPEAT_OFF) {
+                mRepeatButton.setImageResource(R.drawable.repeat_highlighted);
+                mApp.getService().setRepeatMode(Common.REPEAT_PLAYLIST);
+
+            } else if (mApp.getService().getRepeatMode() == Common.REPEAT_PLAYLIST) {
+                mRepeatButton.setImageResource(R.drawable.repeat_song);
+                mApp.getService().setRepeatMode(Common.REPEAT_SONG);
+
+            } else {
+                mRepeatButton.setImageResource(UIElementsHelper.getIcon(mContext, "repeat"));
+                mApp.getService().setRepeatMode(Common.REPEAT_OFF);
+
+            }
+
+        }
+
+    };
+    /**
+     * Shuffle button click listener.
+     */
+    private OnClickListener shuffleButtonClickListener = new OnClickListener() {
+
+        @Override
+        public void onClick(View arg0) {
+            //Toggle shuffle on/off.
+            boolean shuffleOn = mApp.getService().toggleShuffleMode();
+
+            if (shuffleOn)
+                mShuffleButton.setImageResource(R.drawable.shuffle_highlighted);
+            else
+                mShuffleButton.setImageResource(UIElementsHelper.getIcon(mContext, "shuffle"));
+
+        }
+
+    };
+    private Common mApp;
     //Layouts.
-	private DrawerLayout mDrawerLayout;
-	private FrameLayout mDrawerParentLayout;
+    private DrawerLayout mDrawerLayout;
+    private FrameLayout mDrawerParentLayout;
     private QueueDrawerFragment mQueueDrawerFragment;
     private RelativeLayout mCurrentQueueLayout;
-	
-	//Song info/seekbar elements.
-	private SeekBar mSeekbar;
-	private ProgressBar mStreamingProgressBar;
-	
-	//Playback Controls.
-    private RelativeLayout mControlsLayoutHeaderParent;
-	private RelativeLayout mControlsLayoutHeader;
-	private ImageButton mPlayPauseButton;
-    private RelativeLayout mPlayPauseButtonBackground;
-	private ImageButton mNextButton;
-	private ImageButton mPreviousButton;
-	private ImageButton mShuffleButton;
-	private ImageButton mRepeatButton;
+    /**
+     * Drawer open/close listener.
+     */
+    private DrawerListener mDrawerListener = new DrawerListener() {
 
+        @Override
+        public void onDrawerClosed(View drawer) {
+            if (mQueueDrawerFragment != null &&
+                    drawer == mCurrentQueueLayout) {
+                mQueueDrawerFragment.setIsDrawerOpen(false);
+            }
+
+        }
+
+        @Override
+        public void onDrawerOpened(View drawer) {
+            if (mQueueDrawerFragment != null &&
+                    drawer == mCurrentQueueLayout) {
+                mQueueDrawerFragment.setIsDrawerOpen(true);
+            }
+
+        }
+
+        @Override
+        public void onDrawerSlide(View drawer, float arg1) {
+            // TODO Auto-generated method stub
+
+        }
+
+        @Override
+        public void onDrawerStateChanged(int newState) {
+            // TODO Auto-generated method stub
+
+        }
+
+    };
+    //Song info/seekbar elements.
+    private SeekBar mSeekbar;
+    private ProgressBar mStreamingProgressBar;
+    //Playback Controls.
+    private RelativeLayout mControlsLayoutHeaderParent;
+    private RelativeLayout mControlsLayoutHeader;
+    private ImageButton mPlayPauseButton;
+    private RelativeLayout mPlayPauseButtonBackground;
+    private ImageButton mNextButton;
+    private ImageButton mPreviousButton;
+    private ImageButton mShuffleButton;
+    private ImageButton mRepeatButton;
     //Seekbar indicator.
     private RelativeLayout mSeekbarIndicatorLayoutParent;
+    /**
+     * Seekbar change indicator.
+     */
+    private Runnable fadeOutSeekbarIndicator = new Runnable() {
+
+        @Override
+        public void run() {
+            FadeAnimation fadeOut = new FadeAnimation(mSeekbarIndicatorLayoutParent,
+                    300, 0.9f, 0.0f, null);
+            fadeOut.animate();
+        }
+
+    };
     private RelativeLayout mSeekbarIndicatorLayout;
     private TextView mSeekbarIndicatorText;
-
     //Seekbar strobe effect.
     private AlphaAnimation mSeekbarStrobeAnim;
-    private static final int SEEKBAR_STROBE_ANIM_REPEAT = Animation.INFINITE;
-
-	//Playlist pager.
+    //Playlist pager.
     private VelocityViewPager mViewPager;
     private PlaylistPagerAdapter mViewPagerAdapter;
-
     //Handler object.
     private Handler mHandler = new Handler();
-    
     //Differentiates between a user's scroll input and a programmatic scroll.
     private boolean USER_SCROLL = true;
-
     //HashMap that passes on song information to the "Download from Cloud" dialog.
     private HashMap<String, String> metadata;
-    
     //Interface instance and flags.
     private NowPlayingActivityListener mNowPlayingActivityListener;
-    public static final String START_SERVICE = "StartService";
-    private boolean mIsCreating = true;
-    
-    @SuppressLint("NewApi")
-	@Override
-    protected void onCreate(Bundle savedInstanceState) {
-    	mContext = getApplicationContext();
-    	mApp = (Common) getApplicationContext();
-    	mApp.setNowPlayingActivity(this);
-    	setNowPlayingActivityListener(mApp.getPlaybackKickstarter());
-    	
-    	//Set the UI theme.
-        setTheme();
-        
-        super.onCreate(savedInstanceState);	
-    	setContentView(R.layout.activity_now_playing);
-    	
-    	//Set the volume stream for this activity.
-        this.setVolumeControlStream(AudioManager.STREAM_MUSIC);
-        
-        //Drawer layout.
-        if (!mApp.isTabletInLandscape()) {
-            mDrawerLayout = (DrawerLayout) findViewById(R.id.main_activity_drawer_root);
-            mDrawerParentLayout = (FrameLayout) findViewById(R.id.now_playing_drawer_frame_root);
-            mCurrentQueueLayout = (RelativeLayout) findViewById(R.id.queue_drawer);
-            mDrawerLayout.setDrawerListener(mDrawerListener);
-            mDrawerLayout.setBackgroundColor(UIElementsHelper.getBackgroundColor(mContext));
-
-        } else {
-            mCurrentQueueLayout = (RelativeLayout) findViewById(R.id.queue_drawer);
-        }
-        
-        //ViewPager.
-        mViewPager = (VelocityViewPager) findViewById(R.id.nowPlayingPlaylistPager);
-
-        //Seekbar indicator.
-        mSeekbarIndicatorLayoutParent = (RelativeLayout) findViewById(R.id.seekbarIndicatorParent);
-        mSeekbarIndicatorLayout = (RelativeLayout) findViewById(R.id.seekbarIndicator);
-        mSeekbarIndicatorText = (TextView) findViewById(R.id.seekbarIndicatorText);
-
-        mSeekbarIndicatorLayoutParent.setVisibility(View.GONE);
-        mSeekbarIndicatorLayout.setBackgroundResource(UIElementsHelper.getGridViewCardBackground(mContext));
-        mSeekbarIndicatorText.setTypeface(TypefaceHelper.getTypeface(mContext, "Roboto-Regular"));
-        mSeekbarIndicatorText.setTextColor(UIElementsHelper.getThemeBasedTextColor(mContext));
-    	
-    	//Playback Controls.
-        mControlsLayoutHeaderParent = (RelativeLayout) findViewById(R.id.now_playing_controls_header_parent);
-        mControlsLayoutHeader = (RelativeLayout) findViewById(R.id.now_playing_controls_header);
-        mPlayPauseButtonBackground = (RelativeLayout) findViewById(R.id.playPauseButtonBackground);
-    	mPlayPauseButton = (ImageButton) findViewById(R.id.playPauseButton);
-        mNextButton = (ImageButton) findViewById(R.id.nextButton);
-    	mPreviousButton = (ImageButton) findViewById(R.id.previousButton);
-    	mShuffleButton = (ImageButton) findViewById(R.id.shuffleButton);
-    	mRepeatButton = (ImageButton) findViewById(R.id.repeatButton);
-
-    	//Song info/seekbar elements.
-    	mSeekbar = (SeekBar) findViewById(R.id.nowPlayingSeekBar);
-    	mStreamingProgressBar = (ProgressBar) findViewById(R.id.startingStreamProgressBar);
-    	mStreamingProgressBar.setVisibility(View.GONE);
-
-    	try {
-    		mSeekbar.setThumb(getResources().getDrawable(R.drawable.transparent_drawable));
-    	} catch (Exception e) {
-    		e.printStackTrace();
-    	}
-
-        mPlayPauseButtonBackground.setBackgroundResource(UIElementsHelper.getShadowedCircle(mContext));
-        mPlayPauseButton.setImageResource(R.drawable.pause_light);
-        mPlayPauseButton.setId(R.drawable.pause_light);
-    	mNextButton.setImageResource(UIElementsHelper.getIcon(mContext, "btn_playback_next"));
-    	mPreviousButton.setImageResource(UIElementsHelper.getIcon(mContext, "btn_playback_previous"));
-    	
-    	if (mApp.getCurrentTheme()==Common.DARK_THEME) {
-    		mNextButton.setAlpha(1f);
-    		mPreviousButton.setAlpha(1f);
-        }
-
-        //KitKat specific layout code.
-        setKitKatTranslucentBars();
-
-    	//Set the control buttons and background.
-        setControlButtonsBackground();
-    	setPlayPauseButton();
-        setShuffleButtonIcon();
-        setRepeatButtonIcon();
-    	
-        //Set the click listeners.
-    	mSeekbar.setOnSeekBarChangeListener(seekBarChangeListener);
-    	mNextButton.setOnClickListener(mOnClickNextListener);
-    	mPreviousButton.setOnClickListener(mOnClickPreviousListener);
-    	mPlayPauseButton.setOnClickListener(playPauseClickListener);
-        mPlayPauseButtonBackground.setOnClickListener(playPauseClickListener);
-    	mShuffleButton.setOnClickListener(shuffleButtonClickListener);
-    	mRepeatButton.setOnClickListener(repeatButtonClickListener);
-
-        //Apply haptic feedback to the play/pause button.
-        mPlayPauseButtonBackground.setHapticFeedbackEnabled(true);
-        mPlayPauseButton.setHapticFeedbackEnabled(true);
-
-    }
-    
     /**
-     * Updates this activity's UI elements based on the passed intent's 
+     * Updates this activity's UI elements based on the passed intent's
      * update flag(s).
      */
     BroadcastReceiver mReceiver = new BroadcastReceiver() {
-    	
+
         @Override
         public void onReceive(Context context, Intent intent) {
-        	
-        	//Grab the bundle from the intent.
-        	Bundle bundle = intent.getExtras();
 
-        	//Initializes the ViewPager.
-        	if (intent.hasExtra(Common.INIT_PAGER) || 
-        		intent.hasExtra(Common.NEW_QUEUE_ORDER))
+            //Grab the bundle from the intent.
+            Bundle bundle = intent.getExtras();
+
+            //Initializes the ViewPager.
+            if (intent.hasExtra(Common.INIT_PAGER) ||
+                    intent.hasExtra(Common.NEW_QUEUE_ORDER))
                 initViewPager();
 
-        	//Updates the ViewPager's current page/position.
-        	if (intent.hasExtra(Common.UPDATE_PAGER_POSTIION)) {
+            //Updates the ViewPager's current page/position.
+            if (intent.hasExtra(Common.UPDATE_PAGER_POSTIION)) {
                 int currentPosition = mViewPager.getCurrentItem();
                 int newPosition = Integer.parseInt(bundle.getString(Common.UPDATE_PAGER_POSTIION));
-                if (currentPosition!=newPosition) {
+                if (currentPosition != newPosition) {
 
                     if (newPosition > 0 && Math.abs(newPosition - currentPosition) <= 5) {
                         //Smooth scroll to the new index.
@@ -256,71 +232,170 @@ public class NowPlayingActivity extends FragmentActivity {
 
                 }
 
-        	}
-        		
-        	//Updates the playback control buttons.
-        	if (intent.hasExtra(Common.UPDATE_PLAYBACK_CONTROLS)) {
-        		setPlayPauseButton();
-        		setRepeatButtonIcon();
-        		setShuffleButtonIcon();
-        		
-        	}
-        	
-            //Displays the audibook toast.
-        	if (intent.hasExtra(Common.SHOW_AUDIOBOOK_TOAST))
-        		displayAudiobookToast(Long.parseLong(
-        							  bundle.getString(
-        							  Common.SHOW_AUDIOBOOK_TOAST)));
-        	
-        	//Updates the duration of the SeekBar.
-        	if (intent.hasExtra(Common.UPDATE_SEEKBAR_DURATION))
-        		setSeekbarDuration(Integer.parseInt(
-        						   bundle.getString(
-        						   Common.UPDATE_SEEKBAR_DURATION)));
-        	
-        	//Hides the seekbar and displays the streaming progress bar.
-        	if (intent.hasExtra(Common.SHOW_STREAMING_BAR)) {
-        		mSeekbar.setVisibility(View.INVISIBLE);
-        		mStreamingProgressBar.setVisibility(View.VISIBLE);
-        		mHandler.removeCallbacks(seekbarUpdateRunnable);
-        		
-        	}
-        	
-        	//Shows the seekbar and hides the streaming progress bar.
-        	if (intent.hasExtra(Common.HIDE_STREAMING_BAR)) {
-        		mSeekbar.setVisibility(View.VISIBLE);
-        		mStreamingProgressBar.setVisibility(View.INVISIBLE);
-        		mHandler.postDelayed(seekbarUpdateRunnable, 100);
-        	}
-        	
-        	//Updates the buffering progress on the seekbar.
-        	if (intent.hasExtra(Common.UPDATE_BUFFERING_PROGRESS))
-        		mSeekbar.setSecondaryProgress(Integer.parseInt(
-        									  bundle.getString(
-        									  Common.UPDATE_BUFFERING_PROGRESS)));
+            }
 
-        	//Close this activity if the service is about to stop running.
-        	if (intent.hasExtra(Common.SERVICE_STOPPING)) {
-        		mHandler.removeCallbacks(seekbarUpdateRunnable);
-        		finish();
-        	}
-        	
+            //Updates the playback control buttons.
+            if (intent.hasExtra(Common.UPDATE_PLAYBACK_CONTROLS)) {
+                setPlayPauseButton();
+                setRepeatButtonIcon();
+                setShuffleButtonIcon();
+
+            }
+
+            //Displays the audibook toast.
+            if (intent.hasExtra(Common.SHOW_AUDIOBOOK_TOAST))
+                displayAudiobookToast(Long.parseLong(
+                        bundle.getString(
+                                Common.SHOW_AUDIOBOOK_TOAST)));
+
+            //Updates the duration of the SeekBar.
+            if (intent.hasExtra(Common.UPDATE_SEEKBAR_DURATION))
+                setSeekbarDuration(Integer.parseInt(
+                        bundle.getString(
+                                Common.UPDATE_SEEKBAR_DURATION)));
+
+            //Hides the seekbar and displays the streaming progress bar.
+            if (intent.hasExtra(Common.SHOW_STREAMING_BAR)) {
+                mSeekbar.setVisibility(View.INVISIBLE);
+                mStreamingProgressBar.setVisibility(View.VISIBLE);
+                mHandler.removeCallbacks(seekbarUpdateRunnable);
+
+            }
+
+            //Shows the seekbar and hides the streaming progress bar.
+            if (intent.hasExtra(Common.HIDE_STREAMING_BAR)) {
+                mSeekbar.setVisibility(View.VISIBLE);
+                mStreamingProgressBar.setVisibility(View.INVISIBLE);
+                mHandler.postDelayed(seekbarUpdateRunnable, 100);
+            }
+
+            //Updates the buffering progress on the seekbar.
+            if (intent.hasExtra(Common.UPDATE_BUFFERING_PROGRESS))
+                mSeekbar.setSecondaryProgress(Integer.parseInt(
+                        bundle.getString(
+                                Common.UPDATE_BUFFERING_PROGRESS)));
+
+            //Close this activity if the service is about to stop running.
+            if (intent.hasExtra(Common.SERVICE_STOPPING)) {
+                mHandler.removeCallbacks(seekbarUpdateRunnable);
+                finish();
+            }
+
         }
-        
+
     };
-    
+    private boolean mIsCreating = true;
+
+    @SuppressLint("NewApi")
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        mContext = getApplicationContext();
+        mApp = (Common) getApplicationContext();
+        mApp.setNowPlayingActivity(this);
+        setNowPlayingActivityListener(mApp.getPlaybackKickstarter());
+
+        //Set the UI theme.
+        setTheme();
+
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_now_playing);
+
+        //Set the volume stream for this activity.
+        this.setVolumeControlStream(AudioManager.STREAM_MUSIC);
+
+        //Drawer layout.
+        if (!mApp.isTabletInLandscape()) {
+            mDrawerLayout = (DrawerLayout) findViewById(R.id.main_activity_drawer_root);
+            mDrawerParentLayout = (FrameLayout) findViewById(R.id.now_playing_drawer_frame_root);
+            mCurrentQueueLayout = (RelativeLayout) findViewById(R.id.queue_drawer);
+            mDrawerLayout.setDrawerListener(mDrawerListener);
+            mDrawerLayout.setBackgroundColor(UIElementsHelper.getBackgroundColor(mContext));
+
+        } else {
+            mCurrentQueueLayout = (RelativeLayout) findViewById(R.id.queue_drawer);
+        }
+
+        //ViewPager.
+        mViewPager = (VelocityViewPager) findViewById(R.id.nowPlayingPlaylistPager);
+
+        //Seekbar indicator.
+        mSeekbarIndicatorLayoutParent = (RelativeLayout) findViewById(R.id.seekbarIndicatorParent);
+        mSeekbarIndicatorLayout = (RelativeLayout) findViewById(R.id.seekbarIndicator);
+        mSeekbarIndicatorText = (TextView) findViewById(R.id.seekbarIndicatorText);
+
+        mSeekbarIndicatorLayoutParent.setVisibility(View.GONE);
+        mSeekbarIndicatorLayout.setBackgroundResource(UIElementsHelper.getGridViewCardBackground(mContext));
+        mSeekbarIndicatorText.setTypeface(TypefaceHelper.getTypeface(mContext, "Roboto-Regular"));
+        mSeekbarIndicatorText.setTextColor(UIElementsHelper.getThemeBasedTextColor(mContext));
+
+        //Playback Controls.
+        mControlsLayoutHeaderParent = (RelativeLayout) findViewById(R.id.now_playing_controls_header_parent);
+        mControlsLayoutHeader = (RelativeLayout) findViewById(R.id.now_playing_controls_header);
+        mPlayPauseButtonBackground = (RelativeLayout) findViewById(R.id.playPauseButtonBackground);
+        mPlayPauseButton = (ImageButton) findViewById(R.id.playPauseButton);
+        mNextButton = (ImageButton) findViewById(R.id.nextButton);
+        mPreviousButton = (ImageButton) findViewById(R.id.previousButton);
+        mShuffleButton = (ImageButton) findViewById(R.id.shuffleButton);
+        mRepeatButton = (ImageButton) findViewById(R.id.repeatButton);
+
+        //Song info/seekbar elements.
+        mSeekbar = (SeekBar) findViewById(R.id.nowPlayingSeekBar);
+        mStreamingProgressBar = (ProgressBar) findViewById(R.id.startingStreamProgressBar);
+        mStreamingProgressBar.setVisibility(View.GONE);
+
+        try {
+            mSeekbar.setThumb(getResources().getDrawable(R.drawable.transparent_drawable));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        mPlayPauseButtonBackground.setBackgroundResource(UIElementsHelper.getShadowedCircle(mContext));
+        mPlayPauseButton.setImageResource(R.drawable.pause_light);
+        mPlayPauseButton.setId(R.drawable.pause_light);
+        mNextButton.setImageResource(UIElementsHelper.getIcon(mContext, "btn_playback_next"));
+        mPreviousButton.setImageResource(UIElementsHelper.getIcon(mContext, "btn_playback_previous"));
+
+        if (mApp.getCurrentTheme() == Common.DARK_THEME) {
+            mNextButton.setAlpha(1f);
+            mPreviousButton.setAlpha(1f);
+        }
+
+        //KitKat specific layout code.
+        setKitKatTranslucentBars();
+
+        //Set the control buttons and background.
+        setControlButtonsBackground();
+        setPlayPauseButton();
+        setShuffleButtonIcon();
+        setRepeatButtonIcon();
+
+        //Set the click listeners.
+        mSeekbar.setOnSeekBarChangeListener(seekBarChangeListener);
+        mNextButton.setOnClickListener(mOnClickNextListener);
+        mPreviousButton.setOnClickListener(mOnClickPreviousListener);
+        mPlayPauseButton.setOnClickListener(playPauseClickListener);
+        mPlayPauseButtonBackground.setOnClickListener(playPauseClickListener);
+        mShuffleButton.setOnClickListener(shuffleButtonClickListener);
+        mRepeatButton.setOnClickListener(repeatButtonClickListener);
+
+        //Apply haptic feedback to the play/pause button.
+        mPlayPauseButtonBackground.setHapticFeedbackEnabled(true);
+        mPlayPauseButton.setHapticFeedbackEnabled(true);
+
+    }
+
     /**
      * Sets the activity's theme based on user preferences.
      */
     private void setTheme() {
-        if (mApp.getCurrentTheme()==Common.DARK_THEME) {
+        if (mApp.getCurrentTheme() == Common.DARK_THEME) {
             this.setTheme(R.style.AppThemeNoActionBar);
         } else {
             this.setTheme(R.style.AppThemeLightNoActionBar);
         }
-        
+
     }
-    
+
     /**
      * Initializes the view pager.
      */
@@ -335,7 +410,7 @@ public class NowPlayingActivity extends FragmentActivity {
             mViewPager.setCurrentItem(mApp.getService().getCurrentSongIndex(), false);
 
             FadeAnimation fadeAnimation = new FadeAnimation(mViewPager, 600, 0.0f,
-                                                            1.0f, new DecelerateInterpolator(2.0f));
+                    1.0f, new DecelerateInterpolator(2.0f));
 
             fadeAnimation.animate();
 
@@ -368,9 +443,9 @@ public class NowPlayingActivity extends FragmentActivity {
 
         try {
             getSupportFragmentManager().beginTransaction()
-                                       .replace(R.id.queue_drawer, mQueueDrawerFragment)
-                                       .setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
-                                       .commit();
+                    .replace(R.id.queue_drawer, mQueueDrawerFragment)
+                    .setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
+                    .commit();
 
         } catch (IllegalStateException e) {
             /*
@@ -389,9 +464,9 @@ public class NowPlayingActivity extends FragmentActivity {
     private void animateInControlsBar() {
         android.view.animation.TranslateAnimation slideUp =
                 new android.view.animation.TranslateAnimation(Animation.RELATIVE_TO_SELF, 0.0f,
-                                                              Animation.RELATIVE_TO_SELF, 0.0f,
-                                                              Animation.RELATIVE_TO_SELF, 2.0f,
-                                                              Animation.RELATIVE_TO_SELF, 0.0f);
+                        Animation.RELATIVE_TO_SELF, 0.0f,
+                        Animation.RELATIVE_TO_SELF, 2.0f,
+                        Animation.RELATIVE_TO_SELF, 0.0f);
         slideUp.setDuration(300);
         slideUp.setInterpolator(new DecelerateInterpolator(2.0f));
 
@@ -416,22 +491,22 @@ public class NowPlayingActivity extends FragmentActivity {
 
         mControlsLayoutHeaderParent.startAnimation(slideUp);
     }
-    
+
     /**
-     * Scrolls the ViewPager programmatically. If dispatchToListener 
+     * Scrolls the ViewPager programmatically. If dispatchToListener
      * is true, USER_SCROLL will be set to true.
      */
-    private void scrollViewPager(int newPosition, 
-    							 boolean smoothScroll, 
-    							 int velocity, 
-    							 boolean dispatchToListener) {
-    	
-    	USER_SCROLL = dispatchToListener;
-    	mViewPager.scrollToItem(newPosition, 
-                                smoothScroll,
-                                velocity,
-                                dispatchToListener);
-    	
+    private void scrollViewPager(int newPosition,
+                                 boolean smoothScroll,
+                                 int velocity,
+                                 boolean dispatchToListener) {
+
+        USER_SCROLL = dispatchToListener;
+        mViewPager.scrollToItem(newPosition,
+                smoothScroll,
+                velocity,
+                dispatchToListener);
+
     }
 
     /**
@@ -440,7 +515,7 @@ public class NowPlayingActivity extends FragmentActivity {
     private void setControlButtonsBackground() {
         mControlsLayoutHeader.setBackgroundResource(UIElementsHelper.getGridViewCardBackground(mContext));
     }
-    
+
     /**
      * Sets the play/pause button states.
      */
@@ -464,21 +539,21 @@ public class NowPlayingActivity extends FragmentActivity {
     private void animatePlayToPause() {
 
         //Check to make sure the current icon is the play icon.
-        if (mPlayPauseButton.getId()!=R.drawable.play_light)
+        if (mPlayPauseButton.getId() != R.drawable.play_light)
             return;
 
         //Fade out the play button.
         final ScaleAnimation scaleOut = new ScaleAnimation(1.0f, 0.0f, 1.0f, 0.0f,
-                                                           mPlayPauseButton.getWidth()/2,
-                                                           mPlayPauseButton.getHeight()/2);
+                mPlayPauseButton.getWidth() / 2,
+                mPlayPauseButton.getHeight() / 2);
         scaleOut.setDuration(150);
         scaleOut.setInterpolator(new AccelerateInterpolator());
 
 
         //Scale in the pause button.
         final ScaleAnimation scaleIn = new ScaleAnimation(0.0f, 1.0f, 0.0f, 1.0f,
-                                                          mPlayPauseButton.getWidth()/2,
-                                                          mPlayPauseButton.getHeight()/2);
+                mPlayPauseButton.getWidth() / 2,
+                mPlayPauseButton.getHeight() / 2);
         scaleIn.setDuration(150);
         scaleIn.setInterpolator(new DecelerateInterpolator());
 
@@ -533,21 +608,21 @@ public class NowPlayingActivity extends FragmentActivity {
     private void animatePauseToPlay() {
 
         //Check to make sure the current icon is the pause icon.
-        if (mPlayPauseButton.getId()!=R.drawable.pause_light)
+        if (mPlayPauseButton.getId() != R.drawable.pause_light)
             return;
 
         //Scale out the pause button.
         final ScaleAnimation scaleOut = new ScaleAnimation(1.0f, 0.0f, 1.0f, 0.0f,
-                                                           mPlayPauseButton.getWidth()/2,
-                                                           mPlayPauseButton.getHeight()/2);
+                mPlayPauseButton.getWidth() / 2,
+                mPlayPauseButton.getHeight() / 2);
         scaleOut.setDuration(150);
         scaleOut.setInterpolator(new AccelerateInterpolator());
 
 
         //Scale in the play button.
         final ScaleAnimation scaleIn = new ScaleAnimation(0.0f, 1.0f, 0.0f, 1.0f,
-                                                          mPlayPauseButton.getWidth()/2,
-                                                          mPlayPauseButton.getHeight()/2);
+                mPlayPauseButton.getWidth() / 2,
+                mPlayPauseButton.getHeight() / 2);
         scaleIn.setDuration(150);
         scaleIn.setInterpolator(new DecelerateInterpolator());
 
@@ -600,64 +675,62 @@ public class NowPlayingActivity extends FragmentActivity {
      * Sets the repeat button icon based on the current repeat mode.
      */
     private void setRepeatButtonIcon() {
-    	if (mApp.isServiceRunning())
-	    	if (mApp.getService().getRepeatMode()==Common.REPEAT_OFF) {
-	    		mRepeatButton.setImageResource(UIElementsHelper.getIcon(mContext, "repeat"));
-	    	} else if (mApp.getService().getRepeatMode()==Common.REPEAT_PLAYLIST) {
-	    		mRepeatButton.setImageResource(R.drawable.repeat_highlighted);
-	    	} else if (mApp.getService().getRepeatMode()==Common.REPEAT_SONG) {
-	    		mRepeatButton.setImageResource(R.drawable.repeat_song);
-	    	} else if (mApp.getService().getRepeatMode()==Common.A_B_REPEAT) {
-	    		mRepeatButton.setImageResource(R.drawable.repeat_song_range);
-	    	}
-    	
-	    else
-	    	mRepeatButton.setImageResource(UIElementsHelper.getIcon(mContext, "repeat"));
-    	
+        if (mApp.isServiceRunning())
+            if (mApp.getService().getRepeatMode() == Common.REPEAT_OFF) {
+                mRepeatButton.setImageResource(UIElementsHelper.getIcon(mContext, "repeat"));
+            } else if (mApp.getService().getRepeatMode() == Common.REPEAT_PLAYLIST) {
+                mRepeatButton.setImageResource(R.drawable.repeat_highlighted);
+            } else if (mApp.getService().getRepeatMode() == Common.REPEAT_SONG) {
+                mRepeatButton.setImageResource(R.drawable.repeat_song);
+            } else if (mApp.getService().getRepeatMode() == Common.A_B_REPEAT) {
+                mRepeatButton.setImageResource(R.drawable.repeat_song_range);
+            } else
+                mRepeatButton.setImageResource(UIElementsHelper.getIcon(mContext, "repeat"));
+
     }
-    
+
     /**
      * Sets the shuffle button icon based on the current shuffle mode.
      */
     private void setShuffleButtonIcon() {
-    	if (mApp.isServiceRunning())
-	        if (mApp.getService().isShuffleOn()==true) {
-	        	mShuffleButton.setImageResource(R.drawable.shuffle_highlighted);
-	        } else {
-	        	mShuffleButton.setImageResource(UIElementsHelper.getIcon(mContext, "shuffle"));
-	        }
-    	
-    	else
-    		mShuffleButton.setImageResource(UIElementsHelper.getIcon(mContext, "shuffle"));
-        
+        if (mApp.isServiceRunning())
+            if (mApp.getService().isShuffleOn()) {
+                mShuffleButton.setImageResource(R.drawable.shuffle_highlighted);
+            } else {
+                mShuffleButton.setImageResource(UIElementsHelper.getIcon(mContext, "shuffle"));
+            }
+
+        else
+            mShuffleButton.setImageResource(UIElementsHelper.getIcon(mContext, "shuffle"));
+
     }
-    
+
     /**
-     * Sets the seekbar's duration. Also updates the 
+     * Sets the seekbar's duration. Also updates the
      * elapsed/remaining duration text.
      */
     private void setSeekbarDuration(int duration) {
-    	mSeekbar.setMax(duration);
-        mSeekbar.setProgress(mApp.getService().getCurrentMediaPlayer().getCurrentPosition()/1000);
-    	mHandler.postDelayed(seekbarUpdateRunnable, 100);
+        mSeekbar.setMax(duration);
+        mSeekbar.setProgress(mApp.getService().getCurrentMediaPlayer().getCurrentPosition() / 1000);
+        mHandler.postDelayed(seekbarUpdateRunnable, 100);
     }
-    
+
     /**
-     * Sets the KitKat translucent status/nav bar and adjusts 
+     * Sets the KitKat translucent status/nav bar and adjusts
      * the views' boundaries.
      */
     private void setKitKatTranslucentBars() {
-    	//KitKat translucent status bar.
+        //KitKat translucent status bar.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-    		int statusBarHeight = Common.getStatusBarHeight(mContext);
+            int statusBarHeight = Common.getStatusBarHeight(mContext);
             int navigationBarHeight = Common.getNavigationBarHeight(mContext);
-            
-            if (mDrawerParentLayout!=null) {
+
+            if (mDrawerParentLayout != null) {
                 mDrawerParentLayout.setClipToPadding(false);
                 mDrawerParentLayout.setPadding(0, 0, 0, 0);
             }
 
-            if (mControlsLayoutHeaderParent!=null) {
+            if (mControlsLayoutHeaderParent != null) {
                 int bottomPadding = mControlsLayoutHeaderParent.getPaddingBottom();
                 mControlsLayoutHeaderParent.setClipToPadding(false);
                 RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) mControlsLayoutHeaderParent.getLayoutParams();
@@ -675,7 +748,7 @@ public class NowPlayingActivity extends FragmentActivity {
             }
 
         }
-        
+
     }
 
     /**
@@ -683,113 +756,117 @@ public class NowPlayingActivity extends FragmentActivity {
      */
     private OnSeekBarChangeListener seekBarChangeListener = new OnSeekBarChangeListener() {
 
-		@Override
-		public void onProgressChanged(SeekBar seekBar, int seekBarPosition, boolean changedByUser) {
+        @Override
+        public void onProgressChanged(SeekBar seekBar, int seekBarPosition, boolean changedByUser) {
 
             try {
                 long currentSongDuration = mApp.getService().getCurrentMediaPlayer().getDuration();
                 seekBar.setMax((int) currentSongDuration / 1000);
 
                 if (changedByUser)
-                    mSeekbarIndicatorText.setText(mApp.convertMillisToMinsSecs(seekBar.getProgress()*1000));
+                    mSeekbarIndicatorText.setText(mApp.convertMillisToMinsSecs(seekBar.getProgress() * 1000));
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
-		}
+        }
 
-		@Override
-		public void onStartTrackingTouch(SeekBar seekBar) {
-			mHandler.removeCallbacks(seekbarUpdateRunnable);
+        @Override
+        public void onStartTrackingTouch(SeekBar seekBar) {
+            mHandler.removeCallbacks(seekbarUpdateRunnable);
             mHandler.removeCallbacks(fadeOutSeekbarIndicator);
 
             mSeekbarIndicatorLayoutParent.setVisibility(View.VISIBLE);
             mSeekbarIndicatorLayout.setAlpha(0.8f);
 
-		}
+        }
 
-		@Override
-		public void onStopTrackingTouch(SeekBar seekBar) {
-			int seekBarPosition = seekBar.getProgress();
-			mApp.getService().getCurrentMediaPlayer().seekTo(seekBarPosition*1000);
+        @Override
+        public void onStopTrackingTouch(SeekBar seekBar) {
+            int seekBarPosition = seekBar.getProgress();
+            mApp.getService().getCurrentMediaPlayer().seekTo(seekBarPosition * 1000);
 
             //Reinitiate the handler.
             mHandler.post(seekbarUpdateRunnable);
 
             //Fade out the indicator after 1000ms.
             mHandler.postDelayed(fadeOutSeekbarIndicator, 1000);
-			
-		}
-		
-	};
 
-    /**
-     * Seekbar change indicator.
-     */
-    private Runnable fadeOutSeekbarIndicator = new Runnable() {
-
-        @Override
-        public void run() {
-            FadeAnimation fadeOut = new FadeAnimation(mSeekbarIndicatorLayoutParent,
-                                                      300, 0.9f, 0.0f, null);
-            fadeOut.animate();
         }
 
     };
-	
-	/**
-	 * Repeat button click listener.
-	 */
-	private OnClickListener repeatButtonClickListener = new OnClickListener() {
 
-		@Override
-		public void onClick(View arg0) {
-			
-			mApp.getService().clearABRepeatRange();
-			if (mApp.getService().getRepeatMode()==Common.REPEAT_OFF) {
-				mRepeatButton.setImageResource(R.drawable.repeat_highlighted);
-				mApp.getService().setRepeatMode(Common.REPEAT_PLAYLIST);
-				
-			} else if (mApp.getService().getRepeatMode()==Common.REPEAT_PLAYLIST) {
-				mRepeatButton.setImageResource(R.drawable.repeat_song);
-				mApp.getService().setRepeatMode(Common.REPEAT_SONG);
-				
-			} else {
-				mRepeatButton.setImageResource(UIElementsHelper.getIcon(mContext, "repeat"));
-				mApp.getService().setRepeatMode(Common.REPEAT_OFF);
-				
-			}
-			
-		}
-		
-	};
+    /**
+     * @deprecated Applies the correct transformer effect to the ViewPager.
+     */
+    @SuppressWarnings("unused")
+    private void setPlaylistPagerAnimation() {
+        if (mApp.getSharedPreferences().getInt("TRACK_CHANGE_ANIMATION", 0) == 0) {
+            //Don't set a transformer.
+        } else if (mApp.getSharedPreferences().getInt("TRACK_CHANGE_ANIMATION", 0) == 1) {
+            //mViewPager.setPageTransformer(true, new ZoomOutPageTransformer(0.85f));
+        } else if (mApp.getSharedPreferences().getInt("TRACK_CHANGE_ANIMATION", 0) == 2) {
+            //mViewPager.setPageTransformer(true, new DepthPageTransformer());
+        }
 
-	/**
-	 * Shuffle button click listener.
-	 */
-	private OnClickListener shuffleButtonClickListener = new OnClickListener() {
+    }
 
-		@Override
-		public void onClick(View arg0) {
-			//Toggle shuffle on/off.
-			boolean shuffleOn = mApp.getService().toggleShuffleMode();
-			
-			if (shuffleOn)
-				mShuffleButton.setImageResource(R.drawable.shuffle_highlighted);
-			else
-				mShuffleButton.setImageResource(UIElementsHelper.getIcon(mContext, "shuffle"));
-			
-		}
-		
-	};
-    
-	/**
-	 * Click listener for the play/pause button.
-	 */
+    /**
+     * Smoothly scrolls the seekbar to the indicated position.
+     */
+    private void smoothScrollSeekbar(int progress) {
+        ObjectAnimator animation = ObjectAnimator.ofInt(mSeekbar, "progress", progress);
+        animation.setDuration(200);
+        animation.setInterpolator(new DecelerateInterpolator());
+        animation.start();
+
+    }
+
+    /**
+     * Initiates the strobe effect on the seekbar.
+     */
+    private void initSeekbarStrobeEffect() {
+        mSeekbarStrobeAnim = new AlphaAnimation(1.0f, 0.0f);
+        mSeekbarStrobeAnim.setRepeatCount(SEEKBAR_STROBE_ANIM_REPEAT);
+        mSeekbarStrobeAnim.setDuration(700);
+        mSeekbarStrobeAnim.setRepeatMode(Animation.REVERSE);
+
+        mSeekbar.startAnimation(mSeekbarStrobeAnim);
+
+    }
+
+    /**
+     * Stops the seekbar strobe effect.
+     */
+    private void stopSeekbarStrobeEffect() {
+        mSeekbarStrobeAnim = new AlphaAnimation(mSeekbar.getAlpha(), 1.0f);
+        mSeekbarStrobeAnim.setDuration(700);
+        mSeekbar.startAnimation(mSeekbarStrobeAnim);
+
+    }
+
+    /**
+     * Displays the "Resuming from xx:xx" toast.
+     */
+    public void displayAudiobookToast(long resumePlaybackPosition) {
+        try {
+            String resumingFrom = mContext.getResources().getString(R.string.resuming_from)
+                    + " " + mApp.convertMillisToMinsSecs(resumePlaybackPosition) + ".";
+
+            Toast.makeText(mContext, resumingFrom, Toast.LENGTH_LONG).show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    /**
+     * Click listener for the play/pause button.
+     */
     private OnClickListener playPauseClickListener = new OnClickListener() {
-		
-		@Override
-		public void onClick(View view) {
+
+        @Override
+        public void onClick(View view) {
 
             //BZZZT! Give the user a brief haptic feedback touch response.
             view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
@@ -818,76 +895,102 @@ public class NowPlayingActivity extends FragmentActivity {
 
             }.execute();
 
-		}
-		
-	};
-	
-	/**
-	 * Click listener for the previous button.
-	 */
-	private OnClickListener mOnClickPreviousListener = new OnClickListener() {
-		
-		@Override
-		public void onClick(View arg0) {
+        }
+
+    };
+
+    /**
+     * Toggles the open/closed state of the current queue drawer.
+     */
+    public void toggleCurrentQueueDrawer() {
+        if (mDrawerLayout == null)
+            return;
+
+        if (mDrawerLayout.isDrawerOpen(Gravity.END))
+            mDrawerLayout.closeDrawer(Gravity.END);
+        else
+            mDrawerLayout.openDrawer(Gravity.END);
+
+    }
+
+    public SeekBar getSeekbar() {
+        return mSeekbar;
+    }
+
+    /**
+     * Click listener for the previous button.
+     */
+    private OnClickListener mOnClickPreviousListener = new OnClickListener() {
+
+        @Override
+        public void onClick(View arg0) {
 
             //Remove the seekbar update runnable.
             mHandler.removeCallbacks(seekbarUpdateRunnable);
 
 			/*
-			 * Scrolling the pager will automatically call the skipToTrack() method. 
+             * Scrolling the pager will automatically call the skipToTrack() method.
 			 * Since we're passing true for the dispatchToListener parameter, the 
 			 * onPageSelected() listener will receive a callback once the scrolling 
 			 * animation completes. This has the side-benefit of letting the animation 
 			 * finish before starting playback (keeps the animation buttery smooth).
 			 */
-			int newPosition = mViewPager.getCurrentItem() - 1;
-			if (newPosition > -1) {
-				scrollViewPager(newPosition, true, 1, true);
-			} else {
-				mViewPager.setCurrentItem(0, false);
-			}
-			
-		}
-		
-	};
-    
-	/**
-	 * Click listener for the next button.
-	 */
-	private OnClickListener mOnClickNextListener = new OnClickListener() {
-		
-		@Override
-		public void onClick(View arg0) {
+            int newPosition = mViewPager.getCurrentItem() - 1;
+            if (newPosition > -1) {
+                scrollViewPager(newPosition, true, 1, true);
+            } else {
+                mViewPager.setCurrentItem(0, false);
+            }
+
+        }
+
+    };
+
+    public ProgressBar getStreamingProgressBar() {
+        return mStreamingProgressBar;
+    }
+
+    public VelocityViewPager getPlaylistViewPager() {
+        return mViewPager;
+    }
+
+    /**
+     * Click listener for the next button.
+     */
+    private OnClickListener mOnClickNextListener = new OnClickListener() {
+
+        @Override
+        public void onClick(View arg0) {
 
             //Remove the seekbar update runnable.
             mHandler.removeCallbacks(seekbarUpdateRunnable);
 
 			/*
-			 * Scrolling the pager will automatically call the skipToTrack() method. 
+             * Scrolling the pager will automatically call the skipToTrack() method.
 			 * Since we're passing true for the dispatchToListener parameter, the 
 			 * onPageSelected() listener will receive a callback once the scrolling 
 			 * animation completes. This has the side-benefit of letting the animation 
 			 * finish before starting playback (keeps the animation buttery smooth).
 			 */
-			int newPosition = mViewPager.getCurrentItem() + 1;
-			if (newPosition < mViewPagerAdapter.getCount()) {
-				scrollViewPager(newPosition, true, 1, true);
-			} else {
-				if (mApp.getService().getRepeatMode()==Common.REPEAT_PLAYLIST)
-					mViewPager.setCurrentItem(0, false);
-				else
-					Toast.makeText(mContext, R.string.no_songs_to_skip_to, Toast.LENGTH_SHORT).show();
-			}
+            int newPosition = mViewPager.getCurrentItem() + 1;
+            if (newPosition < mViewPagerAdapter.getCount()) {
+                scrollViewPager(newPosition, true, 1, true);
+            } else {
+                if (mApp.getService().getRepeatMode() == Common.REPEAT_PLAYLIST)
+                    mViewPager.setCurrentItem(0, false);
+                else
+                    Toast.makeText(mContext, R.string.no_songs_to_skip_to, Toast.LENGTH_SHORT).show();
+            }
 
-			//mApp.getService().skipToNextTrack();
-			
-		}
-		
-	};
+            //mApp.getService().skipToNextTrack();
 
-	/**
-	 * Downloads a GMusic song for local playback.
-	 */
+        }
+
+    };
+
+    /**
+     * Downloads a GMusic song for local playback.
+     */
     /*private void pinSong() {
     	
     	//Check if the app is getting pinned songs from the official GMusic app.
@@ -938,295 +1041,19 @@ public class NowPlayingActivity extends FragmentActivity {
 		}
 		
     }*/
-
-    /**
-     * Drawer open/close listener.
-     */
-    private DrawerListener mDrawerListener = new DrawerListener() {
-
-		@Override
-		public void onDrawerClosed(View drawer) {
-			if (mQueueDrawerFragment!=null &&
-                drawer==mCurrentQueueLayout) {
-                mQueueDrawerFragment.setIsDrawerOpen(false);
-            }
-			
-		}
-
-		@Override
-		public void onDrawerOpened(View drawer) {
-            if (mQueueDrawerFragment!=null &&
-                drawer==mCurrentQueueLayout) {
-                mQueueDrawerFragment.setIsDrawerOpen(true);
-            }
-			
-		}
-
-		@Override
-		public void onDrawerSlide(View drawer, float arg1) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void onDrawerStateChanged(int newState) {
-			// TODO Auto-generated method stub
-			
-		}
-    	
-    };
-
-    /**
-     * Provides callback methods when the ViewPager's position/current page has changed.
-     */
-    private VelocityViewPager.OnPageChangeListener mPageChangeListener = new VelocityViewPager.OnPageChangeListener() {
-
-		@Override
-		public void onPageScrollStateChanged(int scrollState) {
-			if (scrollState==VelocityViewPager.SCROLL_STATE_DRAGGING)
-				USER_SCROLL = true;
-			
-		}
-
-		@Override
-		public void onPageScrolled(final int pagerPosition, float swipeVelocity, int offsetFromCurrentPosition) {
-			
-			/* swipeVelocity determines whether the viewpager has finished scrolling or not.
-			 * Throw in an if statement that only allows the track to change when
-			 * swipeVelocity is 0 (which means the page is done scrolling). This ensures
-			 * that the tracks don't jump around or get truncated while the user is 
-			 * swiping between different pages.
-			 */
-
-			if (mApp.isServiceRunning() && mApp.getService().getCursor().getCount()!=1) {
-				
-				/* Change tracks ONLY when the user has finished the swiping gesture (swipeVelocity will be zero).
-				 * Also, don't skip tracks if the new pager position is the same as the current mCursor position (indicates 
-				 * that the starting and ending position of the pager is the same).
-				 */
-				if (swipeVelocity==0.0f && pagerPosition!=mApp.getService().getCurrentSongIndex()) {
-					if (USER_SCROLL) {
-                        mHandler.removeCallbacks(seekbarUpdateRunnable);
-                        smoothScrollSeekbar(0);
-
-                        mHandler.postDelayed(new Runnable() {
-
-                            @Override
-                            public void run() {
-                                mApp.getService().skipToTrack(pagerPosition);
-                            }
-
-                        }, 200);
-
-					}
-
-				}
-				
-			}
-			
-		}
-
-		@Override
-		public void onPageSelected(int newPosition) {
-            //TODO Auto-generated method stub.
-
-		}
-		
-	};
-    
-    /**
-     * @deprecated
-     * Applies the correct transformer effect to the ViewPager.
-     */
-    @SuppressWarnings("unused")
-	private void setPlaylistPagerAnimation() {
-    	if (mApp.getSharedPreferences().getInt("TRACK_CHANGE_ANIMATION", 0)==0) {
-    		//Don't set a transformer.
-    	} else if (mApp.getSharedPreferences().getInt("TRACK_CHANGE_ANIMATION", 0)==1) {
-    		//mViewPager.setPageTransformer(true, new ZoomOutPageTransformer(0.85f));
-    	} else if (mApp.getSharedPreferences().getInt("TRACK_CHANGE_ANIMATION", 0)==2) {
-    		//mViewPager.setPageTransformer(true, new DepthPageTransformer());
-    	}
-    	
-    }
-	
-    /**
-     * Create a new Runnable to update the seekbar and time every 100ms.
-     */
-    public Runnable seekbarUpdateRunnable = new Runnable() {
-    	
-    	public void run() {
-    		
-    		try {
-                long currentPosition = mApp.getService().getCurrentMediaPlayer().getCurrentPosition();
-                int currentPositionInSecs = (int) currentPosition/1000;
-                smoothScrollSeekbar(currentPositionInSecs);
-
-                //mSeekbar.setProgress(currentPositionInSecs);
-                mHandler.postDelayed(seekbarUpdateRunnable, 100);
-
-    		} catch (Exception e) {
-    			e.printStackTrace();
-    		}
-    		
-    	}
-    	
-    };
-
-    /**
-     * Smoothly scrolls the seekbar to the indicated position.
-     */
-    private void smoothScrollSeekbar(int progress) {
-        ObjectAnimator animation = ObjectAnimator.ofInt(mSeekbar, "progress", progress);
-        animation.setDuration(200);
-        animation.setInterpolator(new DecelerateInterpolator());
-        animation.start();
-
+    public NowPlayingActivityListener getNowPlayingActivityListener() {
+        return mNowPlayingActivityListener;
     }
 
-    /**
-     * Initiates the strobe effect on the seekbar.
-     */
-    private void initSeekbarStrobeEffect() {
-        mSeekbarStrobeAnim = new AlphaAnimation(1.0f, 0.0f);
-        mSeekbarStrobeAnim.setRepeatCount(SEEKBAR_STROBE_ANIM_REPEAT);
-        mSeekbarStrobeAnim.setDuration(700);
-        mSeekbarStrobeAnim.setRepeatMode(Animation.REVERSE);
-
-        mSeekbar.startAnimation(mSeekbarStrobeAnim);
-
+    public void setNowPlayingActivityListener(NowPlayingActivityListener listener) {
+        mNowPlayingActivityListener = listener;
     }
 
-    /**
-     * Stops the seekbar strobe effect.
-     */
-    private void stopSeekbarStrobeEffect() {
-        mSeekbarStrobeAnim = new AlphaAnimation(mSeekbar.getAlpha(), 1.0f);
-        mSeekbarStrobeAnim.setDuration(700);
-        mSeekbar.startAnimation(mSeekbarStrobeAnim);
-        
-    }
-    
-    public class PlaylistPagerAdapter extends FragmentStatePagerAdapter {
+    @Override
+    public void onResume() {
+        super.onResume();
 
-        public PlaylistPagerAdapter(FragmentManager fm) {
-            super(fm);
-
-        }
-
-        @Override
-        public void destroyItem(ViewGroup container, int position, Object object) {
-            super.destroyItem(container, position, object);
-          
-        }
-
-        //This method controls the layout that is shown on each screen.
-        @Override
-        public Fragment getItem(int position) {
-
-        	/* PlaylistPagerFragment.java will be shown on every pager screen. However, 
-        	 * the fragment will check which screen (position) is being shown, and will
-        	 * update its TextViews and ImageViews to match the song that's being played. */
-    		Fragment fragment = new PlaylistPagerFragment();
-    		
-    		Bundle bundle = new Bundle();
-    		bundle.putInt("POSITION", position);
-    		fragment.setArguments(bundle);
-    		return fragment;
-
-        }
-
-        @Override
-        public int getCount() {
-        	
-        	try {
-            	if (mApp.getService().getPlaybackIndecesList()!=null) {
-            		return mApp.getService().getPlaybackIndecesList().size();
-            	} else {
-            		mApp.getService().stopSelf();
-            		return 0;
-            	}
-        	} catch (Exception e) {
-        		e.printStackTrace();
-        		return 0;
-        	}
-
-        }
-
-    }
-	
-	/**
-	 * Displays the "Resuming from xx:xx" toast.
-	 */
-	public void displayAudiobookToast(long resumePlaybackPosition) {
-		try {
-			String resumingFrom = mContext.getResources().getString(R.string.resuming_from) 
-								+ " " + mApp.convertMillisToMinsSecs(resumePlaybackPosition) + ".";
-			
-			Toast.makeText(mContext, resumingFrom, Toast.LENGTH_LONG).show();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-	}
-
-    /**
-     * Toggles the open/closed state of the current queue drawer.
-     */
-	public void toggleCurrentQueueDrawer() {
-        if (mDrawerLayout==null)
-            return;
-
-        if (mDrawerLayout.isDrawerOpen(Gravity.END))
-            mDrawerLayout.closeDrawer(Gravity.END);
-        else
-            mDrawerLayout.openDrawer(Gravity.END);
-
-    }
-
-	/*
-	 * Getter and setter methods.
-	 */
-	
-	public SeekBar getSeekbar() {
-		return mSeekbar;
-	}
-	
-	public ProgressBar getStreamingProgressBar() {
-		return mStreamingProgressBar;
-	}
-	
-	public VelocityViewPager getPlaylistViewPager() {
-		return mViewPager;
-	}
-
-	public NowPlayingActivityListener getNowPlayingActivityListener() {
-		return mNowPlayingActivityListener;
-	}
-	
-	public void setNowPlayingActivityListener(NowPlayingActivityListener listener) {
-		mNowPlayingActivityListener = listener;
-	}
-	
-	/**
-	 * Interface that provides callbacks once this activity is 
-	 * up and running.
-	 */
-	public interface NowPlayingActivityListener {
-		
-		/**
-		 * Called once this activity's onResume() method finishes 
-		 * executing.
-		 */
-		public void onNowPlayingActivityReady();
-		
-	}
-
-	@Override
-	public void onResume() {
-		super.onResume();
-
-        if (mIsCreating==false) {
+        if (!mIsCreating) {
             setKitKatTranslucentBars();
             mHandler.postDelayed(seekbarUpdateRunnable, 100);
             mIsCreating = false;
@@ -1237,7 +1064,7 @@ public class NowPlayingActivity extends FragmentActivity {
 
         //Update the seekbar.
         try {
-            setSeekbarDuration(mApp.getService().getCurrentMediaPlayer().getDuration()/1000);
+            setSeekbarDuration(mApp.getService().getCurrentMediaPlayer().getDuration() / 1000);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -1252,20 +1079,78 @@ public class NowPlayingActivity extends FragmentActivity {
 
         }, 1000);
 
-		if (getIntent().hasExtra(START_SERVICE) &&
-			getNowPlayingActivityListener()!=null) {
-			getNowPlayingActivityListener().onNowPlayingActivityReady();
+        if (getIntent().hasExtra(START_SERVICE) &&
+                getNowPlayingActivityListener() != null) {
+            getNowPlayingActivityListener().onNowPlayingActivityReady();
 
-			/**
-			 * To prevent the service from being restarted every time this
-			 * activity is resume, we're gonna have to remove the "START_SERVICE"
-			 * extra from the intent.
+            /**
+             * To prevent the service from being restarted every time this
+             * activity is resume, we're gonna have to remove the "START_SERVICE"
+             * extra from the intent.
+             */
+            getIntent().removeExtra(START_SERVICE);
+
+        }
+
+    }
+
+    /**
+     * Provides callback methods when the ViewPager's position/current page has changed.
+     */
+    private VelocityViewPager.OnPageChangeListener mPageChangeListener = new VelocityViewPager.OnPageChangeListener() {
+
+        @Override
+        public void onPageScrollStateChanged(int scrollState) {
+            if (scrollState == VelocityViewPager.SCROLL_STATE_DRAGGING)
+                USER_SCROLL = true;
+
+        }
+
+        @Override
+        public void onPageScrolled(final int pagerPosition, float swipeVelocity, int offsetFromCurrentPosition) {
+			
+			/* swipeVelocity determines whether the viewpager has finished scrolling or not.
+			 * Throw in an if statement that only allows the track to change when
+			 * swipeVelocity is 0 (which means the page is done scrolling). This ensures
+			 * that the tracks don't jump around or get truncated while the user is 
+			 * swiping between different pages.
 			 */
-			getIntent().removeExtra(START_SERVICE);
 
-		}
+            if (mApp.isServiceRunning() && mApp.getService().getCursor().getCount() != 1) {
+				
+				/* Change tracks ONLY when the user has finished the swiping gesture (swipeVelocity will be zero).
+				 * Also, don't skip tracks if the new pager position is the same as the current mCursor position (indicates 
+				 * that the starting and ending position of the pager is the same).
+				 */
+                if (swipeVelocity == 0.0f && pagerPosition != mApp.getService().getCurrentSongIndex()) {
+                    if (USER_SCROLL) {
+                        mHandler.removeCallbacks(seekbarUpdateRunnable);
+                        smoothScrollSeekbar(0);
 
-	}
+                        mHandler.postDelayed(new Runnable() {
+
+                            @Override
+                            public void run() {
+                                mApp.getService().skipToTrack(pagerPosition);
+                            }
+
+                        }, 200);
+
+                    }
+
+                }
+
+            }
+
+        }
+
+        @Override
+        public void onPageSelected(int newPosition) {
+            //TODO Auto-generated method stub.
+
+        }
+
+    };
 
     @Override
     public void onPause() {
@@ -1274,48 +1159,144 @@ public class NowPlayingActivity extends FragmentActivity {
             mApp.setNowPlayingActivity(null);
 
     }
-	
+
     @Override
     public void onStart() {
-    	super.onStart();
-    	//Initialize the broadcast manager that will listen for track changes.
-    	LocalBroadcastManager.getInstance(mContext)
-		 					 .registerReceiver((mReceiver), new IntentFilter(Common.UPDATE_UI_BROADCAST));
-    	
-    	/* Check if the service is up and running. If so, send out a broadcast message 
-    	 * that will initialize this activity fully. This code block is what will 
-    	 * initialize this activity fully if it is opened after the service is already 
+        super.onStart();
+        //Initialize the broadcast manager that will listen for track changes.
+        LocalBroadcastManager.getInstance(mContext)
+                .registerReceiver((mReceiver), new IntentFilter(Common.UPDATE_UI_BROADCAST));
+
+    	/* Check if the service is up and running. If so, send out a broadcast message
+    	 * that will initialize this activity fully. This code block is what will
+    	 * initialize this activity fully if it is opened after the service is already
     	 * up and running (the onServiceRunning() callback isn't available at this point).
     	 */
-    	if (mApp.isServiceRunning() && mApp.getService().getCursor()!=null) {
-    		String[] updateFlags = new String[] { Common.UPDATE_PAGER_POSTIION, 
-    											  Common.UPDATE_SEEKBAR_DURATION, 
-    											  Common.HIDE_STREAMING_BAR, 
-    											  Common.INIT_PAGER, 
-    											  Common.UPDATE_PLAYBACK_CONTROLS, 
-    											  Common.UPDATE_EQ_FRAGMENT };
-    		
-        	String[] flagValues = new String[] { "" + mApp.getService().getCurrentSongIndex(), 
-        										 "" + mApp.getService().getCurrentMediaPlayer().getDuration(), 
-        										 "", "", "", "" };
-        	mApp.broadcastUpdateUICommand(updateFlags, flagValues);
-    	}
-    	
+        if (mApp.isServiceRunning() && mApp.getService().getCursor() != null) {
+            String[] updateFlags = new String[]{Common.UPDATE_PAGER_POSTIION,
+                    Common.UPDATE_SEEKBAR_DURATION,
+                    Common.HIDE_STREAMING_BAR,
+                    Common.INIT_PAGER,
+                    Common.UPDATE_PLAYBACK_CONTROLS,
+                    Common.UPDATE_EQ_FRAGMENT};
+
+            String[] flagValues = new String[]{"" + mApp.getService().getCurrentSongIndex(),
+                    "" + mApp.getService().getCurrentMediaPlayer().getDuration(),
+                    "", "", "", ""};
+            mApp.broadcastUpdateUICommand(updateFlags, flagValues);
+        }
+
     }
-    
+
     @Override
     public void onStop() {
-    	//Unregister the broadcast receivers.
-    	LocalBroadcastManager.getInstance(mContext).unregisterReceiver(mReceiver);
-    	super.onStop();
-    	
+        //Unregister the broadcast receivers.
+        LocalBroadcastManager.getInstance(mContext).unregisterReceiver(mReceiver);
+        super.onStop();
+
     }
-    
+
+    /**
+     * Create a new Runnable to update the seekbar and time every 100ms.
+     */
+    public Runnable seekbarUpdateRunnable = new Runnable() {
+
+        public void run() {
+
+            try {
+                long currentPosition = mApp.getService().getCurrentMediaPlayer().getCurrentPosition();
+                int currentPositionInSecs = (int) currentPosition / 1000;
+                smoothScrollSeekbar(currentPositionInSecs);
+
+                //mSeekbar.setProgress(currentPositionInSecs);
+                mHandler.postDelayed(seekbarUpdateRunnable, 100);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }
+
+    };
+
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
-    	super.onSaveInstanceState(savedInstanceState);
-    	savedInstanceState.putBoolean("CALLED_FROM_FOOTER", true);
-    	savedInstanceState.putBoolean("CALLED_FROM_NOTIF", true);
+        super.onSaveInstanceState(savedInstanceState);
+        savedInstanceState.putBoolean("CALLED_FROM_FOOTER", true);
+        savedInstanceState.putBoolean("CALLED_FROM_NOTIF", true);
     }
-	
+
+    /**
+     * Interface that provides callbacks once this activity is
+     * up and running.
+     */
+    public interface NowPlayingActivityListener {
+
+        /**
+         * Called once this activity's onResume() method finishes
+         * executing.
+         */
+        public void onNowPlayingActivityReady();
+
+    }
+
+    public class PlaylistPagerAdapter extends FragmentStatePagerAdapter {
+
+        public PlaylistPagerAdapter(FragmentManager fm) {
+            super(fm);
+
+        }
+
+        @Override
+        public void destroyItem(ViewGroup container, int position, Object object) {
+            super.destroyItem(container, position, object);
+
+        }
+
+        //This method controls the layout that is shown on each screen.
+        @Override
+        public Fragment getItem(int position) {
+
+        	/* PlaylistPagerFragment.java will be shown on every pager screen. However,
+        	 * the fragment will check which screen (position) is being shown, and will
+        	 * update its TextViews and ImageViews to match the song that's being played. */
+            Fragment fragment = new PlaylistPagerFragment();
+
+            Bundle bundle = new Bundle();
+            bundle.putInt("POSITION", position);
+            fragment.setArguments(bundle);
+            return fragment;
+
+        }
+
+        @Override
+        public int getCount() {
+
+            try {
+                if (mApp.getService().getPlaybackIndecesList() != null) {
+                    return mApp.getService().getPlaybackIndecesList().size();
+                } else {
+                    mApp.getService().stopSelf();
+                    return 0;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                return 0;
+            }
+
+        }
+
+    }
+
+
+
+
+
+
+
+	/*
+	 * Getter and setter methods.
+	 */
+
+
 }

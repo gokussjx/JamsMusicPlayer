@@ -1,45 +1,45 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android" >
-    
-	<item 
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
         android:id="@+id/action_pin"
-        android:title="@string/pin"
         android:icon="@drawable/pin_light"
+        android:orderInCategory="97"
         android:showAsAction="always"
-        android:orderInCategory="97" />    
-    
-    <item 
+        android:title="@string/pin" />
+
+    <item
         android:id="@+id/action_queue_drawer"
-        android:title="@string/current_queue"
         android:icon="@drawable/queue_drawer_light"
+        android:orderInCategory="99"
         android:showAsAction="ifRoom"
-        android:orderInCategory="99" />
-    
-    <item 
+        android:title="@string/current_queue" />
+
+    <item
         android:id="@+id/action_equalizer"
-        android:title="@string/equalizer"
         android:icon="@drawable/equalizer_light"
+        android:orderInCategory="98"
         android:showAsAction="always"
-        android:orderInCategory="98" />
-    
+        android:title="@string/equalizer" />
+
     <item
         android:id="@+id/action_settings"
+        android:icon="@drawable/action_settings_light"
         android:orderInCategory="100"
         android:showAsAction="never"
-        android:icon="@drawable/action_settings_light"
-        android:title="@string/action_settings"/>
-    
-	<item
+        android:title="@string/action_settings" />
+
+    <item
         android:id="@+id/action_equalizer_toggle"
-        android:showAsAction="always"
         android:actionLayout="@layout/actionbar_toggle_switch_layout"
-        android:visible="false"
-        android:orderInCategory="99" />   
-    
+        android:orderInCategory="99"
+        android:showAsAction="always"
+        android:visible="false" />
+
     <item
         android:id="@+id/action_done"
+        android:icon="@drawable/checkmark_light"
         android:orderInCategory="100"
-        android:visible="false"
         android:showAsAction="always"
-        android:icon="@drawable/checkmark_light" />
+        android:visible="false" />
 
 </menu>

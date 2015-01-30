@@ -17,19 +17,13 @@ package com.jams.music.player.ImageTransformers;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.LinearGradient;
 import android.graphics.Matrix;
-import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
-import android.graphics.Shader;
 
 import com.squareup.picasso.Transformation;
 
 /**
  * Returns a bitmap image that is reflected over
  * the Y axis.
- *
  */
 public class PicassoMirrorReflectionTransformer implements Transformation {
 
@@ -58,7 +52,7 @@ public class PicassoMirrorReflectionTransformer implements Transformation {
                 height / 2, width, height / 2, matrix, false);
 
         //Create a new bitmap with same width but taller to fit reflection
-        Bitmap bitmapWithReflection = Bitmap.createBitmap(width,(height + height / 2), Bitmap.Config.ARGB_8888);
+        Bitmap bitmapWithReflection = Bitmap.createBitmap(width, (height + height / 2), Bitmap.Config.ARGB_8888);
 
         /*
          * Create a new Canvas with the bitmap that's big enough for
@@ -72,10 +66,10 @@ public class PicassoMirrorReflectionTransformer implements Transformation {
         //Draw in the reflected image.
         canvas.drawBitmap(reflectionImage, 0, height + reflectionGap, null);
 
-        if (originalImage!=null && !originalImage.isRecycled())
+        if (!originalImage.isRecycled())
             originalImage.recycle();
 
-        if (image!=null && !image.isRecycled())
+        if (!image.isRecycled())
             image.recycle();
 
         return bitmapWithReflection;

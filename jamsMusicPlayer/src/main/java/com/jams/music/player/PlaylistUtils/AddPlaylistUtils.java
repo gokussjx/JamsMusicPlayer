@@ -26,20 +26,20 @@ import android.provider.MediaStore;
 import com.jams.music.player.DBHelpers.DBAccessHelper;
 
 public class AddPlaylistUtils {
-	
-	//Retrieves a cursor that contiains the songs that need to be added to the new playlist.
-	public static Cursor getPlaylistElementsCursor(Context context, 
-										 		   DBAccessHelper musicLibraryDBHelper, 
-										 		   SharedPreferences sharedPreferences,
-										 		   String ARTIST,
-										 		   String ALBUM,
-										 		   String SONG,
-										 		   String GENRE,
-										 		   String ALBUM_ARTIST, 
-										 		   String ADD_TYPE) {
+
+    //Retrieves a cursor that contiains the songs that need to be added to the new playlist.
+    public static Cursor getPlaylistElementsCursor(Context context,
+                                                   DBAccessHelper musicLibraryDBHelper,
+                                                   SharedPreferences sharedPreferences,
+                                                   String ARTIST,
+                                                   String ALBUM,
+                                                   String SONG,
+                                                   String GENRE,
+                                                   String ALBUM_ARTIST,
+                                                   String ADD_TYPE) {
 
 		/*//Initialize the DB access and cursor object.
-		Cursor cursor = null;
+        Cursor cursor = null;
 		
 		if (ADD_TYPE.equals("ARTIST")) {
 			String selection = null;
@@ -206,13 +206,13 @@ public class AddPlaylistUtils {
 		    ALBUM_ARTIST = ALBUM_ARTIST.replace("''", "'");
 		    ALBUM = ALBUM.replace("''", "'");
 		}*/
-		
-		return null;
-	}
-	
-	//Adds the specified song to Android's MediaStore.
-	public static void addToMediaStorePlaylist(ContentResolver resolver, int audioId, long playlistId) {
-        String[] cols = new String[] {"count(*)"};
+
+        return null;
+    }
+
+    //Adds the specified song to Android's MediaStore.
+    public static void addToMediaStorePlaylist(ContentResolver resolver, int audioId, long playlistId) {
+        String[] cols = new String[]{"count(*)"};
         Uri uri = MediaStore.Audio.Playlists.Members.getContentUri("external", playlistId);
         Cursor cur = resolver.query(uri, cols, null, null, null);
         cur.moveToFirst();
@@ -222,20 +222,20 @@ public class AddPlaylistUtils {
         values.put(MediaStore.Audio.Playlists.Members.PLAY_ORDER, Integer.valueOf(base + audioId));
         values.put(MediaStore.Audio.Playlists.Members.AUDIO_ID, audioId);
         resolver.insert(uri, values);
-        
+
     }
-	
-	public static void removeFromPlaylist(ContentResolver resolver, int audioId, long playlistId) {
-	    String[] cols = new String[] {"count(*)"};
-	    Uri uri = MediaStore.Audio.Playlists.Members.getContentUri("external", playlistId);
-	    Cursor cur = resolver.query(uri, cols, null, null, null);
-	    cur.moveToFirst();
-	    final int base = cur.getInt(0);
-	    cur.close();
-	    ContentValues values = new ContentValues();
-	
-	    resolver.delete(uri, MediaStore.Audio.Playlists.Members.AUDIO_ID + "=" + audioId, null);
-	    
-	}
-	
+
+    public static void removeFromPlaylist(ContentResolver resolver, int audioId, long playlistId) {
+        String[] cols = new String[]{"count(*)"};
+        Uri uri = MediaStore.Audio.Playlists.Members.getContentUri("external", playlistId);
+        Cursor cur = resolver.query(uri, cols, null, null, null);
+        cur.moveToFirst();
+        final int base = cur.getInt(0);
+        cur.close();
+        ContentValues values = new ContentValues();
+
+        resolver.delete(uri, MediaStore.Audio.Playlists.Members.AUDIO_ID + "=" + audioId, null);
+
+    }
+
 }

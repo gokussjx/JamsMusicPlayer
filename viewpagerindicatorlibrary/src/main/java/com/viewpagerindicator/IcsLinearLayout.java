@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.LinearLayout;
 
@@ -15,7 +16,7 @@ import android.widget.LinearLayout;
  * {@link android.widget.FrameLayout} so it can receive the margin.
  */
 class IcsLinearLayout extends LinearLayout {
-    private static final int[] LL = new int[] {
+    private static final int[] LL = new int[]{
         /* 0 */ android.R.attr.divider,
         /* 1 */ android.R.attr.showDividers,
         /* 2 */ android.R.attr.dividerPadding,
@@ -58,7 +59,7 @@ class IcsLinearLayout extends LinearLayout {
     }
 
     @Override
-    protected void measureChildWithMargins(View child, int parentWidthMeasureSpec, int widthUsed, int parentHeightMeasureSpec, int heightUsed) {
+    protected void measureChildWithMargins(@NonNull View child, int parentWidthMeasureSpec, int widthUsed, int parentHeightMeasureSpec, int heightUsed) {
         final int index = indexOfChild(child);
         final int orientation = getOrientation();
         final LayoutParams params = (LayoutParams) child.getLayoutParams();
@@ -165,7 +166,7 @@ class IcsLinearLayout extends LinearLayout {
 
     private boolean hasDividerBeforeChildAt(int childIndex) {
         if (childIndex == 0 || childIndex == getChildCount()) {
-          return false;
+            return false;
         }
         if ((mShowDividers & SHOW_DIVIDER_MIDDLE) != 0) {
             boolean hasVisibleViewBefore = false;

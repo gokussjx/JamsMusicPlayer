@@ -42,35 +42,35 @@ public class Notice implements Serializable {
 
     // Setter / Getter
 
-    public void setName(final String name) {
-        mName = name;
-    }
-
-    public void setUrl(final String url) {
-        mUrl = url;
-    }
-
-    public void setCopyright(final String copyright) {
-        mCopyright = copyright;
-    }
-
-    public void setLicense(final License license) {
-        mLicense = license;
-    }
-
     public String getName() {
         return mName;
+    }
+
+    public void setName(final String name) {
+        mName = name;
     }
 
     public String getUrl() {
         return mUrl;
     }
 
+    public void setUrl(final String url) {
+        mUrl = url;
+    }
+
     public String getCopyright() {
         return mCopyright;
     }
 
+    public void setCopyright(final String copyright) {
+        mCopyright = copyright;
+    }
+
     public License getLicense() {
         return mLicense;
+    }
+
+    public void setLicense(final License license) {
+        mLicense = license;
     }
 }

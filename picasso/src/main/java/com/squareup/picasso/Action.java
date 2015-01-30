@@ -17,72 +17,72 @@ package com.squareup.picasso;
 
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;
 
 abstract class Action<T> {
-  static class RequestWeakReference<T> extends WeakReference<T> {
-    final Action action;
+    final Picasso picasso;
+    final Request request;
+    final WeakReference<T> target;
+    final boolean skipCache;
+    final boolean noFade;
+    final int errorResId;
+    final Drawable errorDrawable;
+    final String key;
+    boolean willReplay;
+    boolean cancelled;
 
-    public RequestWeakReference(Action action, T referent, ReferenceQueue<? super T> q) {
-      super(referent, q);
-      this.action = action;
+    Action(Picasso picasso, T target, Request request, boolean skipCache, boolean noFade,
+           int errorResId, Drawable errorDrawable, String key) {
+        this.picasso = picasso;
+        this.request = request;
+        this.target = new RequestWeakReference<T>(this, target, picasso.referenceQueue);
+        this.skipCache = skipCache;
+        this.noFade = noFade;
+        this.errorResId = errorResId;
+        this.errorDrawable = errorDrawable;
+        this.key = key;
     }
-  }
 
-  final Picasso picasso;
-  final Request request;
-  final WeakReference<T> target;
-  final boolean skipCache;
-  final boolean noFade;
-  final int errorResId;
-  final Drawable errorDrawable;
-  final String key;
+    abstract void complete(Bitmap result, Picasso.LoadedFrom from);
 
-  boolean willReplay;
-  boolean cancelled;
+    abstract void error();
 
-  Action(Picasso picasso, T target, Request request, boolean skipCache, boolean noFade,
-      int errorResId, Drawable errorDrawable, String key) {
-    this.picasso = picasso;
-    this.request = request;
-    this.target = new RequestWeakReference<T>(this, target, picasso.referenceQueue);
-    this.skipCache = skipCache;
-    this.noFade = noFade;
-    this.errorResId = errorResId;
-    this.errorDrawable = errorDrawable;
-    this.key = key;
-  }
+    void cancel() {
+        cancelled = true;
+    }
 
-  abstract void complete(Bitmap result, Picasso.LoadedFrom from);
+    Request getRequest() {
+        return request;
+    }
 
-  abstract void error();
+    T getTarget() {
+        return target.get();
+    }
 
-  void cancel() {
-    cancelled = true;
-  }
+    String getKey() {
+        return key;
+    }
 
-  Request getRequest() {
-    return request;
-  }
+    boolean isCancelled() {
+        return cancelled;
+    }
 
-  T getTarget() {
-    return target.get();
-  }
+    boolean willReplay() {
+        return willReplay;
+    }
 
-  String getKey() {
-    return key;
-  }
+    Picasso getPicasso() {
+        return picasso;
+    }
 
-  boolean isCancelled() {
-    return cancelled;
-  }
+    static class RequestWeakReference<T> extends WeakReference<T> {
+        final Action action;
 
-  boolean willReplay() {
-    return willReplay;
-  }
-
-  Picasso getPicasso() {
-    return picasso;
-  }
+        public RequestWeakReference(Action action, T referent, ReferenceQueue<? super T> q) {
+            super(referent, q);
+            this.action = action;
+        }
+    }
 }

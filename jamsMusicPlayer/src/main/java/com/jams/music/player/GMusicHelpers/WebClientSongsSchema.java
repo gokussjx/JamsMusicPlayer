@@ -18,325 +18,325 @@ package com.jams.music.player.GMusicHelpers;
 import org.json.JSONObject;
 
 public class WebClientSongsSchema implements IJsonObject<WebClientSongsSchema> {
-	private int mTotalTracks;
-	private boolean mSubjectToCuration;
-	private String mName;
-	private int mTotalDiscs;
-	private String mTitleNorm;
-	private String mAlbumNorm;
-	private int mTrack;
-	private String mAlbumArtUrl;
-	private String mUrl;
-	private long mCreationDate;
-	private String mAlbumArtistNorm;
-	private String mArtistNorm;
-	private long mLastPlayed;
-	private String mMatchedId;
-	private int mType;
-	private int mDisc;
-	private String mGenre;
-	private int mBeatsPerMinute;
-	private String mAlbum;
-	private String mId;
-	private String mComposer;
-	private String mTitle;
-	private String mAlbumArtist;
-	private int mYear;
-	private String mArtist;
-	private long mDurationMillis;
-	private boolean mIsDeleted;
-	private int mPlayCount;
-	private String mRating;
-	private String mComment;
-	private String mPlaylistEntryId;
+    private int mTotalTracks;
+    private boolean mSubjectToCuration;
+    private String mName;
+    private int mTotalDiscs;
+    private String mTitleNorm;
+    private String mAlbumNorm;
+    private int mTrack;
+    private String mAlbumArtUrl;
+    private String mUrl;
+    private long mCreationDate;
+    private String mAlbumArtistNorm;
+    private String mArtistNorm;
+    private long mLastPlayed;
+    private String mMatchedId;
+    private int mType;
+    private int mDisc;
+    private String mGenre;
+    private int mBeatsPerMinute;
+    private String mAlbum;
+    private String mId;
+    private String mComposer;
+    private String mTitle;
+    private String mAlbumArtist;
+    private int mYear;
+    private String mArtist;
+    private long mDurationMillis;
+    private boolean mIsDeleted;
+    private int mPlayCount;
+    private String mRating;
+    private String mComment;
+    private String mPlaylistEntryId;
 
-	public String getAlbum() {
-		return mAlbum;
-	}
+    public String getAlbum() {
+        return mAlbum;
+    }
 
-	public String getAlbumArtist() {
-		return mAlbumArtist;
-	}
+    public void setAlbum(String album) {
+        mAlbum = album;
+    }
 
-	public String getAlbumArtistNorm() {
-		return mAlbumArtistNorm;
-	}
+    public String getAlbumArtist() {
+        return mAlbumArtist;
+    }
 
-	public String getAlbumArtUrl() {
-		return mAlbumArtUrl;
-	}
+    public void setAlbumArtist(String albumArtist) {
+        mAlbumArtist = albumArtist;
+    }
 
-	public String getAlbumNorm() {
-		return mAlbumNorm;
-	}
+    public String getAlbumArtistNorm() {
+        return mAlbumArtistNorm;
+    }
 
-	public String getArtist() {
-		return mArtist;
-	}
+    public void setAlbumArtistNorm(String albumArtistNorm) {
+        mAlbumArtistNorm = albumArtistNorm;
+    }
 
-	public String getArtistNorm() {
-		return mArtistNorm;
-	}
+    public String getAlbumArtUrl() {
+        return mAlbumArtUrl;
+    }
 
-	public int getBeatsPerMinute() {
-		return mBeatsPerMinute;
-	}
+    public void setAlbumArtUrl(String albumArtUrl) {
+        mAlbumArtUrl = albumArtUrl;
+    }
 
-	public String getComment() {
-		return mComment;
-	}
+    public String getAlbumNorm() {
+        return mAlbumNorm;
+    }
 
-	public String getComposer() {
-		return mComposer;
-	}
+    public void setAlbumNorm(String albumNorm) {
+        mAlbumNorm = albumNorm;
+    }
 
-	public float getCreationDate() {
-		return mCreationDate;
-	}
+    public String getArtist() {
+        return mArtist;
+    }
 
-	public int getDisc() {
-		return mDisc;
-	}
+    public void setArtist(String artist) {
+        mArtist = artist;
+    }
 
-	public long getDurationMillis() {
-		return mDurationMillis;
-	}
+    public String getArtistNorm() {
+        return mArtistNorm;
+    }
 
-	public String getGenre() {
-		return mGenre;
-	}
+    public void setArtistNorm(String artistNorm) {
+        mArtistNorm = artistNorm;
+    }
 
-	public String getId() {
-		return mId;
-	}
+    public int getBeatsPerMinute() {
+        return mBeatsPerMinute;
+    }
 
-	public double getLastPlayed() {
-		return mLastPlayed;
-	}
+    public void setBeatsPerMinute(int beatsPerMinute) {
+        mBeatsPerMinute = beatsPerMinute;
+    }
 
-	public String getMatchedId() {
-		return mMatchedId;
-	}
+    public String getComment() {
+        return mComment;
+    }
 
-	public String getName() {
-		return mName;
-	}
+    public void setComment(String comment) {
+        mComment = comment;
+    }
 
-	public int getPlayCount() {
-		return mPlayCount;
-	}
+    public String getComposer() {
+        return mComposer;
+    }
 
-	public String getRating() {
-		return mRating;
-	}
+    public void setComposer(String composer) {
+        mComposer = composer;
+    }
 
-	public String getTitle() {
-		return mTitle;
-	}
+    public float getCreationDate() {
+        return mCreationDate;
+    }
 
-	public String getTitleNorm() {
-		return mTitleNorm;
-	}
+    public void setCreationDate(long creationDate) {
+        mCreationDate = creationDate;
+    }
 
-	public int getTotalDiscs() {
-		return mTotalDiscs;
-	}
+    public int getDisc() {
+        return mDisc;
+    }
 
-	public int getTotalTracks() {
-		return mTotalTracks;
-	}
+    public void setDisc(int disc) {
+        mDisc = disc;
+    }
 
-	public int getTrack() {
-		return mTrack;
-	}
+    public long getDurationMillis() {
+        return mDurationMillis;
+    }
 
-	public int getType() {
-		return mType;
-	}
+    public void setDurationMillis(long durationMillis) {
+        mDurationMillis = durationMillis;
+    }
 
-	public String getUrl() {
-		return mUrl;
-	}
+    public String getGenre() {
+        return mGenre;
+    }
 
-	public int getYear() {
-		return mYear;
-	}
-	
-	public String getPlaylistEntryId() {
-		return mPlaylistEntryId;
-	}
+    public void setGenre(String genre) {
+        mGenre = genre;
+    }
 
-	public boolean isDeleted() {
-		return mIsDeleted;
-	}
+    public String getId() {
+        return mId;
+    }
 
-	public boolean isSubjectToCuration() {
-		return mSubjectToCuration;
-	}
+    public void setId(String id) {
+        mId = id;
+    }
 
-	public void setAlbum(String album) {
-		mAlbum = album;
-	}
+    public double getLastPlayed() {
+        return mLastPlayed;
+    }
 
-	public void setAlbumArtist(String albumArtist) {
-		mAlbumArtist = albumArtist;
-	}
+    public void setLastPlayed(long lastPlayed) {
+        mLastPlayed = lastPlayed;
+    }
 
-	public void setAlbumArtistNorm(String albumArtistNorm) {
-		mAlbumArtistNorm = albumArtistNorm;
-	}
+    public String getMatchedId() {
+        return mMatchedId;
+    }
 
-	public void setAlbumArtUrl(String albumArtUrl) {
-		mAlbumArtUrl = albumArtUrl;
-	}
+    public void setMatchedId(String matchedId) {
+        mMatchedId = matchedId;
+    }
 
-	public void setAlbumNorm(String albumNorm) {
-		mAlbumNorm = albumNorm;
-	}
+    public String getName() {
+        return mName;
+    }
 
-	public void setArtist(String artist) {
-		mArtist = artist;
-	}
+    public void setName(String name) {
+        mName = name;
+    }
 
-	public void setArtistNorm(String artistNorm) {
-		mArtistNorm = artistNorm;
-	}
+    public int getPlayCount() {
+        return mPlayCount;
+    }
 
-	public void setBeatsPerMinute(int beatsPerMinute) {
-		mBeatsPerMinute = beatsPerMinute;
-	}
+    public String getRating() {
+        return mRating;
+    }
 
-	public void setComment(String comment) {
-		mComment = comment;
-	}
+    public void setRating(String rating) {
+        mRating = rating;
+    }
 
-	public void setComposer(String composer) {
-		mComposer = composer;
-	}
+    public String getTitle() {
+        return mTitle;
+    }
 
-	public void setCreationDate(long creationDate) {
-		mCreationDate = creationDate;
-	}
+    public void setTitle(String title) {
+        mTitle = title;
+    }
 
-	public void setDeleted(boolean isDeleted) {
-		mIsDeleted = isDeleted;
-	}
+    public String getTitleNorm() {
+        return mTitleNorm;
+    }
 
-	public void setDisc(int disc) {
-		mDisc = disc;
-	}
+    public void setTitleNorm(String titleNorm) {
+        mTitleNorm = titleNorm;
+    }
 
-	public void setDurationMillis(long durationMillis) {
-		mDurationMillis = durationMillis;
-	}
+    public int getTotalDiscs() {
+        return mTotalDiscs;
+    }
 
-	public void setGenre(String genre) {
-		mGenre = genre;
-	}
+    public void setTotalDiscs(int totalDiscs) {
+        mTotalDiscs = totalDiscs;
+    }
 
-	public void setId(String id) {
-		mId = id;
-	}
+    public int getTotalTracks() {
+        return mTotalTracks;
+    }
 
-	public void setLastPlayed(long lastPlayed) {
-		mLastPlayed = lastPlayed;
-	}
+    public void setTotalTracks(int totalTracks) {
+        mTotalTracks = totalTracks;
+    }
 
-	public void setMatchedId(String matchedId) {
-		mMatchedId = matchedId;
-	}
+    public int getTrack() {
+        return mTrack;
+    }
 
-	public void setName(String name) {
-		mName = name;
-	}
+    public void setTrack(int track) {
+        mTrack = track;
+    }
 
-	public void setPlaycount(int playcount) {
-		mPlayCount = playcount;
-	}
+    public int getType() {
+        return mType;
+    }
 
-	public void setRating(String rating) {
-		mRating = rating;
-	}
+    public void setType(int type) {
+        mType = type;
+    }
 
-	public void setSubjectToCuration(boolean subjectToCuration) {
-		mSubjectToCuration = subjectToCuration;
-	}
+    public String getUrl() {
+        return mUrl;
+    }
 
-	public void setTitle(String title) {
-		mTitle = title;
-	}
+    public void setUrl(String url) {
+        mUrl = url;
+    }
 
-	public void setTitleNorm(String titleNorm) {
-		mTitleNorm = titleNorm;
-	}
+    public int getYear() {
+        return mYear;
+    }
 
-	public void setTotalDiscs(int totalDiscs) {
-		mTotalDiscs = totalDiscs;
-	}
+    public void setYear(int year) {
+        mYear = year;
+    }
 
-	public void setTotalTracks(int totalTracks) {
-		mTotalTracks = totalTracks;
-	}
+    public String getPlaylistEntryId() {
+        return mPlaylistEntryId;
+    }
 
-	public void setTrack(int track) {
-		mTrack = track;
-	}
+    public boolean isDeleted() {
+        return mIsDeleted;
+    }
 
-	public void setType(int type) {
-		mType = type;
-	}
+    public void setDeleted(boolean isDeleted) {
+        mIsDeleted = isDeleted;
+    }
 
-	public void setUrl(String url) {
-		mUrl = url;
-	}
+    public boolean isSubjectToCuration() {
+        return mSubjectToCuration;
+    }
 
-	public void setYear(int year) {
-		mYear = year;
-	}
-	
-	public void setEntryId(String playlistEntryId) {
-		mPlaylistEntryId = playlistEntryId;
-	}
+    public void setSubjectToCuration(boolean subjectToCuration) {
+        mSubjectToCuration = subjectToCuration;
+    }
 
-	@Override
-	public WebClientSongsSchema fromJsonObject(JSONObject jsonObject) {
-		
-		if(jsonObject != null) {
-			mTotalTracks = jsonObject.optInt("totalTracks");
-			mSubjectToCuration = jsonObject.optBoolean("subjectToCuration");
-			mName = jsonObject.optString("name", null);
-			mTotalDiscs = jsonObject.optInt("totalDiscs");
-			mTitleNorm = jsonObject.optString("titleNorm", null);
-			mAlbumNorm = jsonObject.optString("albumNorm", null);
-			mTrack = jsonObject.optInt("track");
-			mAlbumArtUrl = jsonObject.optString("albumArtUrl", null);
-			mUrl = jsonObject.optString("url", null);
-			mCreationDate = jsonObject.optLong("creationDate");
-			mAlbumArtistNorm = jsonObject.optString("albumArtistNorm", null);
-			mArtistNorm = jsonObject.optString("artistNorm", null);
-			mLastPlayed = jsonObject.optLong("lastPlayed");
-			mMatchedId = jsonObject.optString("matchedId", null);
-			mType = jsonObject.optInt("type");
-			mDisc = jsonObject.optInt("disc");
-			mGenre = jsonObject.optString("genre", null);
-			mBeatsPerMinute = jsonObject.optInt("beatsPerMinute");
-			mAlbum = jsonObject.optString("album", null);
-			mId = jsonObject.optString("id", null);
-			mComposer = jsonObject.optString("composer", null);
-			mTitle = jsonObject.optString("title", null);
-			mAlbumArtist = jsonObject.optString("albumArtist", null);
-			mYear = jsonObject.optInt("year");
-			mArtist = jsonObject.optString("artist", null);
-			mDurationMillis = jsonObject.optLong("durationMillis");
-			mIsDeleted = jsonObject.optBoolean("deleted");
-			mPlayCount = jsonObject.optInt("playCount");
-			mRating = jsonObject.optString("rating", null);
-			mComment = jsonObject.optString("comment", null);
-			mPlaylistEntryId = jsonObject.optString("playlistEntryId");
-		}
+    public void setPlaycount(int playcount) {
+        mPlayCount = playcount;
+    }
 
-		//This method returns itself to support chaining.
-		return this;
-	}
-	
+    public void setEntryId(String playlistEntryId) {
+        mPlaylistEntryId = playlistEntryId;
+    }
+
+    @Override
+    public WebClientSongsSchema fromJsonObject(JSONObject jsonObject) {
+
+        if (jsonObject != null) {
+            mTotalTracks = jsonObject.optInt("totalTracks");
+            mSubjectToCuration = jsonObject.optBoolean("subjectToCuration");
+            mName = jsonObject.optString("name", null);
+            mTotalDiscs = jsonObject.optInt("totalDiscs");
+            mTitleNorm = jsonObject.optString("titleNorm", null);
+            mAlbumNorm = jsonObject.optString("albumNorm", null);
+            mTrack = jsonObject.optInt("track");
+            mAlbumArtUrl = jsonObject.optString("albumArtUrl", null);
+            mUrl = jsonObject.optString("url", null);
+            mCreationDate = jsonObject.optLong("creationDate");
+            mAlbumArtistNorm = jsonObject.optString("albumArtistNorm", null);
+            mArtistNorm = jsonObject.optString("artistNorm", null);
+            mLastPlayed = jsonObject.optLong("lastPlayed");
+            mMatchedId = jsonObject.optString("matchedId", null);
+            mType = jsonObject.optInt("type");
+            mDisc = jsonObject.optInt("disc");
+            mGenre = jsonObject.optString("genre", null);
+            mBeatsPerMinute = jsonObject.optInt("beatsPerMinute");
+            mAlbum = jsonObject.optString("album", null);
+            mId = jsonObject.optString("id", null);
+            mComposer = jsonObject.optString("composer", null);
+            mTitle = jsonObject.optString("title", null);
+            mAlbumArtist = jsonObject.optString("albumArtist", null);
+            mYear = jsonObject.optInt("year");
+            mArtist = jsonObject.optString("artist", null);
+            mDurationMillis = jsonObject.optLong("durationMillis");
+            mIsDeleted = jsonObject.optBoolean("deleted");
+            mPlayCount = jsonObject.optInt("playCount");
+            mRating = jsonObject.optString("rating", null);
+            mComment = jsonObject.optString("comment", null);
+            mPlaylistEntryId = jsonObject.optString("playlistEntryId");
+        }
+
+        //This method returns itself to support chaining.
+        return this;
+    }
+
 }

@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/transparent" >
+    android:background="@android:color/transparent">
 
     <TextView
         android:id="@+id/custom_actionbar_title"
@@ -11,11 +11,11 @@
         android:layout_centerVertical="true"
         android:layout_marginLeft="10dp"
         android:ellipsize="marquee"
-        android:marqueeRepeatLimit ="marquee_forever"
         android:focusable="true"
         android:focusableInTouchMode="true"
+        android:marqueeRepeatLimit="marquee_forever"
         android:scrollHorizontally="true"
         android:singleLine="true"
-        android:textSize="16sp"
-        android:text="" />
+        android:text=""
+        android:textSize="16sp" />
 </RelativeLayout>

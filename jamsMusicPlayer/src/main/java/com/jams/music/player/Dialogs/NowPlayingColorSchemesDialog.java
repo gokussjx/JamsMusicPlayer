@@ -27,15 +27,9 @@ import android.os.Bundle;
 
 import com.jams.music.player.Helpers.UIElementsHelper;
 import com.jams.music.player.R;
-import com.jams.music.player.SettingsActivity.SettingsActivity;
-import com.jams.music.player.SettingsActivity.SettingsAppearanceFragment;
 
 public class NowPlayingColorSchemesDialog extends DialogFragment {
 
-	private Activity parentActivity;
-	private int selectedThemeIndex;
-	private DialogFragment dialogFragment;
-	
 	private static final String NOW_PLAYING_COLOR = "NOW_PLAYING_COLOR";
 	private static final String BLUE = "BLUE";
 	private static final String RED = "RED";
@@ -46,7 +40,10 @@ public class NowPlayingColorSchemesDialog extends DialogFragment {
 	private static final String GRAY = "GRAY";
 	private static final String WHITE = "WHITE";
 	private static final String BLACK = "BLACK";
-	
+    private Activity parentActivity;
+    private int selectedThemeIndex;
+    private DialogFragment dialogFragment;
+
 	@Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
@@ -97,31 +94,31 @@ public class NowPlayingColorSchemesDialog extends DialogFragment {
             public void onClick(DialogInterface dialog, int which) {
 
                 if (which == 0) {
-                    sharedPreferences.edit().putString(NOW_PLAYING_COLOR, WHITE).commit();
+                    sharedPreferences.edit().putString(NOW_PLAYING_COLOR, WHITE).apply();
                     dialog.dismiss();
                 } else if (which == 1) {
-                    sharedPreferences.edit().putString(NOW_PLAYING_COLOR, GRAY).commit();
+                    sharedPreferences.edit().putString(NOW_PLAYING_COLOR, GRAY).apply();
                     dialog.dismiss();
                 } else if (which == 2) {
-                    sharedPreferences.edit().putString(NOW_PLAYING_COLOR, BLUE).commit();
+                    sharedPreferences.edit().putString(NOW_PLAYING_COLOR, BLUE).apply();
                     dialog.dismiss();
                 } else if (which == 3) {
-                    sharedPreferences.edit().putString(NOW_PLAYING_COLOR, RED).commit();
+                    sharedPreferences.edit().putString(NOW_PLAYING_COLOR, RED).apply();
                     dialog.dismiss();
                 } else if (which == 4) {
-                    sharedPreferences.edit().putString(NOW_PLAYING_COLOR, GREEN).commit();
+                    sharedPreferences.edit().putString(NOW_PLAYING_COLOR, GREEN).apply();
                     dialog.dismiss();
                 } else if (which == 5) {
-                    sharedPreferences.edit().putString(NOW_PLAYING_COLOR, ORANGE).commit();
+                    sharedPreferences.edit().putString(NOW_PLAYING_COLOR, ORANGE).apply();
                     dialog.dismiss();
                 } else if (which == 6) {
-                    sharedPreferences.edit().putString(NOW_PLAYING_COLOR, PURPLE).commit();
+                    sharedPreferences.edit().putString(NOW_PLAYING_COLOR, PURPLE).apply();
                     dialog.dismiss();
                 } else if (which == 7) {
-                    sharedPreferences.edit().putString(NOW_PLAYING_COLOR, MAGENTA).commit();
+                    sharedPreferences.edit().putString(NOW_PLAYING_COLOR, MAGENTA).apply();
                     dialog.dismiss();
                 } else if (which == 8) {
-                    sharedPreferences.edit().putString(NOW_PLAYING_COLOR, BLACK).commit();
+                    sharedPreferences.edit().putString(NOW_PLAYING_COLOR, BLACK).apply();
                     dialog.dismiss();
                 }
 

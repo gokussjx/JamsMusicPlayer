@@ -23,17 +23,17 @@ import java.util.NoSuchElementException;
 public class ReadFromM3UPlaylist {
 
     public ReadFromM3UPlaylist() throws Exception {
-    	//Constructor.
+        //Constructor.
     }
 
     public String convertStreamToString(java.io.InputStream is) {
-    	
-	    try {
-	    	return new java.util.Scanner(is).useDelimiter("\\A").next();
-	    } catch (NoSuchElementException e) {
-	    	return "";
-	    }
-	    
+
+        try {
+            return new java.util.Scanner(is).useDelimiter("\\A").next();
+        } catch (NoSuchElementException e) {
+            return "";
+        }
+
     }
 
     public M3UHolder parseFile(File f) throws FileNotFoundException {
@@ -42,18 +42,18 @@ public class ReadFromM3UPlaylist {
             stream = stream.replaceAll("#EXTM3U", "").trim();
             String[] arr = stream.split("#EXTINF.*,");
             String urls = "", data = "";
-            	
-            for (int n = 0; n < arr.length; n++) {
-                if (arr[n].contains("http")) {
-                        String nu = arr[n].substring(arr[n].indexOf("http://"),
-                                        arr[n].indexOf(".mp3") + 4);
 
-                        urls = urls.concat(nu);
-                        data = data.concat(arr[n].replaceAll(nu, "").trim())
-                                        .concat("&&&&");
-                        urls = urls.concat("####");
+            for (String anArr : arr) {
+                if (anArr.contains("http")) {
+                    String nu = anArr.substring(anArr.indexOf("http://"),
+                            anArr.indexOf(".mp3") + 4);
+
+                    urls = urls.concat(nu);
+                    data = data.concat(anArr.replaceAll(nu, "").trim())
+                            .concat("&&&&");
+                    urls = urls.concat("####");
                 }
-                
+
             }
             return new M3UHolder(data.split("&&&&"), urls.split("####"));
         }
@@ -70,7 +70,7 @@ public class ReadFromM3UPlaylist {
 
         public int getSize() {
             if (url != null)
-                    return url.length;
+                return url.length;
             return 0;
         }
 
@@ -81,7 +81,7 @@ public class ReadFromM3UPlaylist {
         public String getUrl(int n) {
             return url[n];
         }
-        
+
     }
-    
+
 }

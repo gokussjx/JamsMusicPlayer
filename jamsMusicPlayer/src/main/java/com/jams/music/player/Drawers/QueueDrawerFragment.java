@@ -21,7 +21,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -41,7 +40,6 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.jams.music.player.Helpers.TypefaceHelper;
 import com.jams.music.player.Helpers.UIElementsHelper;
@@ -53,10 +51,95 @@ import com.mobeta.android.dslv.DragSortListView;
 import com.mobeta.android.dslv.SimpleFloatViewManager;
 
 public class QueueDrawerFragment extends Fragment {
-	
-	private Context mContext;
-	private Common mApp;
 
+    /**
+     * Broadcast receiver interface that will update this activity as necessary.
+     */
+    BroadcastReceiver mReceiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Bundle bundle = intent.getExtras();
+
+            if (bundle.containsKey(Common.UPDATE_PAGER_POSTIION)) {
+                //Update the queue fragment with the new song info.
+                initMiniPlayer();
+                initListViewAdapter(false);
+
+            }
+
+            //Updates the playback control buttons.
+            if (intent.hasExtra(Common.UPDATE_PLAYBACK_CONTROLS))
+                setPlayPauseButton();
+
+            if (bundle.containsKey(Common.SERVICE_STOPPING)) {
+                showEmptyTextView();
+
+            }
+
+        }
+
+    };
+    private Context mContext;
+    /**
+     * Click listener for the mini player.
+     */
+    private View.OnClickListener mOnClickMiniPlayer = new View.OnClickListener() {
+
+        @Override
+        public void onClick(View v) {
+            Intent intent = new Intent(mContext, NowPlayingActivity.class);
+            startActivity(intent);
+        }
+
+    };
+    /**
+     * Click remove interface for the ListView.
+     */
+    private DragSortListView.RemoveListener onRemove = new DragSortListView.RemoveListener() {
+
+        @Override
+        public void remove(int which) {
+
+            //Stop the service if we just removed the last (and only) song.
+            if (mApp.getService().getPlaybackIndecesList().size() == 1) {
+                mContext.stopService(new Intent(mContext, AudioPlaybackService.class));
+                return;
+            }
+
+            //If the song that was removed is the next song, reload it.
+            if (mApp.getService().getPlaybackIndecesList().size() > (mApp.getService().getCurrentSongIndex() + 1)) {
+                if (mListViewAdapter.getItem(which) == mApp.getService().getPlaybackIndecesList().get(mApp.getService().getCurrentSongIndex() + 1)) {
+
+                    //Check which mediaPlayer is currently playing, and prepare the other mediaPlayer.
+                    mApp.getService().prepareAlternateMediaPlayer();
+
+                } else if (mListViewAdapter.getItem(which) == mApp.getService().getPlaybackIndecesList().get(mApp.getService().getCurrentSongIndex())) {
+                    mApp.getService().incrementCurrentSongIndex();
+                    mApp.getService().prepareMediaPlayer(mApp.getService().getCurrentSongIndex());
+                    mApp.getService().decrementCurrentSongIndex();
+                } else if (mListViewAdapter.getItem(which) < mApp.getService().getPlaybackIndecesList().get(mApp.getService().getCurrentSongIndex())) {
+                    mApp.getService().decrementCurrentSongIndex();
+                }
+
+            } else if (which == (mApp.getService().getPlaybackIndecesList().size() - 1) &&
+                    mApp.getService().getCurrentSongIndex() == (mApp.getService().getPlaybackIndecesList().size() - 1)) {
+                //The current song was the last one and it was removed. Time to back up to the previous song.
+                mApp.getService().decrementCurrentSongIndex();
+                mApp.getService().prepareMediaPlayer(mApp.getService().getCurrentSongIndex());
+            } else {
+                //Check which mediaPlayer is currently playing, and prepare the other mediaPlayer.
+                mApp.getService().prepareAlternateMediaPlayer();
+
+            }
+
+            //Remove the item from the adapter.
+            mListViewAdapter.remove(mListViewAdapter.getItem(which));
+
+        }
+
+    };
+    private Common mApp;
     private RelativeLayout mMiniPlayerLayout;
     private ImageView mMiniPlayerAlbumArt;
     private RelativeLayout mPlayPauseBackground;
@@ -65,28 +148,176 @@ public class QueueDrawerFragment extends Fragment {
     private ImageButton mPreviousButton;
     private TextView mTitleText;
     private TextView mSubText;
-
-	private DragSortListView mListView;
+    private DragSortListView mListView;
     private QueueDrawerAdapter mListViewAdapter;
     private TextView mEmptyInfoText;
-
     private boolean mInitListViewParams = true;
     private boolean mDrawerOpen = false;
+    /**
+     * Click listener for the play/pause button.
+     */
+    private View.OnClickListener playPauseClickListener = new View.OnClickListener() {
+
+        @Override
+        public void onClick(View view) {
+
+            //BZZZT! Give the user a brief haptic feedback touch response.
+            view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+
+            //Update the playback UI elements.
+            if (mApp.getService().isPlayingMusic())
+                animatePauseToPlay();
+            else
+                animatePlayToPause();
+
+            /*
+             * Toggle the playback state in a separate thread. This
+             * will allow the play/pause button animation to remain
+             * buttery smooth.
+             */
+            new AsyncTask() {
+
+                @Override
+                protected Object doInBackground(Object[] params) {
+                    mApp.getService().togglePlaybackState();
+                    return null;
+                }
+
+            }.execute();
+
+        }
+
+    };
+    /**
+     * Click listener for the previous button.
+     */
+    private View.OnClickListener mOnClickPreviousListener = new View.OnClickListener() {
+
+        @Override
+        public void onClick(View arg0) {
+            mApp.getService().skipToPreviousTrack();
+
+        }
+
+    };
+    /**
+     * Click listener for the next button.
+     */
+    private View.OnClickListener mOnClickNextListener = new View.OnClickListener() {
+
+        @Override
+        public void onClick(View arg0) {
+            mApp.getService().skipToNextTrack();
+
+        }
+
+    };
+    /**
+     * Click listener for the ListView.
+     */
+    private AdapterView.OnItemClickListener onClick = new AdapterView.OnItemClickListener() {
+
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            if (mApp.isServiceRunning())
+                mApp.getService().skipToTrack(position);
+
+        }
+
+    };
+    /**
+     * Drag and drop interface for the ListView.
+     */
+    private DragSortListView.DropListener onDrop = new DragSortListView.DropListener() {
+
+        @Override
+        public void drop(int from, int to) {
+            if (from != to) {
+                int fromItem = mListViewAdapter.getItem(from);
+                int toItem = mListViewAdapter.getItem(to);
+                mListViewAdapter.remove(fromItem);
+                mListViewAdapter.insert(fromItem, to);
+
+                //If the current song was reordered, change currentSongIndex and update the next song.
+                if (from == mApp.getService().getCurrentSongIndex()) {
+                    mApp.getService().setCurrentSongIndex(to);
+
+                    //Check which mediaPlayer is currently playing, and prepare the other mediaPlayer.
+                    mApp.getService().prepareAlternateMediaPlayer();
+                    return;
+
+                } else if (from > mApp.getService().getCurrentSongIndex() && to <= mApp.getService().getCurrentSongIndex()) {
+                    //One of the next songs was moved to a position before the current song. Move currentSongIndex forward by 1.
+                    mApp.getService().incrementCurrentSongIndex();
+                    mApp.getService().incrementEnqueueReorderScalar();
+
+                    //Check which mediaPlayer is currently playing, and prepare the other mediaPlayer.
+                    mApp.getService().prepareAlternateMediaPlayer();
+                    return;
+
+                } else if (from < mApp.getService().getCurrentSongIndex() && to == mApp.getService().getCurrentSongIndex()) {
+                    /* One of the previous songs was moved to the current song's position (visually speaking,
+                     * the new song will look like it was placed right after the current song.
+                	 */
+                    mApp.getService().decrementCurrentSongIndex();
+                    mApp.getService().decrementEnqueueReorderScalar();
+
+                    //Check which mediaPlayer is currently playing, and prepare the other mediaPlayer.
+                    mApp.getService().prepareAlternateMediaPlayer();
+                    return;
+
+                } else if (from < mApp.getService().getCurrentSongIndex() && to > mApp.getService().getCurrentSongIndex()) {
+                    //One of the previous songs was moved to a position after the current song. Move currentSongIndex back by 1.
+                    mApp.getService().decrementCurrentSongIndex();
+                    mApp.getService().decrementEnqueueReorderScalar();
+
+                    //Check which mediaPlayer is currently playing, and prepare the other mediaPlayer.
+                    mApp.getService().prepareAlternateMediaPlayer();
+                    return;
+
+                }
+
+                //If the next song was reordered, reload it with the new index.
+                if (mApp.getService().getPlaybackIndecesList().size() > (mApp.getService().getCurrentSongIndex() + 1)) {
+                    if (fromItem == mApp.getService().getPlaybackIndecesList().get(mApp.getService().getCurrentSongIndex() + 1) ||
+                            toItem == mApp.getService().getPlaybackIndecesList().get(mApp.getService().getCurrentSongIndex() + 1)) {
+
+                        //Check which mediaPlayer is currently playing, and prepare the other mediaPlayer.
+                        mApp.getService().prepareAlternateMediaPlayer();
+
+                    }
+
+                } else {
+                    //Check which mediaPlayer is currently playing, and prepare the other mediaPlayer.
+                    mApp.getService().prepareAlternateMediaPlayer();
+
+                }
+
+            }
+
+            //Fire a broadcast that notifies all listeners that the current queue order has changed.
+            String[] updateFlags = {Common.NEW_QUEUE_ORDER};
+            String[] flagValues = {""};
+            mApp.broadcastUpdateUICommand(updateFlags, flagValues);
+
+        }
+
+    };
 
     @SuppressWarnings("deprecation")
-	@SuppressLint("NewApi")
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		
-		mContext = getActivity();
-		mApp = (Common) mContext.getApplicationContext();
+    @SuppressLint("NewApi")
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-		View rootView = inflater.inflate(R.layout.fragment_queue_drawer, null);
-		if (mApp.getCurrentTheme()==Common.LIGHT_THEME) {
-			rootView.setBackgroundColor(0xFFFFFFFF);
-		} else {
-			rootView.setBackgroundColor(0xFF191919);
-		}
+        mContext = getActivity();
+        mApp = (Common) mContext.getApplicationContext();
+
+        View rootView = inflater.inflate(R.layout.fragment_queue_drawer, null);
+        if (mApp.getCurrentTheme() == Common.LIGHT_THEME) {
+            rootView.setBackgroundColor(0xFFFFFFFF);
+        } else {
+            rootView.setBackgroundColor(0xFF191919);
+        }
 
         mMiniPlayerLayout = (RelativeLayout) rootView.findViewById(R.id.queue_drawer_mini_player_layout);
         mMiniPlayerAlbumArt = (ImageView) rootView.findViewById(R.id.queue_drawer_album_art);
@@ -126,51 +357,22 @@ public class QueueDrawerFragment extends Fragment {
         //KitKat translucent navigation/status bar.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             int navBarHeight = Common.getNavigationBarHeight(mContext);
-            if (mListView!=null) {
+            if (mListView != null) {
                 mListView.setPadding(0, 0, 0, navBarHeight);
                 mListView.setClipToPadding(false);
             }
 
         }
 
-		return rootView;
-	}
-
-    /**
-     * Broadcast receiver interface that will update this activity as necessary.
-     */
-    BroadcastReceiver mReceiver = new BroadcastReceiver() {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Bundle bundle = intent.getExtras();
-
-            if (bundle.containsKey(Common.UPDATE_PAGER_POSTIION)) {
-                //Update the queue fragment with the new song info.
-                initMiniPlayer();
-                initListViewAdapter(false);
-
-            }
-
-            //Updates the playback control buttons.
-            if (intent.hasExtra(Common.UPDATE_PLAYBACK_CONTROLS))
-                setPlayPauseButton();
-
-            if (bundle.containsKey(Common.SERVICE_STOPPING)) {
-                showEmptyTextView();
-
-            }
-
-        }
-
-    };
+        return rootView;
+    }
 
     /**
      * Helper method that checks whether the audio playback service
      * is running or not.
      */
     private void checkServiceRunning() {
-        if (mApp.isServiceRunning() && mApp.getService().getCursor()!=null) {
+        if (mApp.isServiceRunning() && mApp.getService().getCursor() != null) {
             initMiniPlayer();
             setPlayPauseButton();
             initListViewAdapter(mInitListViewParams);
@@ -188,7 +390,7 @@ public class QueueDrawerFragment extends Fragment {
         mMiniPlayerAlbumArt.setImageBitmap(mApp.getService().getCurrentSong().getAlbumArt());
         mTitleText.setText(mApp.getService().getCurrentSong().getTitle());
         mSubText.setText(mApp.getService().getCurrentSong().getAlbum() + " - " +
-                         mApp.getService().getCurrentSong().getArtist());
+                mApp.getService().getCurrentSong().getArtist());
 
     }
 
@@ -202,13 +404,13 @@ public class QueueDrawerFragment extends Fragment {
      *                       false if the list just needs to be updated
      *                       with the current song.
      */
-	private void initListViewAdapter(boolean initViewParams) {
+    private void initListViewAdapter(boolean initViewParams) {
 
         if (initViewParams) {
             //Reset the initialization flag.
             mInitListViewParams = false;
 
-            if (mApp.getCurrentTheme()==Common.DARK_THEME) {
+            if (mApp.getCurrentTheme() == Common.DARK_THEME) {
                 mListView.setDivider(mContext.getResources().getDrawable(R.drawable.list_divider));
             } else {
                 mListView.setDivider(mContext.getResources().getDrawable(R.drawable.list_divider_light));
@@ -276,21 +478,21 @@ public class QueueDrawerFragment extends Fragment {
     private void animatePlayToPause() {
 
         //Check to make sure the current icon is the play icon.
-        if (mPlayPauseButton.getId()!=R.drawable.play_light)
+        if (mPlayPauseButton.getId() != R.drawable.play_light)
             return;
 
         //Fade out the play button.
         final ScaleAnimation scaleOut = new ScaleAnimation(1.0f, 0.0f, 1.0f, 0.0f,
-                mPlayPauseButton.getWidth()/2,
-                mPlayPauseButton.getHeight()/2);
+                mPlayPauseButton.getWidth() / 2,
+                mPlayPauseButton.getHeight() / 2);
         scaleOut.setDuration(150);
         scaleOut.setInterpolator(new AccelerateInterpolator());
 
 
         //Scale in the pause button.
         final ScaleAnimation scaleIn = new ScaleAnimation(0.0f, 1.0f, 0.0f, 1.0f,
-                mPlayPauseButton.getWidth()/2,
-                mPlayPauseButton.getHeight()/2);
+                mPlayPauseButton.getWidth() / 2,
+                mPlayPauseButton.getHeight() / 2);
         scaleIn.setDuration(150);
         scaleIn.setInterpolator(new DecelerateInterpolator());
 
@@ -345,21 +547,21 @@ public class QueueDrawerFragment extends Fragment {
     private void animatePauseToPlay() {
 
         //Check to make sure the current icon is the pause icon.
-        if (mPlayPauseButton.getId()!=R.drawable.pause_light)
+        if (mPlayPauseButton.getId() != R.drawable.pause_light)
             return;
 
         //Scale out the pause button.
         final ScaleAnimation scaleOut = new ScaleAnimation(1.0f, 0.0f, 1.0f, 0.0f,
-                mPlayPauseButton.getWidth()/2,
-                mPlayPauseButton.getHeight()/2);
+                mPlayPauseButton.getWidth() / 2,
+                mPlayPauseButton.getHeight() / 2);
         scaleOut.setDuration(150);
         scaleOut.setInterpolator(new AccelerateInterpolator());
 
 
         //Scale in the play button.
         final ScaleAnimation scaleIn = new ScaleAnimation(0.0f, 1.0f, 0.0f, 1.0f,
-                mPlayPauseButton.getWidth()/2,
-                mPlayPauseButton.getHeight()/2);
+                mPlayPauseButton.getWidth() / 2,
+                mPlayPauseButton.getHeight() / 2);
         scaleIn.setDuration(150);
         scaleIn.setInterpolator(new DecelerateInterpolator());
 
@@ -409,68 +611,6 @@ public class QueueDrawerFragment extends Fragment {
     }
 
     /**
-     * Click listener for the play/pause button.
-     */
-    private View.OnClickListener playPauseClickListener = new View.OnClickListener() {
-
-        @Override
-        public void onClick(View view) {
-
-            //BZZZT! Give the user a brief haptic feedback touch response.
-            view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
-
-            //Update the playback UI elements.
-            if (mApp.getService().isPlayingMusic())
-                animatePauseToPlay();
-            else
-                animatePlayToPause();
-
-            /*
-             * Toggle the playback state in a separate thread. This
-             * will allow the play/pause button animation to remain
-             * buttery smooth.
-             */
-            new AsyncTask() {
-
-                @Override
-                protected Object doInBackground(Object[] params) {
-                    mApp.getService().togglePlaybackState();
-                    return null;
-                }
-
-            }.execute();
-
-        }
-
-    };
-
-    /**
-     * Click listener for the previous button.
-     */
-    private View.OnClickListener mOnClickPreviousListener = new View.OnClickListener() {
-
-        @Override
-        public void onClick(View arg0) {
-            mApp.getService().skipToPreviousTrack();
-
-        }
-
-    };
-
-    /**
-     * Click listener for the next button.
-     */
-    private View.OnClickListener mOnClickNextListener = new View.OnClickListener() {
-
-        @Override
-        public void onClick(View arg0) {
-            mApp.getService().skipToNextTrack();
-
-        }
-
-    };
-
-    /**
      * Called if the audio playback service is not running.
      */
     public void showEmptyTextView() {
@@ -479,159 +619,6 @@ public class QueueDrawerFragment extends Fragment {
         mEmptyInfoText.setVisibility(View.VISIBLE);
 
     }
-
-    /**
-     * Click listener for the mini player.
-     */
-    private View.OnClickListener mOnClickMiniPlayer = new View.OnClickListener() {
-
-        @Override
-        public void onClick(View v) {
-            Intent intent = new Intent(mContext, NowPlayingActivity.class);
-            startActivity(intent);
-        }
-
-    };
-
-    /**
-     * Click listener for the ListView.
-     */
-    private AdapterView.OnItemClickListener onClick = new AdapterView.OnItemClickListener() {
-
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            if (mApp.isServiceRunning())
-                mApp.getService().skipToTrack(position);
-
-        }
-
-    };
-
-    /**
-     * Drag and drop interface for the ListView.
-     */
-    private DragSortListView.DropListener onDrop = new DragSortListView.DropListener() {
-
-        @Override
-        public void drop(int from, int to) {
-            if (from!=to) {
-                int fromItem = mListViewAdapter.getItem(from);
-                int toItem = mListViewAdapter.getItem(to);
-                mListViewAdapter.remove(fromItem);
-                mListViewAdapter.insert(fromItem, to);
-
-                //If the current song was reordered, change currentSongIndex and update the next song.
-                if (from==mApp.getService().getCurrentSongIndex()) {
-                    mApp.getService().setCurrentSongIndex(to);
-
-                    //Check which mediaPlayer is currently playing, and prepare the other mediaPlayer.
-                    mApp.getService().prepareAlternateMediaPlayer();
-                    return;
-
-                } else if (from > mApp.getService().getCurrentSongIndex() && to <= mApp.getService().getCurrentSongIndex()) {
-                    //One of the next songs was moved to a position before the current song. Move currentSongIndex forward by 1.
-                    mApp.getService().incrementCurrentSongIndex();
-                    mApp.getService().incrementEnqueueReorderScalar();
-
-                    //Check which mediaPlayer is currently playing, and prepare the other mediaPlayer.
-                    mApp.getService().prepareAlternateMediaPlayer();
-                    return;
-
-                } else if (from < mApp.getService().getCurrentSongIndex() && to==mApp.getService().getCurrentSongIndex()) {
-                	/* One of the previous songs was moved to the current song's position (visually speaking,
-                	 * the new song will look like it was placed right after the current song.
-                	 */
-                    mApp.getService().decrementCurrentSongIndex();
-                    mApp.getService().decrementEnqueueReorderScalar();
-
-                    //Check which mediaPlayer is currently playing, and prepare the other mediaPlayer.
-                    mApp.getService().prepareAlternateMediaPlayer();
-                    return;
-
-                } else if (from < mApp.getService().getCurrentSongIndex() && to > mApp.getService().getCurrentSongIndex()) {
-                    //One of the previous songs was moved to a position after the current song. Move currentSongIndex back by 1.
-                    mApp.getService().decrementCurrentSongIndex();
-                    mApp.getService().decrementEnqueueReorderScalar();
-
-                    //Check which mediaPlayer is currently playing, and prepare the other mediaPlayer.
-                    mApp.getService().prepareAlternateMediaPlayer();
-                    return;
-
-                }
-
-                //If the next song was reordered, reload it with the new index.
-                if (mApp.getService().getPlaybackIndecesList().size() > (mApp.getService().getCurrentSongIndex()+1)) {
-                    if (fromItem==mApp.getService().getPlaybackIndecesList().get(mApp.getService().getCurrentSongIndex()+1) ||
-                            toItem==mApp.getService().getPlaybackIndecesList().get(mApp.getService().getCurrentSongIndex()+1)) {
-
-                        //Check which mediaPlayer is currently playing, and prepare the other mediaPlayer.
-                        mApp.getService().prepareAlternateMediaPlayer();
-
-                    }
-
-                } else {
-                    //Check which mediaPlayer is currently playing, and prepare the other mediaPlayer.
-                    mApp.getService().prepareAlternateMediaPlayer();
-
-                }
-
-            }
-
-            //Fire a broadcast that notifies all listeners that the current queue order has changed.
-            String[] updateFlags = { Common.NEW_QUEUE_ORDER };
-            String[] flagValues = { "" };
-            mApp.broadcastUpdateUICommand(updateFlags, flagValues);
-
-        }
-
-    };
-
-    /**
-     * Click remove interface for the ListView.
-     */
-    private DragSortListView.RemoveListener onRemove = new DragSortListView.RemoveListener() {
-
-        @Override
-        public void remove(int which) {
-
-            //Stop the service if we just removed the last (and only) song.
-            if (mApp.getService().getPlaybackIndecesList().size()==1) {
-                mContext.stopService(new Intent(mContext, AudioPlaybackService.class));
-                return;
-            }
-
-            //If the song that was removed is the next song, reload it.
-            if (mApp.getService().getPlaybackIndecesList().size() > (mApp.getService().getCurrentSongIndex()+1)) {
-                if (mListViewAdapter.getItem(which)==mApp.getService().getPlaybackIndecesList().get(mApp.getService().getCurrentSongIndex()+1)) {
-
-                    //Check which mediaPlayer is currently playing, and prepare the other mediaPlayer.
-                    mApp.getService().prepareAlternateMediaPlayer();
-
-                } else if (mListViewAdapter.getItem(which)==mApp.getService().getPlaybackIndecesList().get(mApp.getService().getCurrentSongIndex())) {
-                    mApp.getService().incrementCurrentSongIndex();
-                    mApp.getService().prepareMediaPlayer(mApp.getService().getCurrentSongIndex());
-                    mApp.getService().decrementCurrentSongIndex();
-                } else if (mListViewAdapter.getItem(which) < mApp.getService().getPlaybackIndecesList().get(mApp.getService().getCurrentSongIndex())) {
-                    mApp.getService().decrementCurrentSongIndex();
-                }
-
-            } else if (which==(mApp.getService().getPlaybackIndecesList().size()-1) &&
-                    mApp.getService().getCurrentSongIndex()==(mApp.getService().getPlaybackIndecesList().size()-1)) {
-                //The current song was the last one and it was removed. Time to back up to the previous song.
-                mApp.getService().decrementCurrentSongIndex();
-                mApp.getService().prepareMediaPlayer(mApp.getService().getCurrentSongIndex());
-            } else {
-                //Check which mediaPlayer is currently playing, and prepare the other mediaPlayer.
-                mApp.getService().prepareAlternateMediaPlayer();
-
-            }
-
-            //Remove the item from the adapter.
-            mListViewAdapter.remove(mListViewAdapter.getItem(which));
-
-        }
-
-    };
 
     @Override
     public void onResume() {
@@ -646,7 +633,7 @@ public class QueueDrawerFragment extends Fragment {
     public void onStart() {
         super.onStart();
         LocalBroadcastManager.getInstance(mContext)
-                             .registerReceiver((mReceiver), new IntentFilter(Common.UPDATE_UI_BROADCAST));
+                .registerReceiver((mReceiver), new IntentFilter(Common.UPDATE_UI_BROADCAST));
 
     }
 

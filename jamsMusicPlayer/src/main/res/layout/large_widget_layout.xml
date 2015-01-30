@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/appwidget_dark_bg"
-    android:padding="@dimen/widget_margin" >
+    android:padding="@dimen/widget_margin">
 
     <ImageView
         android:id="@+id/widget_album_art"
@@ -21,7 +21,7 @@
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/widget_album_art"
         android:layout_alignTop="@+id/widget_album_art"
-        android:layout_toRightOf="@+id/widget_album_art" >
+        android:layout_toRightOf="@+id/widget_album_art">
 
         <ImageButton
             android:id="@+id/widget_next_track"
@@ -58,10 +58,10 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
-            android:textStyle="bold"
-            android:singleLine="true"
+            android:layout_marginLeft="10dp"
             android:ellipsize="end"
-            android:layout_marginLeft="10dp"/>
+            android:singleLine="true"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/widget_album_text"
@@ -69,18 +69,18 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_below="@+id/widget_song_title_text"
-            android:singleLine="true"
+            android:layout_marginLeft="10dp"
             android:ellipsize="end"
-			android:layout_marginLeft="10dp" />
+            android:singleLine="true" />
 
         <TextView
             android:id="@+id/widget_artist_text"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_alignLeft="@+id/widget_album_text"
-            android:singleLine="true"
+            android:layout_below="@+id/widget_album_text"
             android:ellipsize="end"
-            android:layout_below="@+id/widget_album_text" />
+            android:singleLine="true" />
 
     </RelativeLayout>
 
@@ -89,18 +89,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/relativeLayout1"
-        android:layout_marginTop="15dp"
+        android:layout_centerHorizontal="true"
         android:layout_marginBottom="12dp"
-        android:fastScrollEnabled="true"
-        android:layout_centerHorizontal="true" >
-    </ListView>
+        android:layout_marginTop="15dp"
+        android:fastScrollEnabled="true"></ListView>
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_alignTop="@+id/widget_listview"
-        android:layout_centerHorizontal="true" 
-        android:background="#666666">
-    </RelativeLayout>
+        android:layout_centerHorizontal="true"
+        android:background="#666666"></RelativeLayout>
 
 </RelativeLayout>

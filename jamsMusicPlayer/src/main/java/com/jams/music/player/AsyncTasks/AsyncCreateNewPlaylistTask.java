@@ -15,8 +15,6 @@
  */
 package com.jams.music.player.AsyncTasks;
 
-import java.util.ArrayList;
-
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -27,10 +25,17 @@ import android.os.AsyncTask;
 import android.provider.MediaStore;
 import android.widget.Toast;
 
-import com.jams.music.player.R;
 import com.jams.music.player.DBHelpers.DBAccessHelper;
+import com.jams.music.player.R;
+
+import java.util.ArrayList;
 
 public class AsyncCreateNewPlaylistTask extends AsyncTask<String, Integer, Boolean> {
+    private final String[] PROJECTION_PLAYLIST = new String[]{
+            MediaStore.Audio.Playlists._ID,
+            MediaStore.Audio.Playlists.NAME,
+            MediaStore.Audio.Playlists.DATA
+    };
     private Context mContext;
     private Cursor mCursor;
     private String mPlaylistName;
@@ -38,48 +43,41 @@ public class AsyncCreateNewPlaylistTask extends AsyncTask<String, Integer, Boole
     private SharedPreferences sharedPreferences;
     private DBAccessHelper musicLibraryDBHelper;
     private DBAccessHelper musicLibraryPlaylistsDBHelper;
-    
     private String mArtist;
     private String mAlbum;
     private String mSong;
     private String mGenre;
     private String mAlbumArtist;
     private String mAddType;
-    
-    private final String[] PROJECTION_PLAYLIST = new String[] {
-        MediaStore.Audio.Playlists._ID,
-        MediaStore.Audio.Playlists.NAME,
-        MediaStore.Audio.Playlists.DATA
-    };
-    
-    public AsyncCreateNewPlaylistTask(Context context, 
-    								  String playlistName, 
-    								  String ARTIST, 
-    								  String ALBUM, 
-    								  String SONG, 
-    								  String GENRE, 
-    								  String ALBUM_ARTIST,
-    								  String ADD_TYPE) {
-    	
-    	mContext = context;
-    	mPlaylistName = playlistName;
-    	sharedPreferences = context.getSharedPreferences("com.jams.music.player", Context.MODE_PRIVATE);
-    	musicLibraryDBHelper = new DBAccessHelper(mContext);
-    	musicLibraryPlaylistsDBHelper = new DBAccessHelper(mContext);
-    	
-    	mArtist = ARTIST;
-    	mAlbum = ALBUM;
-    	mSong = SONG;
-    	mGenre = GENRE;
-    	mAlbumArtist = ALBUM_ARTIST;
-    	mAddType = ADD_TYPE;
+
+    public AsyncCreateNewPlaylistTask(Context context,
+                                      String playlistName,
+                                      String ARTIST,
+                                      String ALBUM,
+                                      String SONG,
+                                      String GENRE,
+                                      String ALBUM_ARTIST,
+                                      String ADD_TYPE) {
+
+        mContext = context;
+        mPlaylistName = playlistName;
+        sharedPreferences = context.getSharedPreferences("com.jams.music.player", Context.MODE_PRIVATE);
+        musicLibraryDBHelper = new DBAccessHelper(mContext);
+        musicLibraryPlaylistsDBHelper = new DBAccessHelper(mContext);
+
+        mArtist = ARTIST;
+        mAlbum = ALBUM;
+        mSong = SONG;
+        mGenre = GENRE;
+        mAlbumArtist = ALBUM_ARTIST;
+        mAddType = ADD_TYPE;
     }
- 
+
     @Override
     protected Boolean doInBackground(String... params) {
-    	
+
 		/*//Replace illegal characters in the playlistName.
-		if (mPlaylistName.contains("/")) {
+        if (mPlaylistName.contains("/")) {
 			mPlaylistName = mPlaylistName.replace("/", "_");
 		}
 		
@@ -230,10 +228,10 @@ public class AsyncCreateNewPlaylistTask extends AsyncTask<String, Integer, Boole
     		gMusicCursor.close();
     		gMusicCursor = null;
     	}*/
-    	
-    	return true;
+
+        return true;
     }
-    
+
     public void reloadPlaylistEntries(ArrayList<Integer> gMusicSongOrder) {
     	/*JSONArray jsonArray = null;
     	try {
@@ -278,11 +276,11 @@ public class AsyncCreateNewPlaylistTask extends AsyncTask<String, Integer, Boole
     		}
     		
     	}*/
-        	
+
     }
-    
+
     private void createMediaStorePlaylist(String playlistName) {
-    	ContentValues mInserts = new ContentValues();
+        ContentValues mInserts = new ContentValues();
         mInserts.put(MediaStore.Audio.Playlists.NAME, playlistName);
         mInserts.put(MediaStore.Audio.Playlists.DATE_ADDED, System.currentTimeMillis());
         mInserts.put(MediaStore.Audio.Playlists.DATE_MODIFIED, System.currentTimeMillis());
@@ -292,21 +290,21 @@ public class AsyncCreateNewPlaylistTask extends AsyncTask<String, Integer, Boole
             if (c != null) {
                 /* Save the newly created ID so it can be selected. Names are allowed to be duplicated,
                  * but IDs can never be. */
-            	c.moveToFirst();
+                c.moveToFirst();
                 mPlaylistId = "" + c.getLong(c.getColumnIndex(MediaStore.Audio.Playlists._ID));
                 c.close();
             }
 
         }
-        
+
     }
-    
+
     private void addSongToPlaylist(ContentResolver resolver, long audioId, long playlistId) {
 
-        String[] cols = new String[] {
+        String[] cols = new String[]{
                 "count(*)"
         };
-        
+
         Uri uri = MediaStore.Audio.Playlists.Members.getContentUri("external", playlistId);
         Cursor cur = resolver.query(uri, cols, null, null, null);
         cur.moveToFirst();
@@ -317,56 +315,56 @@ public class AsyncCreateNewPlaylistTask extends AsyncTask<String, Integer, Boole
         values.put(MediaStore.Audio.Playlists.Members.AUDIO_ID, audioId);
         resolver.insert(uri, values);
     }
-    
+
     private long getSongAudioId(String artist, String album, String title) {
-    	artist = artist.replace("'", "''");
-    	album = album.replace("'", "''");
-    	title = title.replace("'", "''");
-    	
-    	String selection = MediaStore.Audio.AudioColumns.ALBUM + "=" + "'" + album + "'" + " AND "
-    					 + MediaStore.Audio.AudioColumns.ARTIST + "=" + "'" + artist + "'" + " AND "
-    					 + MediaStore.Audio.AudioColumns.TITLE + "=" + "'" + title + "'";
-    	
-    	Cursor cursor = mContext.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, 
-    														null, 
-    														selection, 
-    														null,
-    														null);
-    	
-    	if (cursor!=null && cursor.getCount() > 0) {
-    		cursor.moveToFirst();
-    		return cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media._ID));
-    	} else {
-    		return -1;
-    	}
-    	
+        artist = artist.replace("'", "''");
+        album = album.replace("'", "''");
+        title = title.replace("'", "''");
+
+        String selection = MediaStore.Audio.AudioColumns.ALBUM + "=" + "'" + album + "'" + " AND "
+                + MediaStore.Audio.AudioColumns.ARTIST + "=" + "'" + artist + "'" + " AND "
+                + MediaStore.Audio.AudioColumns.TITLE + "=" + "'" + title + "'";
+
+        Cursor cursor = mContext.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                null,
+                selection,
+                null,
+                null);
+
+        if (cursor != null && cursor.getCount() > 0) {
+            cursor.moveToFirst();
+            return cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media._ID));
+        } else {
+            return -1;
+        }
+
     }
-    
+
     @Override
     protected void onProgressUpdate(Integer... values) {
-    	super.onProgressUpdate(values);
-    	switch(values[0]) {
-    	case 0:
-    		//Common.displayToast(R.string.playlist_created, Toast.LENGTH_SHORT);
-    		Toast.makeText(mContext, R.string.playlist_created, Toast.LENGTH_SHORT).show();
-    		break;
-    	case 1:
-    		//Common.displayToast(R.string.playlist_could_not_be_created, Toast.LENGTH_SHORT);
-    		Toast.makeText(mContext, R.string.playlist_could_not_be_created, Toast.LENGTH_SHORT).show();
-    		break;
-    	}
-    	
+        super.onProgressUpdate(values);
+        switch (values[0]) {
+            case 0:
+                //Common.displayToast(R.string.playlist_created, Toast.LENGTH_SHORT);
+                Toast.makeText(mContext, R.string.playlist_created, Toast.LENGTH_SHORT).show();
+                break;
+            case 1:
+                //Common.displayToast(R.string.playlist_could_not_be_created, Toast.LENGTH_SHORT);
+                Toast.makeText(mContext, R.string.playlist_could_not_be_created, Toast.LENGTH_SHORT).show();
+                break;
+        }
+
     }
-    
+
     @Override
-	protected void onPostExecute(Boolean result) {
-		super.onPostExecute(result);
-    	
-    	if (mCursor!=null) {
-    		mCursor.close();
-        	mCursor = null;
-    	}
-    
-	}
+    protected void onPostExecute(Boolean result) {
+        super.onPostExecute(result);
+
+        if (mCursor != null) {
+            mCursor.close();
+            mCursor = null;
+        }
+
+    }
 
 }

@@ -1,8 +1,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/content"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent" >
+    android:layout_height="fill_parent">
 
     <TextView
         android:id="@+id/virtualizer_title_text"
@@ -19,9 +18,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/virtualizer_title_text"
+        android:layout_centerHorizontal="true"
         android:layout_marginLeft="50dp"
         android:layout_marginRight="50dp"
-        android:layout_centerHorizontal="true"
         android:layout_marginTop="10dp" />
 
     <TextView
@@ -59,9 +58,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/bass_boost_title_text"
+        android:layout_centerHorizontal="true"
         android:layout_marginLeft="50dp"
         android:layout_marginRight="50dp"
-        android:layout_centerHorizontal="true"
         android:layout_marginTop="10dp" />
 
     <TextView
@@ -97,8 +96,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/reverb_title_text"
-        android:layout_toRightOf="@+id/reverb_title_text"
-        android:layout_marginBottom="-10dp" 
-        android:layout_marginLeft="10dp" />
+        android:layout_marginBottom="-10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_toRightOf="@+id/reverb_title_text" />
 
 </RelativeLayout>

@@ -19,35 +19,38 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+
 import java.io.IOException;
 
 import static com.squareup.picasso.Picasso.LoadedFrom.DISK;
 
 class ResourceBitmapHunter extends BitmapHunter {
-  private final Context context;
+    private final Context context;
 
-  ResourceBitmapHunter(Context context, Picasso picasso, Dispatcher dispatcher, Cache cache,
-      Stats stats, Action action) {
-    super(picasso, dispatcher, cache, stats, action);
-    this.context = context;
-  }
-
-  @Override Bitmap decode(Request data) throws IOException {
-    Resources res = Utils.getResources(context, data);
-    int id = Utils.getResourceId(res, data);
-    return decodeResource(res, id, data);
-  }
-
-  @Override Picasso.LoadedFrom getLoadedFrom() {
-    return DISK;
-  }
-
-  private Bitmap decodeResource(Resources resources, int id, Request data) {
-    final BitmapFactory.Options options = createBitmapOptions(data);
-    if (requiresInSampleSize(options)) {
-      BitmapFactory.decodeResource(resources, id, options);
-      calculateInSampleSize(data.targetWidth, data.targetHeight, options);
+    ResourceBitmapHunter(Context context, Picasso picasso, Dispatcher dispatcher, Cache cache,
+                         Stats stats, Action action) {
+        super(picasso, dispatcher, cache, stats, action);
+        this.context = context;
     }
-    return BitmapFactory.decodeResource(resources, id, options);
-  }
+
+    @Override
+    Bitmap decode(Request data) throws IOException {
+        Resources res = Utils.getResources(context, data);
+        int id = Utils.getResourceId(res, data);
+        return decodeResource(res, id, data);
+    }
+
+    @Override
+    Picasso.LoadedFrom getLoadedFrom() {
+        return DISK;
+    }
+
+    private Bitmap decodeResource(Resources resources, int id, Request data) {
+        final BitmapFactory.Options options = createBitmapOptions(data);
+        if (requiresInSampleSize(options)) {
+            BitmapFactory.decodeResource(resources, id, options);
+            calculateInSampleSize(data.targetWidth, data.targetHeight, options);
+        }
+        return BitmapFactory.decodeResource(resources, id, options);
+    }
 }

@@ -16,13 +16,14 @@
 
 package main.java.de.psdev.licensesdialog;
 
-import main.java.de.psdev.licensesdialog.model.Notice;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.os.Bundle;
+
 import de.psdev.licensesdialog.R;
+import main.java.de.psdev.licensesdialog.model.Notice;
 
 public class SingleLicenseDialogFragment extends DialogFragment {
 
@@ -40,15 +41,15 @@ public class SingleLicenseDialogFragment extends DialogFragment {
     private boolean mShowFullLicenseText;
     private DialogInterface.OnDismissListener mOnDismissListener;
 
+    public SingleLicenseDialogFragment() {
+    }
+
     public static SingleLicenseDialogFragment newInstance(final Notice notice) {
         final SingleLicenseDialogFragment fragment = new SingleLicenseDialogFragment();
         final Bundle args = new Bundle();
         args.putSerializable(ARGUMENT_NOTICE, notice);
         fragment.setArguments(args);
         return fragment;
-    }
-
-    public SingleLicenseDialogFragment() {
     }
 
     @Override

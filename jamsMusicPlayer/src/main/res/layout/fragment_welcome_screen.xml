@@ -1,7 +1,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@drawable/now_playing_controls_background_light" >
+    android:background="@drawable/now_playing_controls_background_light">
 
     <TextView
         android:id="@+id/welcome_header"
@@ -11,10 +11,10 @@
         android:layout_alignParentTop="true"
         android:layout_marginLeft="30dp"
         android:layout_marginTop="20dp"
-        android:textColor="#0099CC"
         android:text="@string/welcome"
-        android:textSize="40sp"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="#0099CC"
+        android:textSize="40sp" />
 
     <TextView
         android:id="@+id/welcome_text_1"
@@ -22,9 +22,9 @@
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/welcome_header"
         android:layout_below="@+id/welcome_header"
+        android:layout_marginRight="30dp"
         android:layout_marginTop="25dp"
         android:text="@string/welcome_text_1"
-        android:layout_marginRight="30dp"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <ImageView

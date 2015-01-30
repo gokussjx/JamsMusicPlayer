@@ -16,16 +16,17 @@ import android.view.ViewGroup.LayoutParams;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
-import android.widget.*;
+import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
+import android.widget.ExpandableListView;
+import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
 public class QuickScroll extends View {
 
-    // IDs
-    protected static final int ID_PIN = 512;
-    protected static final int ID_PIN_TEXT = 513;
     // type statics
     public static final int TYPE_POPUP = 0;
     public static final int TYPE_INDICATOR = 1;
@@ -40,7 +41,11 @@ public class QuickScroll extends View {
     public static final int GREY_SCROLLBAR = Color.parseColor("#64404040");
     public static final int BLUE_LIGHT = Color.parseColor("#FF33B5E5");
     public static final int BLUE_LIGHT_SEMITRANSPARENT = Color.parseColor("#8033B5E5");
+    // IDs
+    protected static final int ID_PIN = 512;
+    protected static final int ID_PIN_TEXT = 513;
     protected static final int SCROLLBAR_MARGIN = 10;
+    protected static final int TEXT_PADDING = 4;
     // base variables
     protected boolean isScrolling;
     protected AlphaAnimation fadeInAnimation, fadeOutAnimation;
@@ -51,7 +56,6 @@ public class QuickScroll extends View {
     protected int itemCount;
     protected int type;
     protected boolean isInitialized = false;
-    protected static final int TEXT_PADDING = 4;
     // handlebar variables
     protected View handleBar;
     // indicator variables
@@ -108,10 +112,7 @@ public class QuickScroll extends View {
 
         listView.setOnTouchListener(new OnTouchListener() {
             public boolean onTouch(View v, MotionEvent event) {
-                if (isScrolling && (event.getAction() == MotionEvent.ACTION_MOVE || event.getAction() == MotionEvent.ACTION_DOWN)) {
-                    return true;
-                }
-                return false;
+                return isScrolling && (event.getAction() == MotionEvent.ACTION_MOVE || event.getAction() == MotionEvent.ACTION_DOWN);
             }
         });
 
@@ -176,12 +177,12 @@ public class QuickScroll extends View {
                 listView.setOnScrollListener(new OnScrollListener() {
 
                     public void onScrollStateChanged(AbsListView view, int scrollState) {
-                        if (onScrollListener!=null)
+                        if (onScrollListener != null)
                             onScrollListener.onScrollStateChanged(view, scrollState);
                     }
 
                     public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                        if (onScrollListener!=null)
+                        if (onScrollListener != null)
                             onScrollListener.onScroll(view, firstVisibleItem, visibleItemCount, totalItemCount);
 
                         if (!isScrolling && totalItemCount - visibleItemCount > 0) {
@@ -216,14 +217,15 @@ public class QuickScroll extends View {
         switch (event.getActionMasked()) {
             case MotionEvent.ACTION_DOWN:
                 //Pause image loading.
-                if (picasso!=null)
+                if (picasso != null)
                     picasso.interruptDispatching();
 
                 if (type == TYPE_INDICATOR || type == TYPE_INDICATOR_WITH_HANDLE) {
                     scrollIndicator.startAnimation(fadeInAnimation);
                     scrollIndicator.setPadding(0, 0, getWidth(), 0);
                 } else
-                    scrollIndicatorTextView.startAnimation(fadeInAnimation); scroll(event.getY());
+                    scrollIndicatorTextView.startAnimation(fadeInAnimation);
+                scroll(event.getY());
                 isScrolling = true;
                 return true;
             case MotionEvent.ACTION_MOVE:
@@ -231,7 +233,7 @@ public class QuickScroll extends View {
                 return true;
             case MotionEvent.ACTION_UP:
                 //Resume image loading.
-                if (picasso!=null)
+                if (picasso != null)
                     picasso.continueDispatching();
 
                 if (type == TYPE_INDICATOR_WITH_HANDLE || type == TYPE_POPUP_WITH_HANDLE)
@@ -276,14 +278,14 @@ public class QuickScroll extends View {
             position = 0;
         else if (position >= itemCount)
             position = itemCount - 1;
-        
+
         try {
-        	scrollIndicatorTextView.setText(scrollable.getIndicatorForPosition(position, groupPosition));
+            scrollIndicatorTextView.setText(scrollable.getIndicatorForPosition(position, groupPosition));
             listView.setSelection(scrollable.getScrollPosition(position, groupPosition));
         } catch (NullPointerException e) {
-        	e.printStackTrace();
+            e.printStackTrace();
         }
-        
+
     }
 
     @SuppressLint("NewApi")
@@ -455,6 +457,8 @@ public class QuickScroll extends View {
         onScrollListener = listener;
     }
 
-    public void setPicassoInstance(Picasso picasso) { this.picasso = picasso; }
+    public void setPicassoInstance(Picasso picasso) {
+        this.picasso = picasso;
+    }
 
 }

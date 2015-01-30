@@ -1,7 +1,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:fitsSystemWindows="true" >
+    android:fitsSystemWindows="true">
 
     <com.facebook.widget.LoginButton
         android:id="@+id/special_offer_login_button"
@@ -17,9 +17,9 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:text="@string/special_offer"
         android:layout_marginLeft="20dp"
         android:layout_marginTop="20dp"
+        android:text="@string/special_offer"
         android:textColor="#0099CC"
         android:textSize="36sp" />
 
@@ -29,10 +29,10 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/special_offer_header"
-        android:text="@string/special_offer_details"
-        android:layout_marginTop="30dp"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
+        android:layout_marginTop="30dp"
+        android:text="@string/special_offer_details"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <Button
@@ -43,9 +43,9 @@
         android:layout_alignRight="@+id/special_offer_login_button"
         android:layout_below="@+id/special_offer_login_button"
         android:layout_marginTop="10dp"
+        android:background="@drawable/cling_button_bg"
         android:text="@string/no_thanks"
-        android:textColor="#FFFFFF"
-        android:background="@drawable/cling_button_bg" />
+        android:textColor="#FFFFFF" />
 
     <TextView
         android:id="@+id/lottery_number"
@@ -58,5 +58,5 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textSize="96sp"
         android:visibility="invisible" />
-    
+
 </RelativeLayout>

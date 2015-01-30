@@ -22,25 +22,27 @@ import android.content.Intent;
 
 import com.jams.music.player.AsyncTasks.AsyncUpdateAlbumArtWidgetTask;
 
-public class AlbumArtWidgetProvider extends AppWidgetProvider {
-	
-	private Context mContext;
-	
-	@Override
-	public void onReceive(Context context, Intent intent) {
-		super.onReceive(context, intent);
+import org.jetbrains.annotations.NotNull;
 
-	}
-	
-	@Override
+public class AlbumArtWidgetProvider extends AppWidgetProvider {
+
+    private Context mContext;
+
+    @Override
+    public void onReceive(@NotNull Context context, @NotNull Intent intent) {
+        super.onReceive(context, intent);
+
+    }
+
+    @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
-		super.onUpdate(context, appWidgetManager, appWidgetIds);
-		mContext = context;
+        super.onUpdate(context, appWidgetManager, appWidgetIds);
+        mContext = context;
         final int N = appWidgetIds.length;
 
         AsyncUpdateAlbumArtWidgetTask task = new AsyncUpdateAlbumArtWidgetTask(mContext, N, appWidgetIds, appWidgetManager);
         task.execute();
- 
+
     }
-    
+
 }

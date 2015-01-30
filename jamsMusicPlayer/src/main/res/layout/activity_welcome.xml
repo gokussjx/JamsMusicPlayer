@@ -2,22 +2,22 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@drawable/now_playing_controls_background_light" >
-    
-    <android.support.v4.view.ViewPager
-	    android:id="@+id/welcome_pager"
-	    android:layout_width="fill_parent"
-	    android:layout_height="fill_parent"
-	    android:layout_above="@+id/indicator" >
+    android:background="@drawable/now_playing_controls_background_light"
+    android:orientation="vertical">
 
-	</android.support.v4.view.ViewPager>
-	
+    <android.support.v4.view.ViewPager
+        android:id="@+id/welcome_pager"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_above="@+id/indicator">
+
+    </android.support.v4.view.ViewPager>
+
     <com.viewpagerindicator.LinePageIndicator
         android:id="@+id/indicator"
-        android:padding="20dip"
-        android:layout_alignParentBottom="true"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_width="fill_parent" />
+        android:layout_alignParentBottom="true"
+        android:padding="20dip" />
 
 </RelativeLayout>

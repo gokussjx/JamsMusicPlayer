@@ -25,8 +25,8 @@ import android.os.AsyncTask;
 import android.provider.MediaStore;
 import android.widget.Toast;
 
-import com.jams.music.player.R;
 import com.jams.music.player.DBHelpers.DBAccessHelper;
+import com.jams.music.player.R;
 
 public class AsyncAddSongsToPlaylistTask extends AsyncTask<String, Integer, Boolean> {
     private Context mContext;
@@ -36,44 +36,44 @@ public class AsyncAddSongsToPlaylistTask extends AsyncTask<String, Integer, Bool
     private SharedPreferences sharedPreferences;
     private DBAccessHelper musicLibraryDBHelper;
     private DBAccessHelper musicLibraryPlaylistsDBHelper;
-    
+
     private String mArtist;
     private String mAlbum;
     private String mSong;
     private String mGenre;
     private String mAlbumArtist;
     private String mAddType;
-    
-    public AsyncAddSongsToPlaylistTask(Context context, 
-    								   String playlistName, 
-    								   String playlistId,
-    								   String ARTIST, 
-    								   String ALBUM, 
-    								   String SONG, 
-    								   String GENRE,
-    								   String ALBUM_ARTIST, 
-    								   String ADD_TYPE) {
-    	
-    	mContext = context;
-    	mPlaylistName = playlistName;
-    	mPlaylistId = playlistId;
-    	sharedPreferences = context.getSharedPreferences("com.jams.music.player", Context.MODE_PRIVATE);
-    	musicLibraryDBHelper = new DBAccessHelper(mContext);
-    	musicLibraryPlaylistsDBHelper = new DBAccessHelper(mContext);
-    	
-    	mArtist = ARTIST;
-    	mAlbum = ALBUM;
-    	mSong = SONG;
-    	mGenre = GENRE;
-    	mAlbumArtist = ALBUM_ARTIST;
-    	mAddType = ADD_TYPE;
+
+    public AsyncAddSongsToPlaylistTask(Context context,
+                                       String playlistName,
+                                       String playlistId,
+                                       String ARTIST,
+                                       String ALBUM,
+                                       String SONG,
+                                       String GENRE,
+                                       String ALBUM_ARTIST,
+                                       String ADD_TYPE) {
+
+        mContext = context;
+        mPlaylistName = playlistName;
+        mPlaylistId = playlistId;
+        sharedPreferences = context.getSharedPreferences("com.jams.music.player", Context.MODE_PRIVATE);
+        musicLibraryDBHelper = new DBAccessHelper(mContext);
+        musicLibraryPlaylistsDBHelper = new DBAccessHelper(mContext);
+
+        mArtist = ARTIST;
+        mAlbum = ALBUM;
+        mSong = SONG;
+        mGenre = GENRE;
+        mAlbumArtist = ALBUM_ARTIST;
+        mAddType = ADD_TYPE;
     }
- 
+
     @Override
     protected Boolean doInBackground(String... params) {
-    	
+
 		/*//Replace illegal characters in the playlistName.
-		if (mPlaylistName.contains("/")) {
+        if (mPlaylistName.contains("/")) {
 			mPlaylistName = mPlaylistName.replace("/", "_");
 		}
 		
@@ -266,17 +266,17 @@ public class AsyncAddSongsToPlaylistTask extends AsyncTask<String, Integer, Bool
     		}
     		
     	}*/
-    	
-    	return null;
-        	
+
+        return null;
+
     }
-    
+
     private void addSongToPlaylist(ContentResolver resolver, long audioId, long playlistId) {
 
-        String[] cols = new String[] {
+        String[] cols = new String[]{
                 "count(*)"
         };
-        
+
         Uri uri = MediaStore.Audio.Playlists.Members.getContentUri("external", playlistId);
         Cursor cur = resolver.query(uri, cols, null, null, null);
         cur.moveToFirst();
@@ -287,56 +287,56 @@ public class AsyncAddSongsToPlaylistTask extends AsyncTask<String, Integer, Bool
         values.put(MediaStore.Audio.Playlists.Members.AUDIO_ID, audioId);
         resolver.insert(uri, values);
     }
-    
+
     private long getSongAudioId(String artist, String album, String title) {
-    	artist = artist.replace("'", "''");
-    	album = album.replace("'", "''");
-    	title = title.replace("'", "''");
-    	
-    	String selection = MediaStore.Audio.AudioColumns.ALBUM + "=" + "'" + album + "'" + " AND "
-    					 + MediaStore.Audio.AudioColumns.ARTIST + "=" + "'" + artist + "'" + " AND "
-    					 + MediaStore.Audio.AudioColumns.TITLE + "=" + "'" + title + "'";
-    	
-    	Cursor cursor = mContext.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, 
-    														null, 
-    														selection, 
-    														null,
-    														null);
-    	
-    	if (cursor!=null && cursor.getCount() > 0) {
-    		cursor.moveToFirst();
-    		return cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media._ID));
-    	} else {
-    		return -1;
-    	}
-    	
+        artist = artist.replace("'", "''");
+        album = album.replace("'", "''");
+        title = title.replace("'", "''");
+
+        String selection = MediaStore.Audio.AudioColumns.ALBUM + "=" + "'" + album + "'" + " AND "
+                + MediaStore.Audio.AudioColumns.ARTIST + "=" + "'" + artist + "'" + " AND "
+                + MediaStore.Audio.AudioColumns.TITLE + "=" + "'" + title + "'";
+
+        Cursor cursor = mContext.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                null,
+                selection,
+                null,
+                null);
+
+        if (cursor != null && cursor.getCount() > 0) {
+            cursor.moveToFirst();
+            return cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media._ID));
+        } else {
+            return -1;
+        }
+
     }
-    
+
     @Override
     protected void onProgressUpdate(Integer... values) {
-    	super.onProgressUpdate(values);
-    	switch(values[0]) {
-    	case 0:
-    		//Common.displayToast(R.string.playlist_created, Toast.LENGTH_SHORT);
-    		Toast.makeText(mContext, R.string.playlist_modified, Toast.LENGTH_SHORT).show();
-    		break;
-    	case 1:
-    		//Common.displayToast(R.string.playlist_could_not_be_created, Toast.LENGTH_SHORT);
-    		Toast.makeText(mContext, R.string.playlist_could_not_be_modified, Toast.LENGTH_SHORT).show();
-    		break;
-    	}
-    	
+        super.onProgressUpdate(values);
+        switch (values[0]) {
+            case 0:
+                //Common.displayToast(R.string.playlist_created, Toast.LENGTH_SHORT);
+                Toast.makeText(mContext, R.string.playlist_modified, Toast.LENGTH_SHORT).show();
+                break;
+            case 1:
+                //Common.displayToast(R.string.playlist_could_not_be_created, Toast.LENGTH_SHORT);
+                Toast.makeText(mContext, R.string.playlist_could_not_be_modified, Toast.LENGTH_SHORT).show();
+                break;
+        }
+
     }
-    
+
     @Override
-	protected void onPostExecute(Boolean result) {
-		super.onPostExecute(result);
-    	
-    	if (mCursor!=null) {
-    		mCursor.close();
-        	mCursor = null;
-    	}
-    
-	}
+    protected void onPostExecute(Boolean result) {
+        super.onPostExecute(result);
+
+        if (mCursor != null) {
+            mCursor.close();
+            mCursor = null;
+        }
+
+    }
 
 }

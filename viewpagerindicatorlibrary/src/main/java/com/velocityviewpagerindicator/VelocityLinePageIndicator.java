@@ -39,7 +39,7 @@ import com.velocity.view.pager.library.VelocityViewPager;
  */
 public class VelocityLinePageIndicator extends View implements VelocityPageIndicator {
     private static final int INVALID_POINTER = -1;
-
+    private int mActivePointerId = INVALID_POINTER;
     private final Paint mPaintUnselected = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint mPaintSelected = new Paint(Paint.ANTI_ALIAS_FLAG);
     private VelocityViewPager mVelocityViewPager;
@@ -48,10 +48,8 @@ public class VelocityLinePageIndicator extends View implements VelocityPageIndic
     private boolean mCentered;
     private float mLineWidth;
     private float mGapWidth;
-
     private int mTouchSlop;
     private float mLastMotionX = -1;
-    private int mActivePointerId = INVALID_POINTER;
     private boolean mIsDragging;
 
 
@@ -89,7 +87,7 @@ public class VelocityLinePageIndicator extends View implements VelocityPageIndic
 
         Drawable background = a.getDrawable(R.styleable.VelocityLinePageIndicator_android_background);
         if (background != null) {
-          setBackgroundDrawable(background);
+            setBackgroundDrawable(background);
         }
 
         a.recycle();
@@ -98,18 +96,12 @@ public class VelocityLinePageIndicator extends View implements VelocityPageIndic
         mTouchSlop = ViewConfigurationCompat.getScaledPagingTouchSlop(configuration);
     }
 
-
-    public void setCentered(boolean centered) {
-        mCentered = centered;
-        invalidate();
-    }
-
     public boolean isCentered() {
         return mCentered;
     }
 
-    public void setUnselectedColor(int unselectedColor) {
-        mPaintUnselected.setColor(unselectedColor);
+    public void setCentered(boolean centered) {
+        mCentered = centered;
         invalidate();
     }
 
@@ -117,8 +109,8 @@ public class VelocityLinePageIndicator extends View implements VelocityPageIndic
         return mPaintUnselected.getColor();
     }
 
-    public void setSelectedColor(int selectedColor) {
-        mPaintSelected.setColor(selectedColor);
+    public void setUnselectedColor(int unselectedColor) {
+        mPaintUnselected.setColor(unselectedColor);
         invalidate();
     }
 
@@ -126,13 +118,22 @@ public class VelocityLinePageIndicator extends View implements VelocityPageIndic
         return mPaintSelected.getColor();
     }
 
-    public void setLineWidth(float lineWidth) {
-        mLineWidth = lineWidth;
+    public void setSelectedColor(int selectedColor) {
+        mPaintSelected.setColor(selectedColor);
         invalidate();
     }
 
     public float getLineWidth() {
         return mLineWidth;
+    }
+
+    public void setLineWidth(float lineWidth) {
+        mLineWidth = lineWidth;
+        invalidate();
+    }
+
+    public float getStrokeWidth() {
+        return mPaintSelected.getStrokeWidth();
     }
 
     public void setStrokeWidth(float lineHeight) {
@@ -141,17 +142,13 @@ public class VelocityLinePageIndicator extends View implements VelocityPageIndic
         invalidate();
     }
 
-    public float getStrokeWidth() {
-        return mPaintSelected.getStrokeWidth();
+    public float getGapWidth() {
+        return mGapWidth;
     }
 
     public void setGapWidth(float gapWidth) {
         mGapWidth = gapWidth;
         invalidate();
-    }
-
-    public float getGapWidth() {
-        return mGapWidth;
     }
 
     @Override
@@ -349,8 +346,7 @@ public class VelocityLinePageIndicator extends View implements VelocityPageIndic
     /**
      * Determines the width of this view
      *
-     * @param measureSpec
-     *            A measureSpec packed into an int
+     * @param measureSpec A measureSpec packed into an int
      * @return The width of the view, honoring constraints from measureSpec
      */
     private int measureWidth(int measureSpec) {
@@ -370,14 +366,13 @@ public class VelocityLinePageIndicator extends View implements VelocityPageIndic
                 result = Math.min(result, specSize);
             }
         }
-        return (int)FloatMath.ceil(result);
+        return (int) FloatMath.ceil(result);
     }
 
     /**
      * Determines the height of this view
      *
-     * @param measureSpec
-     *            A measureSpec packed into an int
+     * @param measureSpec A measureSpec packed into an int
      * @return The height of the view, honoring constraints from measureSpec
      */
     private int measureHeight(int measureSpec) {
@@ -396,12 +391,12 @@ public class VelocityLinePageIndicator extends View implements VelocityPageIndic
                 result = Math.min(result, specSize);
             }
         }
-        return (int)FloatMath.ceil(result);
+        return (int) FloatMath.ceil(result);
     }
 
     @Override
     public void onRestoreInstanceState(Parcelable state) {
-        SavedState savedState = (SavedState)state;
+        SavedState savedState = (SavedState) state;
         super.onRestoreInstanceState(savedState.getSuperState());
         mCurrentPage = savedState.currentPage;
         requestLayout();
@@ -416,6 +411,18 @@ public class VelocityLinePageIndicator extends View implements VelocityPageIndic
     }
 
     static class SavedState extends BaseSavedState {
+        @SuppressWarnings("UnusedDeclaration")
+        public static final Parcelable.Creator<SavedState> CREATOR = new Parcelable.Creator<SavedState>() {
+            @Override
+            public SavedState createFromParcel(Parcel in) {
+                return new SavedState(in);
+            }
+
+            @Override
+            public SavedState[] newArray(int size) {
+                return new SavedState[size];
+            }
+        };
         int currentPage;
 
         public SavedState(Parcelable superState) {
@@ -432,18 +439,5 @@ public class VelocityLinePageIndicator extends View implements VelocityPageIndic
             super.writeToParcel(dest, flags);
             dest.writeInt(currentPage);
         }
-
-        @SuppressWarnings("UnusedDeclaration")
-        public static final Parcelable.Creator<SavedState> CREATOR = new Parcelable.Creator<SavedState>() {
-            @Override
-            public SavedState createFromParcel(Parcel in) {
-                return new SavedState(in);
-            }
-
-            @Override
-            public SavedState[] newArray(int size) {
-                return new SavedState[size];
-            }
-        };
     }
 }

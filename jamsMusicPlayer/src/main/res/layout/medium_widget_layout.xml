@@ -2,7 +2,7 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:background="@drawable/appwidget_dark_bg"
-    android:padding="@dimen/widget_margin" >
+    android:padding="@dimen/widget_margin">
 
     <ImageView
         android:id="@+id/widget_album_art"
@@ -20,7 +20,7 @@
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/widget_album_art"
         android:layout_alignTop="@+id/widget_album_art"
-        android:layout_toRightOf="@+id/widget_album_art" >
+        android:layout_toRightOf="@+id/widget_album_art">
 
         <ImageView
             android:id="@+id/widget_next_track"
@@ -54,7 +54,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
-            android:layout_marginLeft="10dp"/>
+            android:layout_marginLeft="10dp" />
 
         <ImageView
             android:id="@+id/widget_artist_album_image"
@@ -62,7 +62,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_below="@+id/widget_song_title_image"
-			android:layout_marginLeft="10dp" />
+            android:layout_marginLeft="10dp" />
 
     </RelativeLayout>
 

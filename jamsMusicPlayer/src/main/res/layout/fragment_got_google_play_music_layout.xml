@@ -1,8 +1,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/root_welcome_layout"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent" 
-    android:paddingBottom="10dp"
-    android:id="@+id/root_welcome_layout" >
+    android:layout_height="fill_parent"
+    android:paddingBottom="10dp">
 
     <TextView
         android:id="@+id/got_google_play_music_text_1"
@@ -11,8 +11,8 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:layout_marginLeft="15dp"
-        android:layout_marginTop="15dp"
         android:layout_marginRight="15dp"
+        android:layout_marginTop="15dp"
         android:text="@string/got_google_play_music_text_1"
         android:textAppearance="?android:attr/textAppearanceSmall" />
 

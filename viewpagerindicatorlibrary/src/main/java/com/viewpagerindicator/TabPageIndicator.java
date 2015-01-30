@@ -16,8 +16,6 @@
  */
 package com.viewpagerindicator;
 
-import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
-import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 import android.content.Context;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -31,31 +29,28 @@ import android.widget.TextView;
 
 import com.velocityviewpagerindicator.R;
 
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
+
 /**
  * This widget implements the dynamic action bar tab behavior that can change
  * across different configurations or circumstances.
  */
 public class TabPageIndicator extends HorizontalScrollView implements PageIndicator {
-    /** Title text used when no title is provided by the adapter. */
-    private static final CharSequence EMPTY_TITLE = "";
-
     /**
-     * Interface for a callback when the selected tab has been reselected.
+     * Title text used when no title is provided by the adapter.
      */
-    public interface OnTabReselectedListener {
-        /**
-         * Callback when the selected tab has been reselected.
-         *
-         * @param position Position of the current center item.
-         */
-        void onTabReselected(int position);
-    }
-
+    private static final CharSequence EMPTY_TITLE = "";
+    private final IcsLinearLayout mTabLayout;
     private Runnable mTabSelector;
-
+    private ViewPager mViewPager;
+    private ViewPager.OnPageChangeListener mListener;
+    private int mMaxTabWidth;
+    private int mSelectedTabIndex;
+    private OnTabReselectedListener mTabReselectedListener;
     private final OnClickListener mTabClickListener = new OnClickListener() {
         public void onClick(View view) {
-            TabView tabView = (TabView)view;
+            TabView tabView = (TabView) view;
             final int oldSelected = mViewPager.getCurrentItem();
             final int newSelected = tabView.getIndex();
             mViewPager.setCurrentItem(newSelected);
@@ -64,16 +59,6 @@ public class TabPageIndicator extends HorizontalScrollView implements PageIndica
             }
         }
     };
-
-    private final IcsLinearLayout mTabLayout;
-
-    private ViewPager mViewPager;
-    private ViewPager.OnPageChangeListener mListener;
-
-    private int mMaxTabWidth;
-    private int mSelectedTabIndex;
-
-    private OnTabReselectedListener mTabReselectedListener;
 
     public TabPageIndicator(Context context) {
         this(context, null);
@@ -100,7 +85,7 @@ public class TabPageIndicator extends HorizontalScrollView implements PageIndica
         final int childCount = mTabLayout.getChildCount();
         if (childCount > 1 && (widthMode == MeasureSpec.EXACTLY || widthMode == MeasureSpec.AT_MOST)) {
             if (childCount > 2) {
-                mMaxTabWidth = (int)(MeasureSpec.getSize(widthMeasureSpec) * 0.4f);
+                mMaxTabWidth = (int) (MeasureSpec.getSize(widthMeasureSpec) * 0.4f);
             } else {
                 mMaxTabWidth = MeasureSpec.getSize(widthMeasureSpec) / 2;
             }
@@ -208,7 +193,7 @@ public class TabPageIndicator extends HorizontalScrollView implements PageIndica
         PagerAdapter adapter = mViewPager.getAdapter();
         IconPagerAdapter iconAdapter = null;
         if (adapter instanceof IconPagerAdapter) {
-            iconAdapter = (IconPagerAdapter)adapter;
+            iconAdapter = (IconPagerAdapter) adapter;
         }
         final int count = adapter.getCount();
         for (int i = 0; i < count; i++) {
@@ -257,6 +242,18 @@ public class TabPageIndicator extends HorizontalScrollView implements PageIndica
     @Override
     public void setOnPageChangeListener(OnPageChangeListener listener) {
         mListener = listener;
+    }
+
+    /**
+     * Interface for a callback when the selected tab has been reselected.
+     */
+    public interface OnTabReselectedListener {
+        /**
+         * Callback when the selected tab has been reselected.
+         *
+         * @param position Position of the current center item.
+         */
+        void onTabReselected(int position);
     }
 
     private class TabView extends TextView {

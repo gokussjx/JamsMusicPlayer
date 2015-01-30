@@ -1,13 +1,13 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/launcher_root_view"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent">
 
- 	<RelativeLayout
+    <RelativeLayout
         android:id="@+id/building_music_library_layout"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:visibility="gone" >
+        android:visibility="gone">
 
         <TextView
             android:id="@+id/building_music_library_text"
@@ -39,5 +39,5 @@
             android:layout_centerHorizontal="true" />
 
     </RelativeLayout>
-    
+
 </RelativeLayout>

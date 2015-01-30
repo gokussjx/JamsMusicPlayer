@@ -1,12 +1,12 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/shadow" >
+    android:background="@drawable/shadow">
 
     <RelativeLayout
+        android:id="@+id/gridViewItemLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/gridViewItemLayout" >
+        android:layout_height="match_parent">
 
         <ImageView
             android:id="@+id/gridViewImage"
@@ -14,47 +14,47 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:adjustViewBounds="true"
-            android:src="@drawable/empty_color_patch"
-            android:scaleType="centerCrop" />
+            android:scaleType="centerCrop"
+            android:src="@drawable/empty_color_patch" />
 
         <RelativeLayout
             android:id="@+id/gridViewTextLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/gridViewImage" >
+            android:layout_below="@+id/gridViewImage">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_toLeftOf="@+id/gridViewOverflowButton" >
+                android:layout_toLeftOf="@+id/gridViewOverflowButton"
+                android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/gridViewTitleText"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:layout_marginRight="15dp"
                     android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
                     android:layout_marginTop="10dp"
                     android:ellipsize="marquee"
                     android:singleLine="true"
                     android:text="Title Text"
-                    android:textSize="16sp"
-                    android:textColor="#FFFFFF" />
+                    android:textColor="#FFFFFF"
+                    android:textSize="16sp" />
 
                 <TextView
                     android:id="@+id/gridViewSubText"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="15dp"
-                    android:layout_marginLeft="15dp"
                     android:layout_marginBottom="10dp"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
                     android:ellipsize="marquee"
                     android:singleLine="true"
                     android:text="Subtext"
-                    android:textSize="14sp"
-                    android:textColor="#FFFFFF" />
+                    android:textColor="#FFFFFF"
+                    android:textSize="14sp" />
 
             </LinearLayout>
 
@@ -62,12 +62,12 @@
                 android:id="@+id/gridViewOverflowButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="?android:selectableItemBackground"
-                android:layout_centerVertical="true"
                 android:layout_alignParentRight="true"
-                android:src="@drawable/ic_action_overflow_light"
+                android:layout_centerVertical="true"
+                android:background="?android:selectableItemBackground"
                 android:scaleX="0.75"
-                android:scaleY="0.75" />
+                android:scaleY="0.75"
+                android:src="@drawable/ic_action_overflow_light" />
 
         </RelativeLayout>
 

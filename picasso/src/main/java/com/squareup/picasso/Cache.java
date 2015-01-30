@@ -19,46 +19,63 @@ import android.graphics.Bitmap;
 
 /**
  * A memory cache for storing the most recently used images.
- * <p>
+ * <p/>
  * <em>Note:</em> The {@link Cache} is accessed by multiple threads. You must ensure
  * your {@link Cache} implementation is thread safe when {@link Cache#get(String)} or {@link
  * Cache#set(String, android.graphics.Bitmap)} is called.
  */
 public interface Cache {
-  /** Retrieve an image for the specified {@code key} or {@code null}. */
-  Bitmap get(String key);
+    /**
+     * A cache which does not store any values.
+     */
+    Cache NONE = new Cache() {
+        @Override
+        public Bitmap get(String key) {
+            return null;
+        }
 
-  /** Store an image in the cache for the specified {@code key}. */
-  void set(String key, Bitmap bitmap);
+        @Override
+        public void set(String key, Bitmap bitmap) {
+            // Ignore.
+        }
 
-  /** Returns the current size of the cache in bytes. */
-  int size();
+        @Override
+        public int size() {
+            return 0;
+        }
 
-  /** Returns the maximum size in bytes that the cache can hold. */
-  int maxSize();
+        @Override
+        public int maxSize() {
+            return 0;
+        }
 
-  /** Clears the cache. */
-  void clear();
+        @Override
+        public void clear() {
+        }
+    };
 
-  /** A cache which does not store any values. */
-  Cache NONE = new Cache() {
-    @Override public Bitmap get(String key) {
-      return null;
-    }
+    /**
+     * Retrieve an image for the specified {@code key} or {@code null}.
+     */
+    Bitmap get(String key);
 
-    @Override public void set(String key, Bitmap bitmap) {
-      // Ignore.
-    }
+    /**
+     * Store an image in the cache for the specified {@code key}.
+     */
+    void set(String key, Bitmap bitmap);
 
-    @Override public int size() {
-      return 0;
-    }
+    /**
+     * Returns the current size of the cache in bytes.
+     */
+    int size();
 
-    @Override public int maxSize() {
-      return 0;
-    }
+    /**
+     * Returns the maximum size in bytes that the cache can hold.
+     */
+    int maxSize();
 
-    @Override public void clear() {
-    }
-  };
+    /**
+     * Clears the cache.
+     */
+    void clear();
 }

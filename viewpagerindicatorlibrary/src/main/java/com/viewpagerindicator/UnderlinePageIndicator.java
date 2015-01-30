@@ -23,6 +23,7 @@ import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import android.support.v4.view.MotionEventCompat;
 import android.support.v4.view.ViewConfigurationCompat;
 import android.support.v4.view.ViewPager;
@@ -40,38 +41,34 @@ import com.velocityviewpagerindicator.R;
  */
 public class UnderlinePageIndicator extends View implements PageIndicator {
     private static final int INVALID_POINTER = -1;
+    private int mActivePointerId = INVALID_POINTER;
     private static final int FADE_FRAME_MS = 30;
-
     private final Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-
     private boolean mFades;
     private int mFadeDelay;
     private int mFadeLength;
     private int mFadeBy;
+    private final Runnable mFadeRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if (!mFades) return;
 
+            final int alpha = Math.max(mPaint.getAlpha() - mFadeBy, 0);
+            mPaint.setAlpha(alpha);
+            invalidate();
+            if (alpha > 0) {
+                postDelayed(this, FADE_FRAME_MS);
+            }
+        }
+    };
     private ViewPager mViewPager;
     private ViewPager.OnPageChangeListener mListener;
     private int mScrollState;
     private int mCurrentPage;
     private float mPositionOffset;
-
     private int mTouchSlop;
     private float mLastMotionX = -1;
-    private int mActivePointerId = INVALID_POINTER;
     private boolean mIsDragging;
-
-    private final Runnable mFadeRunnable = new Runnable() {
-      @Override public void run() {
-        if (!mFades) return;
-
-        final int alpha = Math.max(mPaint.getAlpha() - mFadeBy, 0);
-        mPaint.setAlpha(alpha);
-        invalidate();
-        if (alpha > 0) {
-          postDelayed(this, FADE_FRAME_MS);
-        }
-      }
-    };
 
     public UnderlinePageIndicator(Context context) {
         this(context, null);
@@ -103,7 +100,7 @@ public class UnderlinePageIndicator extends View implements PageIndicator {
 
         Drawable background = a.getDrawable(R.styleable.VelocityUnderlinePageIndicator_android_background);
         if (background != null) {
-          setBackgroundDrawable(background);
+            setBackgroundDrawable(background);
         }
 
         a.recycle();
@@ -178,9 +175,9 @@ public class UnderlinePageIndicator extends View implements PageIndicator {
         final float right = left + pageWidth;
         final float top = getPaddingTop();
         final float bottom = getHeight() - getPaddingBottom();
-        
+
         Log.e("DEBUG", ">>>LEFT:" + left + " >>>RIGHT: " + right + " >>>>TOP: " + top + " >>>>BOTTOM: " + bottom);
-        
+
         canvas.drawRect(left, top, right, bottom, mPaint);
     }
 
@@ -283,7 +280,8 @@ public class UnderlinePageIndicator extends View implements PageIndicator {
         mViewPager.setOnPageChangeListener(this);
         invalidate();
         post(new Runnable() {
-            @Override public void run() {
+            @Override
+            public void run() {
                 if (mFades) {
                     post(mFadeRunnable);
                 }
@@ -360,7 +358,7 @@ public class UnderlinePageIndicator extends View implements PageIndicator {
 
     @Override
     public void onRestoreInstanceState(Parcelable state) {
-        SavedState savedState = (SavedState)state;
+        SavedState savedState = (SavedState) state;
         super.onRestoreInstanceState(savedState.getSuperState());
         mCurrentPage = savedState.currentPage;
         requestLayout();
@@ -375,23 +373,6 @@ public class UnderlinePageIndicator extends View implements PageIndicator {
     }
 
     static class SavedState extends BaseSavedState {
-        int currentPage;
-
-        public SavedState(Parcelable superState) {
-            super(superState);
-        }
-
-        private SavedState(Parcel in) {
-            super(in);
-            currentPage = in.readInt();
-        }
-
-        @Override
-        public void writeToParcel(Parcel dest, int flags) {
-            super.writeToParcel(dest, flags);
-            dest.writeInt(currentPage);
-        }
-
         @SuppressWarnings("UnusedDeclaration")
         public static final Creator<SavedState> CREATOR = new Creator<SavedState>() {
             @Override
@@ -404,5 +385,21 @@ public class UnderlinePageIndicator extends View implements PageIndicator {
                 return new SavedState[size];
             }
         };
+        int currentPage;
+
+        public SavedState(Parcelable superState) {
+            super(superState);
+        }
+
+        private SavedState(Parcel in) {
+            super(in);
+            currentPage = in.readInt();
+        }
+
+        @Override
+        public void writeToParcel(@NonNull Parcel dest, int flags) {
+            super.writeToParcel(dest, flags);
+            dest.writeInt(currentPage);
+        }
     }
 }

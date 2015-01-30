@@ -25,8 +25,8 @@ import android.graphics.Color;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
-import com.jams.music.player.R;
 import com.jams.music.player.DBHelpers.DBAccessHelper;
+import com.jams.music.player.R;
 import com.jams.music.player.Utils.Common;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
@@ -34,12 +34,12 @@ import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 
 public class LargeWidgetAdapterService extends RemoteViewsService {
-	
+
     @Override
     public RemoteViewsFactory onGetViewFactory(Intent intent) {
         return new StackRemoteViewsFactory(this.getApplicationContext(), intent);
     }
-    
+
 }
 
 class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
@@ -50,11 +50,11 @@ class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
     private Common mApp;
     private DisplayImageOptions displayImageOptions;
     private String mWidgetColor = "DARK";
-    
+
     public StackRemoteViewsFactory(Context context, Intent intent) {
         mContext = context;
         mApp = (Common) mContext.getApplicationContext();
-        
+
         sharedPreferences = context.getSharedPreferences("com.jams.music.player", Context.MODE_PRIVATE);
         cursor = mApp.getService().getCursor();
         mWidgetColor = intent.getStringExtra("WIDGET_COLOR");
@@ -64,75 +64,75 @@ class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
         options.inJustDecodeBounds = true;
         options.inJustDecodeBounds = false;
         options.inPurgeable = true;
-        
+
         //Display Image Options.
         displayImageOptions = new DisplayImageOptions.Builder()
-        						  .showImageForEmptyUri(R.drawable.default_album_art)
-        						  .showImageOnFail(R.drawable.default_album_art)
-        						  .cacheInMemory(true)
-        						  .cacheOnDisc(true)
-        						  .decodingOptions(options)
-        						  .imageScaleType(ImageScaleType.EXACTLY)
-        						  .bitmapConfig(Bitmap.Config.RGB_565)
-        						  .displayer(new FadeInBitmapDisplayer(400))
-        						  .build();
-        
+                .showImageForEmptyUri(R.drawable.default_album_art)
+                .showImageOnFail(R.drawable.default_album_art)
+                .cacheInMemory(true)
+                .cacheOnDisc(true)
+                .decodingOptions(options)
+                .imageScaleType(ImageScaleType.EXACTLY)
+                .bitmapConfig(Bitmap.Config.RGB_565)
+                .displayer(new FadeInBitmapDisplayer(400))
+                .build();
+
     }
-    
+
     @Override
     public int getCount() {
-    	if (cursor!=null) {
+        if (cursor != null) {
             return cursor.getCount();
-    	} else {
-    		return 0;
-    	}
-    	
+        } else {
+            return 0;
+        }
+
     }
 
     @Override
     public RemoteViews getViewAt(int position) {
         RemoteViews rv = new RemoteViews(mContext.getPackageName(), R.layout.large_widget_listview_layout);
         if (position <= getCount()) {
-        	
-        	try {
-        		if (mApp.getService().getPlaybackIndecesList()!=null && mApp.getService().getPlaybackIndecesList().size()!=0) {
-            		if (cursor.getCount() > mApp.getService().getPlaybackIndecesList().get(position)) {
-                		cursor.moveToPosition(mApp.getService().getPlaybackIndecesList().get(position));
-                	} else {
-                		return null;
-                	}
-            		
-            	} else {
-            		return null;
-            	}
-        	} catch (Exception e) {
-        		return null;
-        	}
-        	
-        	//Set the song title, album, and artist fields.
-        	String songTitle = cursor.getString(cursor.getColumnIndex(DBAccessHelper.SONG_TITLE));
-        	String songAlbumArtPath = cursor.getString(cursor.getColumnIndex(DBAccessHelper.SONG_ALBUM_ART_PATH));
-        	ImageSize imageSize = new ImageSize(100, 100);
-        	
+
+            try {
+                if (mApp.getService().getPlaybackIndecesList() != null && mApp.getService().getPlaybackIndecesList().size() != 0) {
+                    if (cursor.getCount() > mApp.getService().getPlaybackIndecesList().get(position)) {
+                        cursor.moveToPosition(mApp.getService().getPlaybackIndecesList().get(position));
+                    } else {
+                        return null;
+                    }
+
+                } else {
+                    return null;
+                }
+            } catch (Exception e) {
+                return null;
+            }
+
+            //Set the song title, album, and artist fields.
+            String songTitle = cursor.getString(cursor.getColumnIndex(DBAccessHelper.SONG_TITLE));
+            String songAlbumArtPath = cursor.getString(cursor.getColumnIndex(DBAccessHelper.SONG_ALBUM_ART_PATH));
+            ImageSize imageSize = new ImageSize(100, 100);
+
             //Set the duration of the song.
             long songDurationInMillis = 0;
             try {
-            	songDurationInMillis = Long.parseLong(cursor.getString(cursor.getColumnIndex(DBAccessHelper.SONG_DURATION)));
+                songDurationInMillis = Long.parseLong(cursor.getString(cursor.getColumnIndex(DBAccessHelper.SONG_DURATION)));
             } catch (Exception e) {
-            	songDurationInMillis = 0;
+                songDurationInMillis = 0;
             }
-        	
-        	rv.setTextViewText(R.id.widget_listview_song_name, songTitle);
+
+            rv.setTextViewText(R.id.widget_listview_song_name, songTitle);
             rv.setTextViewText(R.id.widget_listview_duration, convertMillisToMinsSecs(songDurationInMillis));
-            
+
             if (mWidgetColor.equals("LIGHT")) {
-    			rv.setTextColor(R.id.widget_listview_song_name, Color.BLACK);
-    			rv.setTextColor(R.id.widget_listview_duration, Color.BLACK);
-    		}
-            
+                rv.setTextColor(R.id.widget_listview_song_name, Color.BLACK);
+                rv.setTextColor(R.id.widget_listview_duration, Color.BLACK);
+            }
+
             Bitmap bitmap = mApp.getImageLoader().loadImageSync(songAlbumArtPath, imageSize, displayImageOptions);
             rv.setImageViewBitmap(R.id.widget_listview_thumbnail, bitmap);
-            
+
         }
         
         /* This intent latches itself onto the pendingIntentTemplate from 
@@ -140,10 +140,10 @@ class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
         Intent fillInIntent = new Intent();
         fillInIntent.putExtra("INDEX", position);
         rv.setOnClickFillInIntent(R.id.widget_listview_layout, fillInIntent);
-        
+
         return rv;
     }
-    
+
     @Override
     public RemoteViews getLoadingView() {
         return null;
@@ -166,64 +166,64 @@ class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 
     @Override
     public void onDataSetChanged() {
-        
-        if (sharedPreferences.getBoolean("SERVICE_RUNNING", false)==true) {
-        	cursor = mApp.getService().getCursor();
+
+        if (sharedPreferences.getBoolean("SERVICE_RUNNING", false)) {
+            cursor = mApp.getService().getCursor();
         }
-    	
+
     }
-    
-	//Convert millisseconds to hh:mm:ss format.
+
+    //Convert millisseconds to hh:mm:ss format.
     private String convertMillisToMinsSecs(long milliseconds) {
-    	
-    	int secondsValue = (int) (milliseconds / 1000) % 60 ;
-    	int minutesValue = (int) ((milliseconds / (1000*60)) % 60);
-    	int hoursValue  = (int) ((milliseconds / (1000*60*60)) % 24);
-    	
-    	String seconds = "";
-    	String minutes = "";
-    	String hours = "";
-    	
-    	if (secondsValue < 10) {
-    		seconds = "0" + secondsValue;
-    	} else {
-    		seconds = "" + secondsValue;
-    	}
 
-    	if (minutesValue < 10) {
-    		minutes = "0" + minutesValue;
-    	} else {
-    		minutes = "" + minutesValue;
-    	}
-    	
-    	if (hoursValue < 10) {
-    		hours = "0" + hoursValue;
-    	} else {
-    		hours = "" + hoursValue;
-    	}
-    	
-    	
-    	String output = "";
-    	
-    	if (hoursValue!=0) {
-    		output = hours + ":" + minutes + ":" + seconds;
-    	} else {
-    		output = minutes + ":" + seconds;
-    	}
-    	
-    	return output;
+        int secondsValue = (int) (milliseconds / 1000) % 60;
+        int minutesValue = (int) ((milliseconds / (1000 * 60)) % 60);
+        int hoursValue = (int) ((milliseconds / (1000 * 60 * 60)) % 24);
+
+        String seconds = "";
+        String minutes = "";
+        String hours = "";
+
+        if (secondsValue < 10) {
+            seconds = "0" + secondsValue;
+        } else {
+            seconds = "" + secondsValue;
+        }
+
+        if (minutesValue < 10) {
+            minutes = "0" + minutesValue;
+        } else {
+            minutes = "" + minutesValue;
+        }
+
+        if (hoursValue < 10) {
+            hours = "0" + hoursValue;
+        } else {
+            hours = "" + hoursValue;
+        }
+
+
+        String output = "";
+
+        if (hoursValue != 0) {
+            output = hours + ":" + minutes + ":" + seconds;
+        } else {
+            output = minutes + ":" + seconds;
+        }
+
+        return output;
     }
 
-	@Override
-	public void onDestroy() {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void onDestroy() {
+        // TODO Auto-generated method stub
 
-	@Override
-	public void onCreate() {
-		// TODO Auto-generated method stub
-		
-	}
-    
+    }
+
+    @Override
+    public void onCreate() {
+        // TODO Auto-generated method stub
+
+    }
+
 }

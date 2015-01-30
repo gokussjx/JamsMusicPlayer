@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/fragment_artists_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent">
 
     <ListView
         android:id="@+id/genresListView"
@@ -10,42 +10,42 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="15dp"
-        android:drawSelectorOnTop="true" 
-        android:visibility="invisible" >
+        android:drawSelectorOnTop="true"
+        android:visibility="invisible">
 
     </ListView>
-    
+
     <com.andraskindler.quickscroll.QuickScroll
-		android:id="@+id/quickscroll"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_alignParentRight="true"
-		android:layout_alignTop="@+id/genresListView"
-		android:layout_alignBottom="@+id/genresListView"
-		android:layout_marginTop="20dp"
-		android:layout_marginBottom="20dp"
-		android:layout_marginRight="5dp" />
-    
+        android:id="@+id/quickscroll"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/genresListView"
+        android:layout_alignParentRight="true"
+        android:layout_alignTop="@+id/genresListView"
+        android:layout_marginBottom="20dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginTop="20dp" />
+
     <TextView
         android:id="@+id/empty_view_text"
-        android:visibility="invisible"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        android:hint="@string/no_genres_found_info"
-        android:gravity="center"
         android:layout_marginLeft="25dp"
         android:layout_marginRight="25dp"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        android:gravity="center"
+        android:hint="@string/no_genres_found_info"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:visibility="invisible" />
 
     <ImageView
         android:id="@+id/empty_view_image"
-        android:visibility="invisible"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/empty_view_text"
         android:layout_centerHorizontal="true"
-        android:src="@drawable/genres_light" />
+        android:src="@drawable/genres_light"
+        android:visibility="invisible" />
 
 </RelativeLayout>

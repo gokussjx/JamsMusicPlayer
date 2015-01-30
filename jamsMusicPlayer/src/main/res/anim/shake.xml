@@ -1,4 +1,5 @@
 <translate xmlns:android="http://schemas.android.com/apk/res/android"
-    android:fromXDelta="0" android:toXDelta="20" 
     android:duration="1000"
-    android:interpolator="@anim/cycle_interpolator" />
+    android:fromXDelta="0"
+    android:interpolator="@anim/cycle_interpolator"
+    android:toXDelta="20" />

@@ -36,11 +36,11 @@ import android.os.Bundle;
  * https://groups.google.com/forum/#!topic/android-developers/LtmA9xbrD5A
  */
 public class KitKatFixActivity extends Activity {
-	
-	@Override
-	public void onCreate(Bundle bundle) {
-		super.onCreate(bundle);
-		finish();
-	}
-	
+
+    @Override
+    public void onCreate(Bundle bundle) {
+        super.onCreate(bundle);
+        finish();
+    }
+
 }
