@@ -1,6 +1,6 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent" >
+    android:layout_height="fill_parent">
 
     <EditText
         android:id="@+id/add_music_library_text_field"
@@ -10,7 +10,7 @@
         android:layout_alignRight="@+id/add_music_library_instructions"
         android:layout_toRightOf="@+id/add_music_library_label_button"
         android:hint="@string/music_library_name"
-        android:ems="10" >
+        android:ems="10">
 
         <requestFocus />
     </EditText>

@@ -16,11 +16,12 @@
 
 package main.java.de.psdev.licensesdialog;
 
+import android.content.Context;
+
+import de.psdev.licensesdialog.R;
 import main.java.de.psdev.licensesdialog.licenses.License;
 import main.java.de.psdev.licensesdialog.model.Notice;
 import main.java.de.psdev.licensesdialog.model.Notices;
-import android.content.Context;
-import de.psdev.licensesdialog.R;
 
 public final class NoticesHtmlBuilder {
 

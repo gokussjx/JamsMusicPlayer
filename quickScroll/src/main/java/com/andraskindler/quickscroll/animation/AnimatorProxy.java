@@ -17,7 +17,9 @@ import java.util.WeakHashMap;
  * are using {@code ObjectAnimator} as it will handle that itself.
  */
 public final class AnimatorProxy extends Animation {
-    /** Whether or not the current running platform needs to be proxied. */
+    /**
+     * Whether or not the current running platform needs to be proxied.
+     */
     public static final boolean NEEDS_PROXY = Integer.valueOf(Build.VERSION.SDK).intValue() < Build.VERSION_CODES.HONEYCOMB;
 
     private static final WeakHashMap<View, AnimatorProxy> PROXIES =
@@ -70,6 +72,7 @@ public final class AnimatorProxy extends Animation {
     public float getAlpha() {
         return mAlpha;
     }
+
     public void setAlpha(float alpha) {
         if (mAlpha != alpha) {
             mAlpha = alpha;
@@ -79,9 +82,11 @@ public final class AnimatorProxy extends Animation {
             }
         }
     }
+
     public float getPivotX() {
         return mPivotX;
     }
+
     public void setPivotX(float pivotX) {
         if (!mHasPivot || mPivotX != pivotX) {
             prepareForUpdate();
@@ -90,9 +95,11 @@ public final class AnimatorProxy extends Animation {
             invalidateAfterUpdate();
         }
     }
+
     public float getPivotY() {
         return mPivotY;
     }
+
     public void setPivotY(float pivotY) {
         if (!mHasPivot || mPivotY != pivotY) {
             prepareForUpdate();
@@ -101,9 +108,11 @@ public final class AnimatorProxy extends Animation {
             invalidateAfterUpdate();
         }
     }
+
     public float getRotation() {
         return mRotationZ;
     }
+
     public void setRotation(float rotation) {
         if (mRotationZ != rotation) {
             prepareForUpdate();
@@ -111,9 +120,11 @@ public final class AnimatorProxy extends Animation {
             invalidateAfterUpdate();
         }
     }
+
     public float getRotationX() {
         return mRotationX;
     }
+
     public void setRotationX(float rotationX) {
         if (mRotationX != rotationX) {
             prepareForUpdate();
@@ -121,6 +132,7 @@ public final class AnimatorProxy extends Animation {
             invalidateAfterUpdate();
         }
     }
+
     public float getRotationY() {
         return mRotationY;
     }
@@ -132,9 +144,11 @@ public final class AnimatorProxy extends Animation {
             invalidateAfterUpdate();
         }
     }
+
     public float getScaleX() {
         return mScaleX;
     }
+
     public void setScaleX(float scaleX) {
         if (mScaleX != scaleX) {
             prepareForUpdate();
@@ -142,9 +156,11 @@ public final class AnimatorProxy extends Animation {
             invalidateAfterUpdate();
         }
     }
+
     public float getScaleY() {
         return mScaleY;
     }
+
     public void setScaleY(float scaleY) {
         if (mScaleY != scaleY) {
             prepareForUpdate();
@@ -152,6 +168,7 @@ public final class AnimatorProxy extends Animation {
             invalidateAfterUpdate();
         }
     }
+
     public int getScrollX() {
         View view = mView.get();
         if (view == null) {
@@ -159,12 +176,14 @@ public final class AnimatorProxy extends Animation {
         }
         return view.getScrollX();
     }
+
     public void setScrollX(int value) {
         View view = mView.get();
         if (view != null) {
             view.scrollTo(value, view.getScrollY());
         }
     }
+
     public int getScrollY() {
         View view = mView.get();
         if (view == null) {
@@ -172,6 +191,7 @@ public final class AnimatorProxy extends Animation {
         }
         return view.getScrollY();
     }
+
     public void setScrollY(int value) {
         View view = mView.get();
         if (view != null) {
@@ -182,6 +202,7 @@ public final class AnimatorProxy extends Animation {
     public float getTranslationX() {
         return mTranslationX;
     }
+
     public void setTranslationX(float translationX) {
         if (mTranslationX != translationX) {
             prepareForUpdate();
@@ -189,9 +210,11 @@ public final class AnimatorProxy extends Animation {
             invalidateAfterUpdate();
         }
     }
+
     public float getTranslationY() {
         return mTranslationY;
     }
+
     public void setTranslationY(float translationY) {
         if (mTranslationY != translationY) {
             prepareForUpdate();
@@ -199,6 +222,7 @@ public final class AnimatorProxy extends Animation {
             invalidateAfterUpdate();
         }
     }
+
     public float getX() {
         View view = mView.get();
         if (view == null) {
@@ -206,12 +230,14 @@ public final class AnimatorProxy extends Animation {
         }
         return view.getLeft() + mTranslationX;
     }
+
     public void setX(float x) {
         View view = mView.get();
         if (view != null) {
             setTranslationX(x - view.getLeft());
         }
     }
+
     public float getY() {
         View view = mView.get();
         if (view == null) {
@@ -219,6 +245,7 @@ public final class AnimatorProxy extends Animation {
         }
         return view.getTop() + mTranslationY;
     }
+
     public void setY(float y) {
         View view = mView.get();
         if (view != null) {
@@ -232,6 +259,7 @@ public final class AnimatorProxy extends Animation {
             computeRect(mBefore, view);
         }
     }
+
     private void invalidateAfterUpdate() {
         View view = mView.get();
         if (view == null || view.getParent() == null) {
@@ -242,7 +270,7 @@ public final class AnimatorProxy extends Animation {
         computeRect(after, view);
         after.union(mBefore);
 
-        ((View)view.getParent()).invalidate(
+        ((View) view.getParent()).invalidate(
                 (int) Math.floor(after.left),
                 (int) Math.floor(after.top),
                 (int) Math.ceil(after.right),

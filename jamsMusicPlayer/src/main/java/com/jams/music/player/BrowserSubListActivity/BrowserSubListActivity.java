@@ -30,7 +30,6 @@ import android.view.animation.Animation;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -47,7 +46,6 @@ import com.jams.music.player.ListViewFragment.ListViewCardsAdapter;
 import com.jams.music.player.R;
 import com.jams.music.player.Utils.Common;
 import com.nhaarman.listviewanimations.swinginadapters.prepared.SwingBottomInAnimationAdapter;
-import com.squareup.picasso.Callback;
 
 import java.util.HashMap;
 
@@ -104,7 +102,7 @@ public class BrowserSubListActivity extends FragmentActivity {
         mHeaderSubText = getIntent().getExtras().getString("subText");
         mField2 = getIntent().getExtras().getString("field2");
 
-        if (mHeaderText==null || mHeaderText.isEmpty())
+        if (mHeaderText == null || mHeaderText.isEmpty())
             mHeaderText = mContext.getResources().getString(R.string.unknown_genre);
 
         mHeaderLayout = (RelativeLayout) findViewById(R.id.browser_sub_header_layout);
@@ -145,19 +143,19 @@ public class BrowserSubListActivity extends FragmentActivity {
                 }
 
                 mApp.getPlaybackKickstarter()
-                    .initPlayback(mContext,
-                            mQuerySelection,
-                            playbackRouteId,
-                            0,
-                            true,
-                            false);
+                        .initPlayback(mContext,
+                                mQuerySelection,
+                                playbackRouteId,
+                                0,
+                                true,
+                                false);
 
             }
 
         });
 
         //Apply the ListViews' dividers.
-        if (mApp.getCurrentTheme()==Common.DARK_THEME) {
+        if (mApp.getCurrentTheme() == Common.DARK_THEME) {
             mListView.setDivider(mContext.getResources().getDrawable(R.drawable.list_divider));
         } else {
             mListView.setDivider(mContext.getResources().getDrawable(R.drawable.list_divider_light));
@@ -183,7 +181,7 @@ public class BrowserSubListActivity extends FragmentActivity {
      * Sets the entire activity-wide theme.
      */
     private void setTheme() {
-        if (mApp.getCurrentTheme()==Common.DARK_THEME) {
+        if (mApp.getCurrentTheme() == Common.DARK_THEME) {
             setTheme(R.style.AppThemeNoActionBar);
         } else {
             setTheme(R.style.AppThemeLightNoActionBar);
@@ -200,16 +198,16 @@ public class BrowserSubListActivity extends FragmentActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
 
             int topPadding = Common.getStatusBarHeight(mContext);
-            if (mDrawerParentLayout!=null) {
-                mDrawerParentLayout.setPadding(0, (0-topPadding), 0, 0);
+            if (mDrawerParentLayout != null) {
+                mDrawerParentLayout.setPadding(0, (0 - topPadding), 0, 0);
                 mDrawerParentLayout.setClipToPadding(false);
 
                 int navigationBarHeight = Common.getNavigationBarHeight(mContext);
                 mListView.setClipToPadding(false);
                 mListView.setPadding(mListView.getPaddingLeft(),
-                                     mListView.getPaddingTop(),
-                                     mListView.getPaddingRight(),
-                                     mListView.getPaddingBottom() + navigationBarHeight);
+                        mListView.getPaddingTop(),
+                        mListView.getPaddingRight(),
+                        mListView.getPaddingBottom() + navigationBarHeight);
 
 
             }
@@ -230,8 +228,8 @@ public class BrowserSubListActivity extends FragmentActivity {
         //Load the current queue drawer.
         mQueueDrawerFragment = new QueueDrawerFragment();
         getSupportFragmentManager().beginTransaction()
-                                   .replace(R.id.current_queue_drawer_container, mQueueDrawerFragment)
-                                   .commit();
+                .replace(R.id.current_queue_drawer_container, mQueueDrawerFragment)
+                .commit();
 
     }
 
@@ -246,10 +244,10 @@ public class BrowserSubListActivity extends FragmentActivity {
             //Slide down the header image.
             mApp.getPicasso().load(mHeaderImagePath).into(mHeaderImage);
             TranslateAnimation slideDown = new TranslateAnimation(mHeaderLayout, 400, new DecelerateInterpolator(2.0f),
-                                                                  View.VISIBLE, Animation.RELATIVE_TO_SELF,
-                                                                  0.0f, Animation.RELATIVE_TO_SELF, 0.0f,
-                                                                  Animation.RELATIVE_TO_SELF, -2.0f,
-                                                                  Animation.RELATIVE_TO_SELF, 0.0f);
+                    View.VISIBLE, Animation.RELATIVE_TO_SELF,
+                    0.0f, Animation.RELATIVE_TO_SELF, 0.0f,
+                    Animation.RELATIVE_TO_SELF, -2.0f,
+                    Animation.RELATIVE_TO_SELF, 0.0f);
 
             slideDown.setAnimationListener(new Animation.AnimationListener() {
 
@@ -323,29 +321,29 @@ public class BrowserSubListActivity extends FragmentActivity {
             switch (mFragmentId) {
                 case Common.ARTISTS_FLIPPED_SONGS_FRAGMENT:
                     mQuerySelection = " AND " + DBAccessHelper.SONG_ALBUM + "=" + "'"
-                                    + mHeaderText.replace("'", "''") + "'" + " AND "
-                                    + DBAccessHelper.SONG_ARTIST + "=" + "'"
-                                    + mHeaderSubText.replace("'", "''") + "'";
+                            + mHeaderText.replace("'", "''") + "'" + " AND "
+                            + DBAccessHelper.SONG_ARTIST + "=" + "'"
+                            + mHeaderSubText.replace("'", "''") + "'";
                     break;
                 case Common.ALBUM_ARTISTS_FLIPPED_SONGS_FRAGMENT:
                     mQuerySelection = " AND " + DBAccessHelper.SONG_ALBUM + "=" + "'"
-                                    + mHeaderText.replace("'", "''") + "'" + " AND "
-                                    + DBAccessHelper.SONG_ALBUM_ARTIST + "=" + "'"
-                                    + mHeaderSubText.replace("'", "''") + "'";
+                            + mHeaderText.replace("'", "''") + "'" + " AND "
+                            + DBAccessHelper.SONG_ALBUM_ARTIST + "=" + "'"
+                            + mHeaderSubText.replace("'", "''") + "'";
                     break;
                 case Common.ALBUMS_FLIPPED_FRAGMENT:
                     mQuerySelection = " AND " + DBAccessHelper.SONG_ALBUM + "=" + "'"
-                                    + mHeaderText.replace("'", "''") + "'" + " AND "
-                                    + DBAccessHelper.SONG_ARTIST + "=" + "'"
-                                    + mHeaderSubText.replace("'", "''") + "'";
+                            + mHeaderText.replace("'", "''") + "'" + " AND "
+                            + DBAccessHelper.SONG_ARTIST + "=" + "'"
+                            + mHeaderSubText.replace("'", "''") + "'";
                     break;
                 case Common.GENRES_FLIPPED_SONGS_FRAGMENT:
                     mQuerySelection = " AND " + DBAccessHelper.SONG_ALBUM + "=" + "'"
-                                    + mHeaderText.replace("'", "''") + "'" + " AND "
-                                    + DBAccessHelper.SONG_GENRE + "=" + "'"
-                                    + mHeaderSubText.replace("'", "''") + "'" + " AND "
-                                    + DBAccessHelper.SONG_ARTIST + "=" + "'"
-                                    + mField2.replace("'", "''") + "'";
+                            + mHeaderText.replace("'", "''") + "'" + " AND "
+                            + DBAccessHelper.SONG_GENRE + "=" + "'"
+                            + mHeaderSubText.replace("'", "''") + "'" + " AND "
+                            + DBAccessHelper.SONG_ARTIST + "=" + "'"
+                            + mField2.replace("'", "''") + "'";
                     break;
             }
 
@@ -379,12 +377,12 @@ public class BrowserSubListActivity extends FragmentActivity {
             }
 
             mApp.getPlaybackKickstarter()
-                .initPlayback(mContext,
-                        mQuerySelection,
-                        playbackRouteId,
-                        index,
-                        true,
-                        false);
+                    .initPlayback(mContext,
+                            mQuerySelection,
+                            playbackRouteId,
+                            index,
+                            true,
+                            false);
 
         }
 
@@ -534,10 +532,10 @@ public class BrowserSubListActivity extends FragmentActivity {
             try {
                 View topChild = view.getChildAt(0);
                 int scrollY = -(topChild.getTop()) + view.getFirstVisiblePosition() * topChild.getHeight();
-                int adjustedScrollY = (int) ((-scrollY)-mApp.convertDpToPixels(340.0f, mContext));
+                int adjustedScrollY = (int) ((-scrollY) - mApp.convertDpToPixels(340.0f, mContext));
 
                 RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) mHeaderLayout.getLayoutParams();
-                params.topMargin = adjustedScrollY/3;
+                params.topMargin = adjustedScrollY / 3;
                 mHeaderLayout.setLayoutParams(params);
 
             } catch (Exception e) {

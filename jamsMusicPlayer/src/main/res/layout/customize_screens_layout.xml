@@ -1,7 +1,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:dslv="http://schemas.android.com/apk/res/com.jams.music.player"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent" >
+    android:layout_height="fill_parent">
 
     <TextView
         android:id="@+id/customize_screens_text"
@@ -16,19 +16,18 @@
         android:text="@string/customize_screens_text"
         android:textAppearance="?android:attr/textAppearanceSmall" />
 
-	<com.mobeta.android.dslv.DragSortListView
-	    xmlns:dslv="http://schemas.android.com/apk/res/com.jams.music.player"
-	    android:id="@+id/customize_screens_listview"
-	    android:layout_width="fill_parent"
-	    android:layout_height="wrap_content"
-	    android:layout_margin="3dp"
-	    android:layout_below="@+id/customize_screens_text"
-	    android:choiceMode="multipleChoice"
-	    dslv:drag_enabled="true"
-	    dslv:drag_handle_id="@+id/customize_screens_handle"
-	    dslv:drag_scroll_start="0.33"
-	    dslv:drag_start_mode="onDown"
-	    dslv:float_alpha="0.6"
-	    dslv:slide_shuffle_speed="0.3" />
+    <com.mobeta.android.dslv.DragSortListView xmlns:dslv="http://schemas.android.com/apk/res/com.jams.music.player"
+        android:id="@+id/customize_screens_listview"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="3dp"
+        android:layout_below="@+id/customize_screens_text"
+        android:choiceMode="multipleChoice"
+        dslv:drag_enabled="true"
+        dslv:drag_handle_id="@+id/customize_screens_handle"
+        dslv:drag_scroll_start="0.33"
+        dslv:drag_start_mode="onDown"
+        dslv:float_alpha="0.6"
+        dslv:slide_shuffle_speed="0.3" />
 
 </RelativeLayout>

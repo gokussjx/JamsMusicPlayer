@@ -1,6 +1,6 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent" >
+    android:layout_height="fill_parent">
 
     <TextView
         android:id="@+id/welcome_header"
@@ -33,7 +33,7 @@
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/welcome_text_1"
         android:layout_below="@+id/welcome_text_1"
-        android:layout_marginTop="30dp" >
+        android:layout_marginTop="30dp">
 
         <RadioButton
             android:id="@+id/scan_every_startup"
@@ -57,7 +57,7 @@
             android:textColor="#FFFFFF"
             android:layout_marginTop="10dp"
             android:text="@string/scan_every_5_startups" />
-        
+
         <RadioButton
             android:id="@+id/scan_every_10_startups"
             android:layout_width="wrap_content"
@@ -65,7 +65,7 @@
             android:textColor="#FFFFFF"
             android:layout_marginTop="10dp"
             android:text="@string/scan_every_10_startups" />
-                
+
         <RadioButton
             android:id="@+id/scan_every_20_startups"
             android:layout_width="wrap_content"
@@ -73,7 +73,7 @@
             android:textColor="#FFFFFF"
             android:layout_marginTop="10dp"
             android:text="@string/scan_every_20_startups" />
-        
+
         <RadioButton
             android:id="@+id/scan_manually"
             android:layout_width="wrap_content"

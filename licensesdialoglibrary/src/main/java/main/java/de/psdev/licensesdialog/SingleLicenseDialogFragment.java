@@ -16,13 +16,14 @@
 
 package main.java.de.psdev.licensesdialog;
 
-import main.java.de.psdev.licensesdialog.model.Notice;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.os.Bundle;
+
 import de.psdev.licensesdialog.R;
+import main.java.de.psdev.licensesdialog.model.Notice;
 
 public class SingleLicenseDialogFragment extends DialogFragment {
 

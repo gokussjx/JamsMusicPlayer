@@ -25,39 +25,39 @@ import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 import android.widget.Toast;
 
-import com.jams.music.player.R;
 import com.jams.music.player.AsyncTasks.AsyncBuildLibraryTask;
+import com.jams.music.player.R;
 import com.jams.music.player.WelcomeActivity.WelcomeActivity;
 
 public class BuildMusicLibraryService extends Service implements AsyncBuildLibraryTask.OnBuildLibraryProgressUpdate {
-	
-	private Context mContext;
-	private NotificationCompat.Builder mBuilder;
-	private Notification mNotification;
-	private NotificationManager mNotifyManager;
-	public static int mNotificationId = 92713;
-	
-	@Override
-	public void onCreate() {
-		mContext = this.getApplicationContext();
-	}
-	
-	@Override
-	public int onStartCommand(Intent intent, int startId, int flags) {
-		
-		//Create a persistent notification that keeps this service running and displays the scan progress.
-		mBuilder = new NotificationCompat.Builder(mContext);
-		mBuilder.setSmallIcon(R.drawable.notif_icon);
-		mBuilder.setContentTitle(getResources().getString(R.string.building_music_library));
-		mBuilder.setTicker(getResources().getString(R.string.building_music_library));
-		mBuilder.setContentText("");
-		mBuilder.setProgress(0, 0, true);
-		
-		mNotifyManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
-		mNotification = mBuilder.build();
-		mNotification.flags |= Notification.FLAG_INSISTENT | Notification.FLAG_NO_CLEAR;
-		
-		startForeground(mNotificationId, mNotification);	
+
+    private Context mContext;
+    private NotificationCompat.Builder mBuilder;
+    private Notification mNotification;
+    private NotificationManager mNotifyManager;
+    public static int mNotificationId = 92713;
+
+    @Override
+    public void onCreate() {
+        mContext = this.getApplicationContext();
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int startId, int flags) {
+
+        //Create a persistent notification that keeps this service running and displays the scan progress.
+        mBuilder = new NotificationCompat.Builder(mContext);
+        mBuilder.setSmallIcon(R.drawable.notif_icon);
+        mBuilder.setContentTitle(getResources().getString(R.string.building_music_library));
+        mBuilder.setTicker(getResources().getString(R.string.building_music_library));
+        mBuilder.setContentText("");
+        mBuilder.setProgress(0, 0, true);
+
+        mNotifyManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotification = mBuilder.build();
+        mNotification.flags |= Notification.FLAG_INSISTENT | Notification.FLAG_NO_CLEAR;
+
+        startForeground(mNotificationId, mNotification);
 
         //Go crazy with a full-on scan.
         AsyncBuildLibraryTask task = new AsyncBuildLibraryTask(mContext, this);
@@ -65,14 +65,14 @@ public class BuildMusicLibraryService extends Service implements AsyncBuildLibra
         task.setOnBuildLibraryProgressUpdate(this);
         task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
-		return START_STICKY;
-	}
-	
-	@Override
-	public IBinder onBind(Intent arg0) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+        return START_STICKY;
+    }
+
+    @Override
+    public IBinder onBind(Intent arg0) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
     @Override
     public void onStartBuildingLibrary() {

@@ -94,7 +94,7 @@ public class SettingsAppearanceFragment extends PreferenceFragment {
      * Applies KitKat specific translucency.
      */
     private void applyKitKatTranslucency() {
-        if (Build.VERSION.SDK_INT==Build.VERSION_CODES.KITKAT) {
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
 
             //Calculate ActionBar and navigation bar height.
             TypedValue tv = new TypedValue();
@@ -105,7 +105,7 @@ public class SettingsAppearanceFragment extends PreferenceFragment {
 
             mListView.setBackgroundColor(0xFFEEEEEE);
             mRootView.setPadding(0, actionBarHeight + Common.getStatusBarHeight(mContext),
-                                 0, 0);
+                    0, 0);
             mListView.setPadding(10, 0, 10, Common.getNavigationBarHeight(mContext));
             mListView.setClipToPadding(false);
 
@@ -196,7 +196,7 @@ public class SettingsAppearanceFragment extends PreferenceFragment {
     public void onResume() {
         super.onResume();
 
-        if (Build.VERSION.SDK_INT==Build.VERSION_CODES.KITKAT)
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT)
             getActivity().getActionBar().setBackgroundDrawable(UIElementsHelper.getGeneralActionBarBackground(mContext));
 
     }

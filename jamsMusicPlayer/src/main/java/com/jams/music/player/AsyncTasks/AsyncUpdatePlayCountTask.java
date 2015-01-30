@@ -20,14 +20,14 @@ import android.os.AsyncTask;
 
 public class AsyncUpdatePlayCountTask extends AsyncTask<String, Void, Void> {
     private Context mContext;
-    
+
     public AsyncUpdatePlayCountTask(Context context) {
-    	mContext = context;
+        mContext = context;
     }
-    
+
     @Override
     protected Void doInBackground(String... params) {
-    	/*
+        /*
     	try {
     		int currentPlayCount = 0;
     		mApp.getService().getCursor().moveToPosition(mApp.getService().getPlaybackIndecesList().get(mApp.getService().getCurrentSongIndex()));
@@ -137,13 +137,13 @@ public class AsyncUpdatePlayCountTask extends AsyncTask<String, Void, Void> {
     		e.printStackTrace();
     	}
     	*/
-    	return null;
+        return null;
     }
 
     @Override
     protected void onPostExecute(Void arg0) {
-    	
-        
+
+
     }
 
 }

@@ -15,10 +15,10 @@
  */
 package com.jams.music.player.GMusicHelpers;
 
-import java.util.ArrayList;
-
 import org.json.JSONArray;
 
+import java.util.ArrayList;
+
 public interface IJsonArray<T> {
-	ArrayList<T> fromJsonArray(JSONArray jsonArray);
+    ArrayList<T> fromJsonArray(JSONArray jsonArray);
 }

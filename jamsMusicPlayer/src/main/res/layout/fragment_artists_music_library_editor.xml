@@ -4,15 +4,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:descendantFocusability="beforeDescendants"
-	android:focusableInTouchMode="true" >
-	    
+    android:focusableInTouchMode="true">
+
     <ListView
         android:id="@+id/musicLibraryEditorArtistsListView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/artists_music_library_editor_instructions"
         android:layout_centerHorizontal="true"
-        android:drawSelectorOnTop="true" >
+        android:drawSelectorOnTop="true">
 
     </ListView>
 

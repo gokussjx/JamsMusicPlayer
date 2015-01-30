@@ -7,4 +7,4 @@
     android:paddingLeft="16dp"
     android:paddingRight="16dp"
     android:textColor="#FFFFFF"
-    android:minHeight="64dp"/>
+    android:minHeight="64dp" />

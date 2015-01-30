@@ -57,34 +57,34 @@ import java.util.HashMap;
 
 /**
  * Generic, multipurpose GridView fragment.
- * 
+ *
  * @author Saravan Pantham
  */
 public class GridViewFragment extends Fragment {
-	
-	private Context mContext;
-	private GridViewFragment mFragment;
-	private Common mApp;
-	private View mRootView;
+
+    private Context mContext;
+    private GridViewFragment mFragment;
+    private Common mApp;
+    private View mRootView;
     private RelativeLayout mGridViewContainer;
-	private int mFragmentId;
-	
-	private QuickScrollGridView mQuickScroll;
-	private BaseAdapter mGridViewAdapter;
-	private HashMap<Integer, String> mDBColumnsMap;
-	private GridView mGridView;
-	private TextView mEmptyTextView;
-	
-	public Handler mHandler = new Handler();
-	private Cursor mCursor;
+    private int mFragmentId;
+
+    private QuickScrollGridView mQuickScroll;
+    private BaseAdapter mGridViewAdapter;
+    private HashMap<Integer, String> mDBColumnsMap;
+    private GridView mGridView;
+    private TextView mEmptyTextView;
+
+    public Handler mHandler = new Handler();
+    private Cursor mCursor;
     private String mFragmentTitle;
-	private String mQuerySelection = "";
-	
+    private String mQuerySelection = "";
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mRootView = inflater.inflate(R.layout.fragment_grid_view, container, false);
         mContext = getActivity().getApplicationContext();
-	    mApp = (Common) mContext;
+        mApp = (Common) mContext;
         mFragment = this;
 
         //Set the background color and the partial color bleed.
@@ -94,10 +94,10 @@ public class GridViewFragment extends Fragment {
         mFragmentId = getArguments().getInt(Common.FRAGMENT_ID);
         mFragmentTitle = getArguments().getString(MainActivity.FRAGMENT_HEADER);
         mDBColumnsMap = new HashMap<Integer, String>();
-	    
+
         mQuickScroll = (QuickScrollGridView) mRootView.findViewById(R.id.quickscrollgrid);
 
-		//Set the adapter for the outer gridview.
+        //Set the adapter for the outer gridview.
         mGridView = (GridView) mRootView.findViewById(R.id.generalGridView);
         mGridViewContainer = (RelativeLayout) mRootView.findViewById(R.id.fragment_grid_view_frontal_layout);
         mGridView.setVerticalScrollBarEnabled(false);
@@ -113,8 +113,8 @@ public class GridViewFragment extends Fragment {
 
         //KitKat translucent navigation/status bar.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-        	int topPadding = Common.getStatusBarHeight(mContext);
-            
+            int topPadding = Common.getStatusBarHeight(mContext);
+
             //Calculate navigation bar height.
             int navigationBarHeight = 0;
             int resourceId = getResources().getIdentifier("navigation_bar_height", "dimen", "android");
@@ -126,35 +126,35 @@ public class GridViewFragment extends Fragment {
             mGridView.setClipToPadding(false);
             mGridView.setPadding(0, mGridView.getPaddingTop(), 0, navigationBarHeight);
             mQuickScroll.setPadding(0, 0, 0, navigationBarHeight);
-            
+
         }
 
         //Set the empty views.
         mEmptyTextView = (TextView) mRootView.findViewById(R.id.empty_view_text);
-	    mEmptyTextView.setTypeface(TypefaceHelper.getTypeface(mContext, "Roboto-Light"));
-	    mEmptyTextView.setPaintFlags(mEmptyTextView.getPaintFlags() | Paint.ANTI_ALIAS_FLAG | Paint.SUBPIXEL_TEXT_FLAG);
-        
+        mEmptyTextView.setTypeface(TypefaceHelper.getTypeface(mContext, "Roboto-Light"));
+        mEmptyTextView.setPaintFlags(mEmptyTextView.getPaintFlags() | Paint.ANTI_ALIAS_FLAG | Paint.SUBPIXEL_TEXT_FLAG);
+
         //Create a set of options to optimize the bitmap memory usage.
         final BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         options.inJustDecodeBounds = false;
         options.inPurgeable = true;
-	    
+
         mHandler.postDelayed(queryRunnable, 250);
         return mRootView;
     }
-    
+
     /**
      * Query runnable.
      */
     public Runnable queryRunnable = new Runnable() {
 
-		@Override
-		public void run() {
-			new AsyncRunQuery().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-			
-		}
-    	
+        @Override
+        public void run() {
+            new AsyncRunQuery().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
+        }
+
     };
 
     /**
@@ -172,20 +172,20 @@ public class GridViewFragment extends Fragment {
         }
 
     };
-    
+
     /**
      * Item click listener for the GridView/ListView.
      */
     private OnItemClickListener onItemClickListener = new OnItemClickListener() {
 
-		@Override
-		public void onItemClick(AdapterView<?> arg0, View view, int index, long id) {
+        @Override
+        public void onItemClick(AdapterView<?> arg0, View view, int index, long id) {
 
             //Determine the new activity's fragment id.
             int newFragmentId = getNewFragmentId();
 
             Intent intent;
-            if (newFragmentId==Common.ALBUMS_FLIPPED_FRAGMENT) {
+            if (newFragmentId == Common.ALBUMS_FLIPPED_FRAGMENT) {
                 intent = new Intent(mContext, BrowserSubListActivity.class);
             } else {
                 intent = new Intent(mContext, BrowserSubGridActivity.class);
@@ -201,8 +201,8 @@ public class GridViewFragment extends Fragment {
             startActivity(intent);
             getActivity().overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
 
-		}
-    	
+        }
+
     };
 
     /**
@@ -224,72 +224,72 @@ public class GridViewFragment extends Fragment {
         }
 
     }
-    
+
     /**
-     * Runs the correct DB query based on the passed in fragment id and 
+     * Runs the correct DB query based on the passed in fragment id and
      * displays the GridView.
-     * 
+     *
      * @author Saravan Pantham
      */
     public class AsyncRunQuery extends AsyncTask<Void, Void, Void> {
 
-		@Override
-		protected Void doInBackground(Void... params) {
-	        mCursor = mApp.getDBAccessHelper().getFragmentCursor(mContext, mQuerySelection, mFragmentId);
-	        loadDBColumnNames();
-	        
-	        return null;
-		}
-		
-		/**
-		 * Populates the DB column names based on the specifed fragment id.
-		 */
-		private void loadDBColumnNames() {
-			
-			switch (mFragmentId) {
-			case Common.ARTISTS_FRAGMENT:
-				mDBColumnsMap.put(GridViewCardsAdapter.TITLE_TEXT, DBAccessHelper.SONG_ARTIST);
-				mDBColumnsMap.put(GridViewCardsAdapter.SOURCE, DBAccessHelper.SONG_SOURCE);
-				mDBColumnsMap.put(GridViewCardsAdapter.FILE_PATH, DBAccessHelper.SONG_FILE_PATH);
-				mDBColumnsMap.put(GridViewCardsAdapter.ARTWORK_PATH, DBAccessHelper.SONG_ALBUM_ART_PATH);
-                mDBColumnsMap.put(GridViewCardsAdapter.FIELD_1, DBAccessHelper.ALBUMS_COUNT);
-				break;
-			case Common.ALBUM_ARTISTS_FRAGMENT:
-				mDBColumnsMap.put(GridViewCardsAdapter.TITLE_TEXT, DBAccessHelper.SONG_ALBUM_ARTIST);
-				mDBColumnsMap.put(GridViewCardsAdapter.SOURCE, DBAccessHelper.SONG_SOURCE);
-				mDBColumnsMap.put(GridViewCardsAdapter.FILE_PATH, DBAccessHelper.SONG_FILE_PATH);
-				mDBColumnsMap.put(GridViewCardsAdapter.ARTWORK_PATH, DBAccessHelper.SONG_ALBUM_ART_PATH);
-                mDBColumnsMap.put(GridViewCardsAdapter.FIELD_1, DBAccessHelper.ALBUMS_COUNT);
-				break;
-			case Common.ALBUMS_FRAGMENT:
-				mDBColumnsMap.put(GridViewCardsAdapter.TITLE_TEXT, DBAccessHelper.SONG_ALBUM);
-				mDBColumnsMap.put(GridViewCardsAdapter.SOURCE, DBAccessHelper.SONG_SOURCE);
-				mDBColumnsMap.put(GridViewCardsAdapter.FILE_PATH, DBAccessHelper.SONG_FILE_PATH);
-				mDBColumnsMap.put(GridViewCardsAdapter.ARTWORK_PATH, DBAccessHelper.SONG_ALBUM_ART_PATH);
-                mDBColumnsMap.put(GridViewCardsAdapter.FIELD_1, DBAccessHelper.SONG_ARTIST);
-				break;
-			case Common.PLAYLISTS_FRAGMENT:
-				break;
-			case Common.GENRES_FRAGMENT:
-                mDBColumnsMap.put(GridViewCardsAdapter.TITLE_TEXT, DBAccessHelper.SONG_GENRE);
-                mDBColumnsMap.put(GridViewCardsAdapter.SOURCE, DBAccessHelper.SONG_SOURCE);
-                mDBColumnsMap.put(GridViewCardsAdapter.FILE_PATH, DBAccessHelper.SONG_FILE_PATH);
-                mDBColumnsMap.put(GridViewCardsAdapter.ARTWORK_PATH, DBAccessHelper.SONG_ALBUM_ART_PATH);
-                mDBColumnsMap.put(GridViewCardsAdapter.FIELD_1, DBAccessHelper.GENRE_SONG_COUNT);
-				break;
-			case Common.FOLDERS_FRAGMENT:
-				break;
-			}
-			
-		}
-    	
-		@Override
-		public void onPostExecute(Void result) {
-			super.onPostExecute(result);
+        @Override
+        protected Void doInBackground(Void... params) {
+            mCursor = mApp.getDBAccessHelper().getFragmentCursor(mContext, mQuerySelection, mFragmentId);
+            loadDBColumnNames();
+
+            return null;
+        }
+
+        /**
+         * Populates the DB column names based on the specifed fragment id.
+         */
+        private void loadDBColumnNames() {
+
+            switch (mFragmentId) {
+                case Common.ARTISTS_FRAGMENT:
+                    mDBColumnsMap.put(GridViewCardsAdapter.TITLE_TEXT, DBAccessHelper.SONG_ARTIST);
+                    mDBColumnsMap.put(GridViewCardsAdapter.SOURCE, DBAccessHelper.SONG_SOURCE);
+                    mDBColumnsMap.put(GridViewCardsAdapter.FILE_PATH, DBAccessHelper.SONG_FILE_PATH);
+                    mDBColumnsMap.put(GridViewCardsAdapter.ARTWORK_PATH, DBAccessHelper.SONG_ALBUM_ART_PATH);
+                    mDBColumnsMap.put(GridViewCardsAdapter.FIELD_1, DBAccessHelper.ALBUMS_COUNT);
+                    break;
+                case Common.ALBUM_ARTISTS_FRAGMENT:
+                    mDBColumnsMap.put(GridViewCardsAdapter.TITLE_TEXT, DBAccessHelper.SONG_ALBUM_ARTIST);
+                    mDBColumnsMap.put(GridViewCardsAdapter.SOURCE, DBAccessHelper.SONG_SOURCE);
+                    mDBColumnsMap.put(GridViewCardsAdapter.FILE_PATH, DBAccessHelper.SONG_FILE_PATH);
+                    mDBColumnsMap.put(GridViewCardsAdapter.ARTWORK_PATH, DBAccessHelper.SONG_ALBUM_ART_PATH);
+                    mDBColumnsMap.put(GridViewCardsAdapter.FIELD_1, DBAccessHelper.ALBUMS_COUNT);
+                    break;
+                case Common.ALBUMS_FRAGMENT:
+                    mDBColumnsMap.put(GridViewCardsAdapter.TITLE_TEXT, DBAccessHelper.SONG_ALBUM);
+                    mDBColumnsMap.put(GridViewCardsAdapter.SOURCE, DBAccessHelper.SONG_SOURCE);
+                    mDBColumnsMap.put(GridViewCardsAdapter.FILE_PATH, DBAccessHelper.SONG_FILE_PATH);
+                    mDBColumnsMap.put(GridViewCardsAdapter.ARTWORK_PATH, DBAccessHelper.SONG_ALBUM_ART_PATH);
+                    mDBColumnsMap.put(GridViewCardsAdapter.FIELD_1, DBAccessHelper.SONG_ARTIST);
+                    break;
+                case Common.PLAYLISTS_FRAGMENT:
+                    break;
+                case Common.GENRES_FRAGMENT:
+                    mDBColumnsMap.put(GridViewCardsAdapter.TITLE_TEXT, DBAccessHelper.SONG_GENRE);
+                    mDBColumnsMap.put(GridViewCardsAdapter.SOURCE, DBAccessHelper.SONG_SOURCE);
+                    mDBColumnsMap.put(GridViewCardsAdapter.FILE_PATH, DBAccessHelper.SONG_FILE_PATH);
+                    mDBColumnsMap.put(GridViewCardsAdapter.ARTWORK_PATH, DBAccessHelper.SONG_ALBUM_ART_PATH);
+                    mDBColumnsMap.put(GridViewCardsAdapter.FIELD_1, DBAccessHelper.GENRE_SONG_COUNT);
+                    break;
+                case Common.FOLDERS_FRAGMENT:
+                    break;
+            }
+
+        }
+
+        @Override
+        public void onPostExecute(Void result) {
+            super.onPostExecute(result);
             mHandler.postDelayed(initGridView, 200);
-			
-		}
-		
+
+        }
+
     }
 
     /**
@@ -300,12 +300,12 @@ public class GridViewFragment extends Fragment {
         @Override
         public void run() {
             TranslateAnimation animation = new TranslateAnimation(Animation.RELATIVE_TO_SELF, 0.0f,
-					  											  Animation.RELATIVE_TO_SELF, 0.0f,
-					  											  Animation.RELATIVE_TO_SELF, 2.0f,
-					  											  Animation.RELATIVE_TO_SELF, 0.0f);
+                    Animation.RELATIVE_TO_SELF, 0.0f,
+                    Animation.RELATIVE_TO_SELF, 2.0f,
+                    Animation.RELATIVE_TO_SELF, 0.0f);
 
-			animation.setDuration(150);
-			animation.setInterpolator(new AccelerateDecelerateInterpolator());
+            animation.setDuration(150);
+            animation.setInterpolator(new AccelerateDecelerateInterpolator());
 
             mGridViewAdapter = new GridViewCardsAdapter(mContext, mFragment, mDBColumnsMap);
             //mGridView.setAdapter(mGridViewAdapter);
@@ -320,9 +320,9 @@ public class GridViewFragment extends Fragment {
 
             //Init the quick scroll widget.
             mQuickScroll.init(QuickScrollGridView.TYPE_INDICATOR_WITH_HANDLE,
-                              mGridView,
-                              (GridViewCardsAdapter) mGridViewAdapter,
-                              QuickScrollGridView.STYLE_HOLO);
+                    mGridView,
+                    (GridViewCardsAdapter) mGridViewAdapter,
+                    QuickScrollGridView.STYLE_HOLO);
 
             int[] quickScrollColors = UIElementsHelper.getQuickScrollColors(mContext);
             PauseOnScrollHelper scrollHelper = new PauseOnScrollHelper(mApp.getPicasso(), null, false, true);
@@ -333,30 +333,30 @@ public class GridViewFragment extends Fragment {
             mQuickScroll.setIndicatorColor(quickScrollColors[1], quickScrollColors[0], quickScrollColors[2]);
             mQuickScroll.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 48);
 
-	        animation.setAnimationListener(new AnimationListener() {
+            animation.setAnimationListener(new AnimationListener() {
 
-				@Override
-				public void onAnimationEnd(Animation arg0) {
-					mQuickScroll.setVisibility(View.VISIBLE);
+                @Override
+                public void onAnimationEnd(Animation arg0) {
+                    mQuickScroll.setVisibility(View.VISIBLE);
                     //animationAdapter.setShouldAnimate(false);
 
-				}
+                }
 
-				@Override
-				public void onAnimationRepeat(Animation arg0) {
-					// TODO Auto-generated method stub
+                @Override
+                public void onAnimationRepeat(Animation arg0) {
+                    // TODO Auto-generated method stub
 
-				}
+                }
 
-				@Override
-				public void onAnimationStart(Animation arg0) {
-					mGridView.setVisibility(View.VISIBLE);
+                @Override
+                public void onAnimationStart(Animation arg0) {
+                    mGridView.setVisibility(View.VISIBLE);
 
-				}
+                }
 
-	        });
+            });
 
-	        mGridView.startAnimation(animation);
+            mGridView.startAnimation(animation);
         }
 
     };
@@ -366,7 +366,7 @@ public class GridViewFragment extends Fragment {
         super.onDestroyView();
         mRootView = null;
 
-        if (mCursor!=null) {
+        if (mCursor != null) {
             mCursor.close();
             mCursor = null;
         }
@@ -393,24 +393,24 @@ public class GridViewFragment extends Fragment {
      * Getter methods.
      */
 
-	public GridViewCardsAdapter getGridViewAdapter() {
-		return (GridViewCardsAdapter) mGridViewAdapter;
-	}
+    public GridViewCardsAdapter getGridViewAdapter() {
+        return (GridViewCardsAdapter) mGridViewAdapter;
+    }
 
-	public GridView getGridView() {
-		return mGridView;
-	}
+    public GridView getGridView() {
+        return mGridView;
+    }
 
-	public Cursor getCursor() {
-		return mCursor;
-	}
+    public Cursor getCursor() {
+        return mCursor;
+    }
 
 	/*
-	 * Setter methods.
+     * Setter methods.
 	 */
-	
-	public void setCursor(Cursor cursor) {
-		this.mCursor = cursor;
-	}
+
+    public void setCursor(Cursor cursor) {
+        this.mCursor = cursor;
+    }
 
 }

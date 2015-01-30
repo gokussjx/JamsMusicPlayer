@@ -17,84 +17,76 @@ package com.jams.music.player.Helpers;
 
 import android.content.ContentUris;
 import android.content.Context;
-import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.provider.MediaStore;
-import android.util.Log;
 
 import com.jams.music.player.DBHelpers.DBAccessHelper;
 import com.jams.music.player.DBHelpers.MediaStoreAccessHelper;
-import com.jams.music.player.R;
 import com.jams.music.player.Utils.Common;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 import com.squareup.picasso.Transformation;
 
-import java.util.ArrayList;
-
 /**
  * Helper class for the current song.
- * 
- * @author Saravan Pantham
  *
+ * @author Saravan Pantham
  */
 public class SongHelper {
 
-	private SongHelper mSongHelper;
-	private Common mApp;
-	private int mIndex;
-	private boolean mIsCurrentSong = false;
-	private boolean mIsAlbumArtLoaded = false;
-	
-	//Song parameters.
-	private String mTitle;
-	private String mArtist;
-	private String mAlbum;
-	private String mAlbumArtist;
-	private String mDuration;
-	private String mFilePath;
-	private String mGenre;
-	private String mId;
-	private String mAlbumArtPath;
-	private String mSource;
-	private String mLocalCopyPath;
-	private long mSavedPosition;
-	private Bitmap mAlbumArt;
-	
-	private AlbumArtLoadedListener mAlbumArtLoadedListener;
-	
-	/**
-	 * Interface that provides callbacks to the provided listener 
-	 * once the song's album art has been loaded.
-	 */
-	public interface AlbumArtLoadedListener {
-		
-		/**
-		 * Called once the album art bitmap is ready for use.
-		 */
-		public void albumArtLoaded();
-	}
-	
-	/**
-	 * Moves the specified cursor to the specified index and populates this 
-	 * helper object with new song data.
-	 * 
-	 * @param context Context used to get a new Common object.
-	 * @param index The index of the song.
+    private SongHelper mSongHelper;
+    private Common mApp;
+    private int mIndex;
+    private boolean mIsCurrentSong = false;
+    private boolean mIsAlbumArtLoaded = false;
+
+    //Song parameters.
+    private String mTitle;
+    private String mArtist;
+    private String mAlbum;
+    private String mAlbumArtist;
+    private String mDuration;
+    private String mFilePath;
+    private String mGenre;
+    private String mId;
+    private String mAlbumArtPath;
+    private String mSource;
+    private String mLocalCopyPath;
+    private long mSavedPosition;
+    private Bitmap mAlbumArt;
+
+    private AlbumArtLoadedListener mAlbumArtLoadedListener;
+
+    /**
+     * Interface that provides callbacks to the provided listener
+     * once the song's album art has been loaded.
+     */
+    public interface AlbumArtLoadedListener {
+
+        /**
+         * Called once the album art bitmap is ready for use.
+         */
+        public void albumArtLoaded();
+    }
+
+    /**
+     * Moves the specified cursor to the specified index and populates this
+     * helper object with new song data.
+     *
+     * @param context             Context used to get a new Common object.
+     * @param index               The index of the song.
      * @param albumArtTransformer The transformer to apply to the album art bitmap;
-	 */
-	public void populateSongData(Context context, int index, Transformation albumArtTransformer) {
-		
-		mSongHelper = this;
-		mApp = (Common) context.getApplicationContext();
-		mIndex = index;
-		
-		if (mApp.isServiceRunning()) {
-			mApp.getService().getCursor().moveToPosition(mApp.getService().getPlaybackIndecesList().get(index));
+     */
+    public void populateSongData(Context context, int index, Transformation albumArtTransformer) {
+
+        mSongHelper = this;
+        mApp = (Common) context.getApplicationContext();
+        mIndex = index;
+
+        if (mApp.isServiceRunning()) {
+            mApp.getService().getCursor().moveToPosition(mApp.getService().getPlaybackIndecesList().get(index));
 
             this.setId(mApp.getService().getCursor().getString(getIdColumnIndex()));
             this.setTitle(mApp.getService().getCursor().getString(getTitleColumnIndex()));
@@ -111,20 +103,20 @@ public class SongHelper {
             this.setSavedPosition(determineSavedPosition());
 
             mApp.getPicasso()
-                .load(getAlbumArtPath())
-                .transform(albumArtTransformer)
-                .into(imageLoadingTarget);
+                    .load(getAlbumArtPath())
+                    .transform(albumArtTransformer)
+                    .into(imageLoadingTarget);
 
-		}
+        }
 
-	}
+    }
 
     /**
      * Moves the specified cursor to the specified index and populates this
      * helper object with new song data.
      *
      * @param context Context used to get a new Common object.
-     * @param index The index of the song.
+     * @param index   The index of the song.
      */
     public void populateSongData(Context context, int index) {
 
@@ -164,7 +156,7 @@ public class SongHelper {
      * retrieve all song data, see populateSongData().
      *
      * @param context Context used to get a new Common object.
-     * @param index The index of the song.
+     * @param index   The index of the song.
      */
     public void populateBasicSongData(Context context, int index) {
 
@@ -194,37 +186,37 @@ public class SongHelper {
     }
 
     /**
-	 * Sets this helper object as the current song. This method 
-	 * will check if the song's album art has already been loaded. 
-	 * If so, the updateNotification() and updateWidget() methods 
-	 * will be called. If not, they'll be called as soon as the 
-	 * album art is loaded.
-	 */
-	public void setIsCurrentSong() {
-		mIsCurrentSong = true;
-		//The album art has already been loaded.
-		if (mIsAlbumArtLoaded) {
-			mApp.getService().updateNotification(this);
-			mApp.getService().updateWidgets();
-		} else {
-			/* 
+     * Sets this helper object as the current song. This method
+     * will check if the song's album art has already been loaded.
+     * If so, the updateNotification() and updateWidget() methods
+     * will be called. If not, they'll be called as soon as the
+     * album art is loaded.
+     */
+    public void setIsCurrentSong() {
+        mIsCurrentSong = true;
+        //The album art has already been loaded.
+        if (mIsAlbumArtLoaded) {
+            mApp.getService().updateNotification(this);
+            mApp.getService().updateWidgets();
+        } else {
+            /*
 			 * The album art isn't ready yet. The listener will call 
 			 * the updateNotification() and updateWidgets() methods.
 			 */
-		}
-		
-	}
-	
-	/**
-	 * Image loading listener to store the current song's album art.
-	 */
+        }
+
+    }
+
+    /**
+     * Image loading listener to store the current song's album art.
+     */
     Target imageLoadingTarget = new Target() {
 
         @Override
         public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
             mIsAlbumArtLoaded = true;
             setAlbumArt(bitmap);
-            if (getAlbumArtLoadedListener()!=null)
+            if (getAlbumArtLoadedListener() != null)
                 getAlbumArtLoadedListener().albumArtLoaded();
 
             if (mIsCurrentSong) {
@@ -251,7 +243,7 @@ public class SongHelper {
     };
 
     private int getIdColumnIndex() {
-        if (mApp.getService().getCursor().getColumnIndex(MediaStore.Audio.Media.IS_MUSIC)==-1) {
+        if (mApp.getService().getCursor().getColumnIndex(MediaStore.Audio.Media.IS_MUSIC) == -1) {
             //We're dealing with Jams' internal DB schema.
             return mApp.getService().getCursor().getColumnIndex(DBAccessHelper.SONG_ID);
         } else {
@@ -271,7 +263,7 @@ public class SongHelper {
     }
 
     private int getFilePathColumnIndex() {
-        if (mApp.getService().getCursor().getColumnIndex(MediaStore.Audio.Media.IS_MUSIC)==-1) {
+        if (mApp.getService().getCursor().getColumnIndex(MediaStore.Audio.Media.IS_MUSIC) == -1) {
             //We're dealing with Jams' internal DB schema.
             return mApp.getService().getCursor().getColumnIndex(DBAccessHelper.SONG_FILE_PATH);
         } else {
@@ -291,7 +283,7 @@ public class SongHelper {
     }
 
     private int getTitleColumnIndex() {
-        if (mApp.getService().getCursor().getColumnIndex(MediaStore.Audio.Media.IS_MUSIC)==-1) {
+        if (mApp.getService().getCursor().getColumnIndex(MediaStore.Audio.Media.IS_MUSIC) == -1) {
             //We're dealing with Jams' internal DB schema.
             return mApp.getService().getCursor().getColumnIndex(DBAccessHelper.SONG_TITLE);
         } else {
@@ -310,7 +302,7 @@ public class SongHelper {
     }
 
     private int getArtistColumnIndex() {
-        if (mApp.getService().getCursor().getColumnIndex(MediaStore.Audio.Media.IS_MUSIC)==-1) {
+        if (mApp.getService().getCursor().getColumnIndex(MediaStore.Audio.Media.IS_MUSIC) == -1) {
             //We're dealing with Jams' internal DB schema.
             return mApp.getService().getCursor().getColumnIndex(DBAccessHelper.SONG_ARTIST);
         } else {
@@ -330,7 +322,7 @@ public class SongHelper {
     }
 
     private int getAlbumColumnIndex() {
-        if (mApp.getService().getCursor().getColumnIndex(MediaStore.Audio.Media.IS_MUSIC)==-1) {
+        if (mApp.getService().getCursor().getColumnIndex(MediaStore.Audio.Media.IS_MUSIC) == -1) {
             //We're dealing with Jams' internal DB schema.
             return mApp.getService().getCursor().getColumnIndex(DBAccessHelper.SONG_ALBUM);
         } else {
@@ -350,7 +342,7 @@ public class SongHelper {
     }
 
     private int getAlbumArtistColumnIndex() {
-        if (mApp.getService().getCursor().getColumnIndex(MediaStore.Audio.Media.IS_MUSIC)==-1) {
+        if (mApp.getService().getCursor().getColumnIndex(MediaStore.Audio.Media.IS_MUSIC) == -1) {
             //We're dealing with Jams' internal DB schema.
             return mApp.getService().getCursor().getColumnIndex(DBAccessHelper.SONG_ALBUM_ARTIST);
         } else {
@@ -363,7 +355,7 @@ public class SongHelper {
                 return mApp.getService().getCursor().getColumnIndex(DBAccessHelper.SONG_ALBUM_ARTIST);
             else
                 //The current row is from MediaStore's DB schema.
-                if (mApp.getService().getCursor().getColumnIndex(MediaStoreAccessHelper.ALBUM_ARTIST)!=-1)
+                if (mApp.getService().getCursor().getColumnIndex(MediaStoreAccessHelper.ALBUM_ARTIST) != -1)
                     return mApp.getService().getCursor().getColumnIndex(MediaStoreAccessHelper.ALBUM_ARTIST);
                 else
                     return mApp.getService().getCursor().getColumnIndex(MediaStore.Audio.Media.ARTIST);
@@ -373,7 +365,7 @@ public class SongHelper {
     }
 
     private String determineGenreName(Context context) {
-        if (mApp.getService().getCursor().getColumnIndex(MediaStore.Audio.Media.IS_MUSIC)==-1) {
+        if (mApp.getService().getCursor().getColumnIndex(MediaStore.Audio.Media.IS_MUSIC) == -1) {
             //We're dealing with Jams' internal DB schema.
             int colIndex = mApp.getService().getCursor().getColumnIndex(DBAccessHelper.SONG_GENRE);
             return mApp.getService().getCursor().getString(colIndex);
@@ -398,7 +390,7 @@ public class SongHelper {
     }
 
     private String determineAlbumArtPath() {
-        if (mApp.getService().getCursor().getColumnIndex(MediaStore.Audio.Media.IS_MUSIC)==-1) {
+        if (mApp.getService().getCursor().getColumnIndex(MediaStore.Audio.Media.IS_MUSIC) == -1) {
             //We're dealing with Jams' internal DB schema.
             int colIndex = mApp.getService().getCursor().getColumnIndex(DBAccessHelper.SONG_ALBUM_ART_PATH);
             return mApp.getService().getCursor().getString(colIndex);
@@ -427,7 +419,7 @@ public class SongHelper {
     }
 
     private String determineDuration() {
-        if (mApp.getService().getCursor().getColumnIndex(MediaStore.Audio.Media.IS_MUSIC)==-1) {
+        if (mApp.getService().getCursor().getColumnIndex(MediaStore.Audio.Media.IS_MUSIC) == -1) {
             //We're dealing with Jams' internal DB schema.
             int colIndex = mApp.getService().getCursor().getColumnIndex(DBAccessHelper.SONG_DURATION);
             return mApp.getService().getCursor().getString(colIndex);
@@ -455,7 +447,7 @@ public class SongHelper {
     }
 
     private String determineSongSource() {
-        if (mApp.getService().getCursor().getColumnIndex(MediaStore.Audio.Media.IS_MUSIC)==-1) {
+        if (mApp.getService().getCursor().getColumnIndex(MediaStore.Audio.Media.IS_MUSIC) == -1) {
             //We're dealing with Jams' internal DB schema.
             int colIndex = mApp.getService().getCursor().getColumnIndex(DBAccessHelper.SONG_SOURCE);
             return mApp.getService().getCursor().getString(colIndex);
@@ -480,7 +472,7 @@ public class SongHelper {
     }
 
     private String determineLocalCopyPath() {
-        if (mApp.getService().getCursor().getColumnIndex(MediaStore.Audio.Media.IS_MUSIC)==-1) {
+        if (mApp.getService().getCursor().getColumnIndex(MediaStore.Audio.Media.IS_MUSIC) == -1) {
             //We're dealing with Jams' internal DB schema.
             int colIndex = mApp.getService().getCursor().getColumnIndex(DBAccessHelper.LOCAL_COPY_PATH);
             return mApp.getService().getCursor().getString(colIndex);
@@ -506,7 +498,7 @@ public class SongHelper {
     }
 
     private long determineSavedPosition() {
-        if (mApp.getService().getCursor().getColumnIndex(MediaStore.Audio.Media.IS_MUSIC)==-1) {
+        if (mApp.getService().getCursor().getColumnIndex(MediaStore.Audio.Media.IS_MUSIC) == -1) {
             //We're dealing with Jams' internal DB schema.
             int colIndex = mApp.getService().getCursor().getColumnIndex(DBAccessHelper.SAVED_POSITION);
             return mApp.getService().getCursor().getLong(colIndex);
@@ -534,116 +526,116 @@ public class SongHelper {
         return mIndex;
     }
 
-	public String getTitle() {
-		return mTitle;
-	}
-	
-	public void setTitle(String title) {
-		mTitle = title;
-	}
-	
-	public String getArtist() {
-		return mArtist;
-	}
-	
-	public void setArtist(String artist) {
-		mArtist = artist;
-	}
-	
-	public String getAlbum() {
-		return mAlbum;
-	}
-	
-	public void setAlbum(String album) {
-		mAlbum = album;
-	}
-	
-	public String getAlbumArtist() {
-		return mAlbumArtist;
-	}
-	
-	public void setAlbumArtist(String albumArtist) {
-		mAlbumArtist = albumArtist;
-	}
-	
-	public String getDuration() {
-		return mDuration;
-	}
-	
-	public void setDuration(String duration) {
-		mDuration = duration;
-	}
-	
-	public String getFilePath() {
-		return mFilePath;
-	}
-	
-	public String getLocalCopyPath() {
-		return mLocalCopyPath;
-	}
-	
-	public Bitmap getAlbumArt() {
-		return mAlbumArt;
-	}
-	
-	public void setFilePath(String filePath) {
-		mFilePath = filePath;
-	}
-	
-	public String getGenre() {
-		return mGenre;
-	}
-	
-	public void setGenre(String genre) {
-		mGenre = genre;
-	}
-	
-	public String getId() {
-		return mId;
-	}
-	
-	public void setId(String id) {
-		mId = id;
-	}
-	
-	public String getAlbumArtPath() {
-		return mAlbumArtPath;
-	}
-	
-	public void setAlbumArtPath(String albumArtPath) {
-		mAlbumArtPath = albumArtPath;
-	}
-	
-	public String getSource() {
-		return mSource;
-	}
-	
-	public void setSource(String source) {
-		mSource = source;
-	}
+    public String getTitle() {
+        return mTitle;
+    }
 
-	public void setLocalCopyPath(String localCopyPath) {
-		mLocalCopyPath = localCopyPath;
-	}
-	
-	public void setAlbumArt(Bitmap albumArt) {
-		mAlbumArt = albumArt;
-	}
-	
-	public void setSavedPosition(long savedPosition) {
-		mSavedPosition = savedPosition;
-	}
-	
-	public long getSavedPosition() {
-		return mSavedPosition;
-	}
-	
-	public void setAlbumArtLoadedListener(AlbumArtLoadedListener listener) {
-		mAlbumArtLoadedListener = listener;
-	}
-	
-	public AlbumArtLoadedListener getAlbumArtLoadedListener() {
-		return mAlbumArtLoadedListener;
-	}
-	
+    public void setTitle(String title) {
+        mTitle = title;
+    }
+
+    public String getArtist() {
+        return mArtist;
+    }
+
+    public void setArtist(String artist) {
+        mArtist = artist;
+    }
+
+    public String getAlbum() {
+        return mAlbum;
+    }
+
+    public void setAlbum(String album) {
+        mAlbum = album;
+    }
+
+    public String getAlbumArtist() {
+        return mAlbumArtist;
+    }
+
+    public void setAlbumArtist(String albumArtist) {
+        mAlbumArtist = albumArtist;
+    }
+
+    public String getDuration() {
+        return mDuration;
+    }
+
+    public void setDuration(String duration) {
+        mDuration = duration;
+    }
+
+    public String getFilePath() {
+        return mFilePath;
+    }
+
+    public String getLocalCopyPath() {
+        return mLocalCopyPath;
+    }
+
+    public Bitmap getAlbumArt() {
+        return mAlbumArt;
+    }
+
+    public void setFilePath(String filePath) {
+        mFilePath = filePath;
+    }
+
+    public String getGenre() {
+        return mGenre;
+    }
+
+    public void setGenre(String genre) {
+        mGenre = genre;
+    }
+
+    public String getId() {
+        return mId;
+    }
+
+    public void setId(String id) {
+        mId = id;
+    }
+
+    public String getAlbumArtPath() {
+        return mAlbumArtPath;
+    }
+
+    public void setAlbumArtPath(String albumArtPath) {
+        mAlbumArtPath = albumArtPath;
+    }
+
+    public String getSource() {
+        return mSource;
+    }
+
+    public void setSource(String source) {
+        mSource = source;
+    }
+
+    public void setLocalCopyPath(String localCopyPath) {
+        mLocalCopyPath = localCopyPath;
+    }
+
+    public void setAlbumArt(Bitmap albumArt) {
+        mAlbumArt = albumArt;
+    }
+
+    public void setSavedPosition(long savedPosition) {
+        mSavedPosition = savedPosition;
+    }
+
+    public long getSavedPosition() {
+        return mSavedPosition;
+    }
+
+    public void setAlbumArtLoadedListener(AlbumArtLoadedListener listener) {
+        mAlbumArtLoadedListener = listener;
+    }
+
+    public AlbumArtLoadedListener getAlbumArtLoadedListener() {
+        return mAlbumArtLoadedListener;
+    }
+
 }

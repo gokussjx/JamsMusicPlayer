@@ -26,25 +26,25 @@ import android.support.v4.app.DialogFragment;
 import android.view.View;
 import android.widget.EditText;
 
-import com.jams.music.player.R;
 import com.jams.music.player.AsyncTasks.AsyncCreateNewPlaylistTask;
 import com.jams.music.player.Helpers.TypefaceHelper;
+import com.jams.music.player.R;
 
 public class AddToPlaylistDialog extends DialogFragment {
 
-	private Context mContext;
-	private String ADD_TYPE;
-	private String ARTIST;
-	private String ALBUM;
-	private String ALBUM_ARTIST;
-	private String SONG;
-	private String GENRE;
-	
-	@Override
+    private Context mContext;
+    private String ADD_TYPE;
+    private String ARTIST;
+    private String ALBUM;
+    private String ALBUM_ARTIST;
+    private String SONG;
+    private String GENRE;
+
+    @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-		
-		mContext = getActivity().getApplicationContext();
-		
+
+        mContext = getActivity().getApplicationContext();
+
 /*		//Retrieve the arguments.
 		ADD_TYPE = getArguments().getString("ADD_TYPE");
 		
@@ -65,7 +65,7 @@ public class AddToPlaylistDialog extends DialogFragment {
 			ALBUM = getArguments().getString("ALBUM");
 			ALBUM_ARTIST = getArguments().getString("ALBUM_ARTIST");
 		}*/
-		
+
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         /*String columns[] = { DBAccessHelper.PLAYLIST_NAME, DBAccessHelper._ID,
         					 DBAccessHelper.PLAYLIST_FILE_PATH, DBAccessHelper.PLAYLIST_SOURCE,
@@ -112,48 +112,48 @@ public class AddToPlaylistDialog extends DialogFragment {
         return builder.create();
     }
 
-	//Displays the "Add New Playlist" dialog.
-	public void showNewPlaylistDialog() {
-		View dialogView = getActivity().getLayoutInflater().inflate(R.layout.add_new_playlist_dialog_layout, null);
-		final EditText newPlaylistEditText = (EditText) dialogView.findViewById(R.id.new_playlist_name_text_field);
-		newPlaylistEditText.setTypeface(TypefaceHelper.getTypeface(getActivity(), "RobotoCondensed-Light"));
-		newPlaylistEditText.setPaintFlags(newPlaylistEditText.getPaintFlags() | Paint.ANTI_ALIAS_FLAG | Paint.SUBPIXEL_TEXT_FLAG);
-		
-		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-		builder.setTitle(R.string.new_playlist);
-		builder.setView(dialogView);
-		builder.setPositiveButton(R.string.ok, new OnClickListener() {
+    //Displays the "Add New Playlist" dialog.
+    public void showNewPlaylistDialog() {
+        View dialogView = getActivity().getLayoutInflater().inflate(R.layout.add_new_playlist_dialog_layout, null);
+        final EditText newPlaylistEditText = (EditText) dialogView.findViewById(R.id.new_playlist_name_text_field);
+        newPlaylistEditText.setTypeface(TypefaceHelper.getTypeface(getActivity(), "RobotoCondensed-Light"));
+        newPlaylistEditText.setPaintFlags(newPlaylistEditText.getPaintFlags() | Paint.ANTI_ALIAS_FLAG | Paint.SUBPIXEL_TEXT_FLAG);
 
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				//Retrieve the name of the new playlist.
-				String playlistName = newPlaylistEditText.getText().toString();
-				AsyncCreateNewPlaylistTask task = new AsyncCreateNewPlaylistTask(mContext, 
-																				 playlistName, 
-																				 ARTIST, 
-																				 ALBUM, 
-																				 SONG, 
-																				 GENRE, 
-																				 ALBUM_ARTIST,
-																				 ADD_TYPE);
-				task.execute();
-				dialog.dismiss();
-				
-			}
-			
-		});
-		
-		builder.setNegativeButton(R.string.cancel, new OnClickListener() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle(R.string.new_playlist);
+        builder.setView(dialogView);
+        builder.setPositiveButton(R.string.ok, new OnClickListener() {
 
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				dialog.dismiss();
-				
-			}
-			
-		});
-		
-		builder.create().show();
-	}
-	
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                //Retrieve the name of the new playlist.
+                String playlistName = newPlaylistEditText.getText().toString();
+                AsyncCreateNewPlaylistTask task = new AsyncCreateNewPlaylistTask(mContext,
+                        playlistName,
+                        ARTIST,
+                        ALBUM,
+                        SONG,
+                        GENRE,
+                        ALBUM_ARTIST,
+                        ADD_TYPE);
+                task.execute();
+                dialog.dismiss();
+
+            }
+
+        });
+
+        builder.setNegativeButton(R.string.cancel, new OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+
+            }
+
+        });
+
+        builder.create().show();
+    }
+
 }

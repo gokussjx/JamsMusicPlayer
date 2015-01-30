@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:id="@+id/back_to_parent_directory_view" >
+    android:id="@+id/back_to_parent_directory_view">
 
     <ImageView
         android:id="@+id/back_to_parent_directory_icon"

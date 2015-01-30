@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="128.0dip"
-    tools:ignore="ContentDescription" >
+    tools:ignore="ContentDescription">
 
     <!-- The height cannot be specified any other way. It must read "128.0dip" and cannot be referenced. I think it's a bug. -->
 
@@ -14,7 +14,7 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:scaleType="fitXY" />
-    
+
     <LinearLayout
         android:id="@+id/notification_expanded_buttons"
         android:layout_width="wrap_content"
@@ -26,7 +26,7 @@
         android:dividerPadding="@dimen/notification_expanded_buttons_divider_padding"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:showDividers="middle" >
+        android:showDividers="middle">
 
         <ImageButton
             android:id="@+id/notification_expanded_base_previous"
@@ -86,7 +86,7 @@
         android:layout_toRightOf="@+id/notification_expanded_base_image"
         android:orientation="vertical"
         android:paddingLeft="@dimen/notification_info_container_padding_left"
-        android:paddingTop="@dimen/notification_expanded_content_padding_top" >
+        android:paddingTop="@dimen/notification_expanded_content_padding_top">
 
         <TextView
             android:id="@+id/notification_expanded_base_line_one"

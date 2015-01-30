@@ -7,7 +7,8 @@ import static com.andraskindler.quickscroll.animation.AnimatorProxy.NEEDS_PROXY;
 import static com.andraskindler.quickscroll.animation.AnimatorProxy.wrap;
 
 public final class ViewHelper {
-    private ViewHelper() {}
+    private ViewHelper() {
+    }
 
     public static float getAlpha(View view) {
         return NEEDS_PROXY ? wrap(view).getAlpha() : Honeycomb.getAlpha(view);

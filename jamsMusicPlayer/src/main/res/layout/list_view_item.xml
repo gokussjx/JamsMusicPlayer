@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="84dp" >
+    android:layout_height="84dp">
 
     <TextView
         android:id="@+id/listViewRightSubText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-		android:layout_centerVertical="true"
-		android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
         android:paddingRight="48dp"
         android:text="0:00"
-        android:lines="1" 
-      	android:ellipsize="end" 
+        android:lines="1"
+        android:ellipsize="end"
         android:textSize="14sp" />
 
     <ImageView
@@ -20,10 +20,10 @@
         android:layout_height="@dimen/list_view_left_icon_size"
         android:layout_width="@dimen/list_view_left_icon_size"
         android:layout_alignParentLeft="true"
-		android:layout_centerVertical="true"
+        android:layout_centerVertical="true"
         android:src="@drawable/empty_color_patch_circular"
         android:paddingLeft="8dp" />
-    
+
     <LinearLayout
         android:id="@+id/listViewTextContainer"
         android:layout_width="match_parent"
@@ -31,12 +31,12 @@
         android:layout_centerVertical="true"
         android:layout_toRightOf="@+id/listViewLeftIcon"
         android:layout_toLeftOf="@+id/listViewRightSubText"
-        android:orientation="vertical" >
+        android:orientation="vertical">
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" 
-            android:layout_weight="1" >
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
 
             <TextView
                 android:id="@+id/listViewTitleText"
@@ -53,15 +53,15 @@
                 android:text="Song Name"
                 android:layout_marginRight="15dp"
                 android:textSize="16sp" />
-            
+
         </RelativeLayout>
-        
+
         <RelativeLayout
             android:id="@+id/listViewSubTextParent"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" 
-            android:layout_weight="1" >
-            
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+
             <TextView
                 android:id="@+id/listViewSubText"
                 android:layout_width="wrap_content"
@@ -77,9 +77,9 @@
                 android:textSize="14sp"
                 android:singleLine="true"
                 android:textColor="#AAAAAA" />
-            
+
         </RelativeLayout>
-        
+
     </LinearLayout>
 
     <ImageButton
@@ -92,6 +92,6 @@
         android:background="?android:selectableItemBackground"
         android:src="@drawable/ic_action_overflow_universal"
         android:scaleX="0.75"
-        android:scaleY="0.75"/>
+        android:scaleY="0.75" />
 
 </RelativeLayout>

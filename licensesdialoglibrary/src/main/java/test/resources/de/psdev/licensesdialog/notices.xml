@@ -25,7 +25,7 @@
     <notice>
         <name>RoboGuice 2.0</name>
         <url>http://roboguice.org</url>
-        <copyright/>
+        <copyright />
         <license>Apache Software License 2.0</license>
     </notice>
     <notice>
@@ -37,7 +37,9 @@
     <notice>
         <name>Android ViewPagerIndicator</name>
         <url>http://viewpagerindicator.com/</url>
-        <copyright>Copyright (C) 2011 The Android Open Source Project&lt;br/&gt;Copyright (C) 2012 Jake Wharton</copyright>
+        <copyright>Copyright (C) 2011 The Android Open Source Project&lt;br/&gt;Copyright (C) 2012
+            Jake Wharton
+        </copyright>
         <license>Apache Software License 2.0</license>
     </notice>
     <notice>
@@ -49,13 +51,14 @@
     <notice>
         <name>Crouton</name>
         <url>https://github.com/keyboardsurfer/Crouton</url>
-        <copyright>Copyright 2012 Benjamin Weiss&lt;br/&gt;Copyright 2012 Neofonie Mobile GmbH</copyright>
+        <copyright>Copyright 2012 Benjamin Weiss&lt;br/&gt;Copyright 2012 Neofonie Mobile GmbH
+        </copyright>
         <license>Apache Software License 2.0</license>
     </notice>
     <notice>
         <name>Jackson JSON-processor</name>
         <url>http://jackson.codehaus.org/</url>
-        <copyright/>
+        <copyright />
         <license>Apache Software License 2.0</license>
     </notice>
     <notice>
@@ -91,7 +94,9 @@
     <notice>
         <name>DiskLruCache</name>
         <url>https://github.com/JakeWharton/DiskLruCache</url>
-        <copyright>Copyright (C) 2011 The Android Open Source Project&lt;br/&gt;Copyright 2012 Jake Wharton</copyright>
+        <copyright>Copyright (C) 2011 The Android Open Source Project&lt;br/&gt;Copyright 2012 Jake
+            Wharton
+        </copyright>
         <license>Apache Software License 2.0</license>
     </notice>
     <notice>

@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content" >
+    android:layout_height="wrap_content">
 
     <TextView
         android:id="@+id/songDurationListView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-		android:layout_centerVertical="true"
-		android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
         android:layout_marginRight="15dp"
         android:text="0:00"
-        android:lines="1" 
-      	android:ellipsize="end" 
+        android:lines="1"
+        android:ellipsize="end"
         android:textAppearance="?android:attr/textAppearanceSmall" />
 
     <RelativeLayout
@@ -20,15 +20,15 @@
         android:layout_width="75dp"
         android:layout_height="75dp"
         android:layout_alignParentLeft="true"
-        android:layout_centerVertical="true" >
-        
+        android:layout_centerVertical="true">
+
         <ImageView
-	        android:id="@+id/songsListAlbumThumbnail"
-	        android:layout_width="75dp"
-	        android:layout_height="75dp"
-	        android:layout_alignParentLeft="true"
-	        android:layout_centerVertical="true" 
-	        android:src="@drawable/transparent_drawable"/>
+            android:id="@+id/songsListAlbumThumbnail"
+            android:layout_width="75dp"
+            android:layout_height="75dp"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/transparent_drawable" />
 
         <ImageView
             android:id="@+id/dimmer"
@@ -38,7 +38,7 @@
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:src="@drawable/transparent_black_patch" />
-        
+
         <TextView
             android:id="@+id/top_25_played_rank_text"
             android:layout_width="fill_parent"
@@ -49,22 +49,22 @@
             android:textColor="#FFFFFF"
             android:textSize="25sp"
             android:text="#25" />
-        
+
     </RelativeLayout>
 
-	<LinearLayout
+    <LinearLayout
         android:id="@+id/linearLayout1"
         android:layout_width="fill_parent"
         android:layout_height="75dp"
         android:layout_centerVertical="true"
         android:layout_toRightOf="@+id/albumArtLayout"
         android:layout_toLeftOf="@+id/songDurationListView"
-        android:orientation="vertical" >
+        android:orientation="vertical">
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" 
-            android:layout_weight="1" >
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
 
             <TextView
                 android:id="@+id/songNameListView"
@@ -78,14 +78,14 @@
                 android:ellipsize="end"
                 android:gravity="bottom"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
-            
+
         </RelativeLayout>
-        
+
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" 
-            android:layout_weight="1.25" >
-            
+            android:layout_height="wrap_content"
+            android:layout_weight="1.25">
+
             <TextView
                 android:id="@+id/artistNameSongListView"
                 android:layout_width="wrap_content"
@@ -96,9 +96,9 @@
                 android:text="Artist Name"
                 android:gravity="top"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
-            
+
         </RelativeLayout>
-        
+
     </LinearLayout>
 
 </RelativeLayout>

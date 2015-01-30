@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content" >
+    android:layout_height="wrap_content">
 
     <ImageView
         android:id="@+id/file_folder_icon"
@@ -19,22 +19,22 @@
         android:layout_alignParentLeft="true"
         android:focusable="false"
         android:layout_centerVertical="true" />
-    
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="64dp"
         android:layout_centerVertical="true"
         android:layout_toRightOf="@+id/file_folder_icon"
-        android:orientation="vertical" >
+        android:orientation="vertical">
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" 
-            android:layout_weight="1" >
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
 
             <TextView
-        		android:id="@+id/file_folder_title_multiselect"
-        		android:layout_width="wrap_content"
+                android:id="@+id/file_folder_title_multiselect"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentLeft="true"
@@ -45,17 +45,17 @@
                 android:gravity="bottom"
                 android:fadingEdge="horizontal"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
-            
+
         </RelativeLayout>
-        
+
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" 
-            android:layout_weight="1.25" >
-            
+            android:layout_height="wrap_content"
+            android:layout_weight="1.25">
+
             <TextView
-		        android:id="@+id/file_folder_size_multiselect"
-		        android:layout_width="wrap_content"
+                android:id="@+id/file_folder_size_multiselect"
+                android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentLeft="true"
@@ -64,9 +64,9 @@
                 android:gravity="top"
                 android:fadingEdge="horizontal"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
-            
+
         </RelativeLayout>
-        
+
     </LinearLayout>
 
 </RelativeLayout>

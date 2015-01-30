@@ -1,45 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content" >
+    android:layout_height="wrap_content">
 
 
-     <ImageView
+    <ImageView
         android:id="@+id/remove_song_from_queue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-		android:layout_centerVertical="true"
-		android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
         android:layout_marginRight="30dp"
-        android:lines="1" 
-      	android:ellipsize="end" 
-      	android:visibility="visible"
-      	android:scaleX="0.75"
-      	android:scaleY="0.75"
-      	android:src="@drawable/cross_light" />
-    
+        android:lines="1"
+        android:ellipsize="end"
+        android:visibility="visible"
+        android:scaleX="0.75"
+        android:scaleY="0.75"
+        android:src="@drawable/cross_light" />
+
     <ImageView
         android:id="@+id/playlists_flipped_handle"
         android:layout_width="wrap_content"
         android:layout_height="75dp"
         android:layout_alignParentLeft="true"
         android:layout_marginLeft="5dp"
-        android:layout_centerVertical="true" 
-        android:src="@drawable/drag_handle"/>
-    
-	<LinearLayout
+        android:layout_centerVertical="true"
+        android:src="@drawable/drag_handle" />
+
+    <LinearLayout
         android:id="@+id/linearLayout1"
         android:layout_width="fill_parent"
         android:layout_height="75dp"
         android:layout_centerVertical="true"
         android:layout_toRightOf="@+id/playlists_flipped_handle"
         android:layout_toLeftOf="@+id/remove_song_from_queue"
-        android:orientation="vertical" >
+        android:orientation="vertical">
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" 
-            android:layout_weight="1" >
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
 
             <TextView
                 android:id="@+id/playlists_flipped_song"
@@ -55,14 +55,14 @@
                 android:text="Song Name"
                 android:layout_marginRight="10dp"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
-            
+
         </RelativeLayout>
-        
+
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" 
-            android:layout_weight="1.25" >
-            
+            android:layout_height="wrap_content"
+            android:layout_weight="1.25">
+
             <TextView
                 android:id="@+id/playlists_flipped_artist"
                 android:layout_width="wrap_content"
@@ -75,9 +75,9 @@
                 android:text="Artist Name | 0:00"
                 android:layout_marginRight="10dp"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
-            
+
         </RelativeLayout>
-        
+
     </LinearLayout>
 
 </RelativeLayout>

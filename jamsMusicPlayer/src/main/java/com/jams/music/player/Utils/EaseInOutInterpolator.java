@@ -38,13 +38,15 @@ public class EaseInOutInterpolator implements Interpolator {
     }
 
     private float in(float t) {
-        return (float) (-Math.cos(t * (Math.PI/2)) + 1);
+        return (float) (-Math.cos(t * (Math.PI / 2)) + 1);
     }
+
     private float out(float t) {
-        return (float) Math.sin(t * (Math.PI/2));
+        return (float) Math.sin(t * (Math.PI / 2));
     }
+
     private float inout(float t) {
-        return (float) (-0.5f * (Math.cos(Math.PI*t) - 1));
+        return (float) (-0.5f * (Math.cos(Math.PI * t) - 1));
     }
 
     public static class EasingType {

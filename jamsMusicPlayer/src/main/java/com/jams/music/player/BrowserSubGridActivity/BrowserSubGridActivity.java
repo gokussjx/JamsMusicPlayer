@@ -24,7 +24,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.DrawerLayout;
-import android.util.Log;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AccelerateInterpolator;
@@ -102,7 +101,7 @@ public class BrowserSubGridActivity extends FragmentActivity {
         mHeaderText = getIntent().getExtras().getString("headerText");
         mHeaderSubText = getIntent().getExtras().getString("subText");
 
-        if (mHeaderText==null || mHeaderText.isEmpty())
+        if (mHeaderText == null || mHeaderText.isEmpty())
             mHeaderText = mContext.getResources().getString(R.string.unknown_genre);
 
         mHeaderLayout = (RelativeLayout) findViewById(R.id.browser_sub_header_layout);
@@ -143,12 +142,12 @@ public class BrowserSubGridActivity extends FragmentActivity {
                 }
 
                 mApp.getPlaybackKickstarter()
-                    .initPlayback(mContext,
-                            mQuerySelection,
-                            playbackRouteId,
-                            0,
-                            true,
-                            false);
+                        .initPlayback(mContext,
+                                mQuerySelection,
+                                playbackRouteId,
+                                0,
+                                true,
+                                false);
 
             }
 
@@ -182,7 +181,7 @@ public class BrowserSubGridActivity extends FragmentActivity {
      * Sets the entire activity-wide theme.
      */
     private void setTheme() {
-        if (mApp.getCurrentTheme()==Common.DARK_THEME) {
+        if (mApp.getCurrentTheme() == Common.DARK_THEME) {
             setTheme(R.style.AppThemeNoActionBar);
         } else {
             setTheme(R.style.AppThemeLightNoActionBar);
@@ -199,16 +198,16 @@ public class BrowserSubGridActivity extends FragmentActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
 
             int topPadding = Common.getStatusBarHeight(mContext);
-            if (mDrawerParentLayout!=null) {
-                mDrawerParentLayout.setPadding(0, (0-topPadding), 0, 0);
+            if (mDrawerParentLayout != null) {
+                mDrawerParentLayout.setPadding(0, (0 - topPadding), 0, 0);
                 mDrawerParentLayout.setClipToPadding(false);
 
                 int navigationBarHeight = Common.getNavigationBarHeight(mContext);
                 mGridView.setClipToPadding(false);
                 mGridView.setPadding(mGridView.getPaddingLeft(),
-                                     mGridView.getPaddingTop(),
-                                     mGridView.getPaddingRight(),
-                                     mGridView.getPaddingBottom() + navigationBarHeight);
+                        mGridView.getPaddingTop(),
+                        mGridView.getPaddingRight(),
+                        mGridView.getPaddingBottom() + navigationBarHeight);
 
 
             }
@@ -223,14 +222,14 @@ public class BrowserSubGridActivity extends FragmentActivity {
     private void loadDrawerFragments() {
         //Load the navigation drawer.
         getSupportFragmentManager().beginTransaction()
-                                   .replace(R.id.nav_drawer_container, new NavigationDrawerFragment())
-                                   .commit();
+                .replace(R.id.nav_drawer_container, new NavigationDrawerFragment())
+                .commit();
 
         //Load the current queue drawer.
         mQueueDrawerFragment = new QueueDrawerFragment();
         getSupportFragmentManager().beginTransaction()
-                                   .replace(R.id.current_queue_drawer_container, mQueueDrawerFragment)
-                                   .commit();
+                .replace(R.id.current_queue_drawer_container, mQueueDrawerFragment)
+                .commit();
 
     }
 
@@ -246,10 +245,10 @@ public class BrowserSubGridActivity extends FragmentActivity {
             mApp.getPicasso().load(mHeaderImagePath).into(mHeaderImage);
 
             TranslateAnimation slideDown = new TranslateAnimation(mHeaderLayout, 400, new DecelerateInterpolator(2.0f),
-                                                                  View.VISIBLE, Animation.RELATIVE_TO_SELF,
-                                                                  0.0f, Animation.RELATIVE_TO_SELF, 0.0f,
-                                                                  Animation.RELATIVE_TO_SELF, -2.0f,
-                                                                  Animation.RELATIVE_TO_SELF, 0.0f);
+                    View.VISIBLE, Animation.RELATIVE_TO_SELF,
+                    0.0f, Animation.RELATIVE_TO_SELF, 0.0f,
+                    Animation.RELATIVE_TO_SELF, -2.0f,
+                    Animation.RELATIVE_TO_SELF, 0.0f);
 
             slideDown.setAnimationListener(new Animation.AnimationListener() {
 
@@ -407,9 +406,9 @@ public class BrowserSubGridActivity extends FragmentActivity {
         public void run() {
             android.view.animation.TranslateAnimation animation = new
                     android.view.animation.TranslateAnimation(Animation.RELATIVE_TO_SELF, 0.0f,
-                                                              Animation.RELATIVE_TO_SELF, 0.0f,
-                                                              Animation.RELATIVE_TO_SELF, 2.0f,
-                                                              Animation.RELATIVE_TO_SELF, 0.0f);
+                    Animation.RELATIVE_TO_SELF, 0.0f,
+                    Animation.RELATIVE_TO_SELF, 2.0f,
+                    Animation.RELATIVE_TO_SELF, 0.0f);
 
             animation.setDuration(150);
             animation.setInterpolator(new AccelerateDecelerateInterpolator());
@@ -465,10 +464,10 @@ public class BrowserSubGridActivity extends FragmentActivity {
      */
     private void slideAwayHeader() {
         TranslateAnimation slideDown = new TranslateAnimation(mHeaderLayout, 400, new AccelerateInterpolator(2.0f),
-                                                              View.INVISIBLE, Animation.RELATIVE_TO_SELF,
-                                                              0.0f, Animation.RELATIVE_TO_SELF, 0.0f,
-                                                              Animation.RELATIVE_TO_SELF, 0.0f,
-                                                              Animation.RELATIVE_TO_SELF, -2.0f);
+                View.INVISIBLE, Animation.RELATIVE_TO_SELF,
+                0.0f, Animation.RELATIVE_TO_SELF, 0.0f,
+                Animation.RELATIVE_TO_SELF, 0.0f,
+                Animation.RELATIVE_TO_SELF, -2.0f);
 
         slideDown.setAnimationListener(new Animation.AnimationListener() {
 
@@ -499,10 +498,10 @@ public class BrowserSubGridActivity extends FragmentActivity {
      */
     private void slideAwayGridView() {
         android.view.animation.TranslateAnimation animation = new
-                         android.view.animation.TranslateAnimation(Animation.RELATIVE_TO_SELF, 0.0f,
-                         Animation.RELATIVE_TO_SELF, 0.0f,
-                         Animation.RELATIVE_TO_SELF, 0.0f,
-                         Animation.RELATIVE_TO_SELF, 2.0f);
+                android.view.animation.TranslateAnimation(Animation.RELATIVE_TO_SELF, 0.0f,
+                Animation.RELATIVE_TO_SELF, 0.0f,
+                Animation.RELATIVE_TO_SELF, 0.0f,
+                Animation.RELATIVE_TO_SELF, 2.0f);
 
         animation.setDuration(400);
         animation.setInterpolator(new AccelerateInterpolator(2.0f));
@@ -548,10 +547,10 @@ public class BrowserSubGridActivity extends FragmentActivity {
             try {
                 View topChild = view.getChildAt(0);
                 int scrollY = -(topChild.getTop()) + view.getFirstVisiblePosition() * topChild.getHeight();
-                int adjustedScrollY = (int) ((-scrollY)-mApp.convertDpToPixels(280.0f, mContext));
+                int adjustedScrollY = (int) ((-scrollY) - mApp.convertDpToPixels(280.0f, mContext));
 
                 RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) mHeaderLayout.getLayoutParams();
-                params.topMargin = adjustedScrollY/3;
+                params.topMargin = adjustedScrollY / 3;
                 mHeaderLayout.setLayoutParams(params);
 
             } catch (Exception e) {

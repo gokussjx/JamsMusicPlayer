@@ -16,8 +16,6 @@
  */
 package com.velocityviewpagerindicator;
 
-import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
-import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 import android.content.Context;
 import android.support.v4.view.PagerAdapter;
 import android.util.AttributeSet;
@@ -30,12 +28,17 @@ import android.widget.TextView;
 import com.velocity.view.pager.library.VelocityViewPager;
 import com.velocity.view.pager.library.VelocityViewPager.OnPageChangeListener;
 
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
+
 /**
  * This widget implements the dynamic action bar tab behavior that can change
  * across different configurations or circumstances.
  */
 public class VelocityTabPageIndicator extends HorizontalScrollView implements VelocityPageIndicator {
-    /** Title text used when no title is provided by the adapter. */
+    /**
+     * Title text used when no title is provided by the adapter.
+     */
     private static final CharSequence EMPTY_TITLE = "";
 
     /**
@@ -54,7 +57,7 @@ public class VelocityTabPageIndicator extends HorizontalScrollView implements Ve
 
     private final OnClickListener mTabClickListener = new OnClickListener() {
         public void onClick(View view) {
-            TabView tabView = (TabView)view;
+            TabView tabView = (TabView) view;
             final int oldSelected = mVelocityViewPager.getCurrentItem();
             final int newSelected = tabView.getIndex();
             mVelocityViewPager.setCurrentItem(newSelected);
@@ -99,7 +102,7 @@ public class VelocityTabPageIndicator extends HorizontalScrollView implements Ve
         final int childCount = mTabLayout.getChildCount();
         if (childCount > 1 && (widthMode == MeasureSpec.EXACTLY || widthMode == MeasureSpec.AT_MOST)) {
             if (childCount > 2) {
-                mMaxTabWidth = (int)(MeasureSpec.getSize(widthMeasureSpec) * 0.4f);
+                mMaxTabWidth = (int) (MeasureSpec.getSize(widthMeasureSpec) * 0.4f);
             } else {
                 mMaxTabWidth = MeasureSpec.getSize(widthMeasureSpec) / 2;
             }
@@ -207,7 +210,7 @@ public class VelocityTabPageIndicator extends HorizontalScrollView implements Ve
         PagerAdapter adapter = mVelocityViewPager.getAdapter();
         VelocityIconPagerAdapter iconAdapter = null;
         if (adapter instanceof VelocityIconPagerAdapter) {
-            iconAdapter = (VelocityIconPagerAdapter)adapter;
+            iconAdapter = (VelocityIconPagerAdapter) adapter;
         }
         final int count = adapter.getCount();
         for (int i = 0; i < count; i++) {

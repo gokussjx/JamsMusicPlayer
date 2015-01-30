@@ -1,7 +1,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@drawable/now_playing_controls_background_light" >
+    android:background="@drawable/now_playing_controls_background_light">
 
     <TextView
         android:id="@+id/welcome_header"

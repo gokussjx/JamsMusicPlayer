@@ -15,14 +15,8 @@
  */
 package com.jams.music.player.Drawers;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Paint;
 import android.graphics.drawable.ColorDrawable;
@@ -39,136 +33,140 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.jams.music.player.R;
 import com.jams.music.player.DBHelpers.DBAccessHelper;
 import com.jams.music.player.Helpers.TypefaceHelper;
 import com.jams.music.player.Helpers.UIElementsHelper;
 import com.jams.music.player.MainActivity.MainActivity;
+import com.jams.music.player.R;
 import com.jams.music.player.Utils.Common;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class InnerNavigationDrawerFragment extends Fragment {
 
     private Common mApp;
-	private ListView browsersListView;
-	private ListView librariesListView;
-	private TextView browsersHeaderText;
-	private TextView librariesHeaderText;
-	public static ImageView librariesColorTagImageView;
-	private ImageView librariesIcon;
-	
-	private Cursor cursor;
-	private DBAccessHelper userLibrariesDBHelper;
+    private ListView browsersListView;
+    private ListView librariesListView;
+    private TextView browsersHeaderText;
+    private TextView librariesHeaderText;
+    public static ImageView librariesColorTagImageView;
+    private ImageView librariesIcon;
 
-	@SuppressLint("NewApi")
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		View rootView = inflater.inflate(R.layout.navigation_drawer_layout, null);
-		mApp = (Common) getActivity().getApplicationContext();
-		
-		browsersListView = (ListView) rootView.findViewById(R.id.browsers_list_view);
-		librariesListView = (ListView) rootView.findViewById(R.id.libraries_list_view);
-		browsersHeaderText = (TextView) rootView.findViewById(R.id.browsers_header_text);
-		librariesHeaderText = (TextView) rootView.findViewById(R.id.libraries_header_text);
-		librariesColorTagImageView = (ImageView) rootView.findViewById(R.id.library_color_tag);
-		librariesIcon = (ImageView) rootView.findViewById(R.id.libraries_icon);
-		librariesIcon.setImageResource(UIElementsHelper.getIcon(getActivity(), "libraries"));
-		
-		Drawable backgroundDrawable;
-		if (mApp.getCurrentTheme()== Common.DARK_THEME) {
-			backgroundDrawable = new ColorDrawable(0x191919);
-		} else {
-			backgroundDrawable = getResources().getDrawable(R.drawable.holo_white_selector);
-		}
-		
-		int currentAPI = android.os.Build.VERSION.SDK_INT;
-		if (currentAPI < android.os.Build.VERSION_CODES.JELLY_BEAN) {
-			rootView.setBackgroundDrawable(backgroundDrawable);
-		} else {
-			rootView.setBackground(backgroundDrawable);
-		}
-		
-		//Set the header text fonts/colors.
-		browsersHeaderText.setTypeface(TypefaceHelper.getTypeface(getActivity(), "RobotoCondensed-Light"));
-		librariesHeaderText.setTypeface(TypefaceHelper.getTypeface(getActivity(), "RobotoCondensed-Light"));
-		browsersHeaderText.setPaintFlags(browsersHeaderText.getPaintFlags() | Paint.ANTI_ALIAS_FLAG | Paint.FAKE_BOLD_TEXT_FLAG | Paint.SUBPIXEL_TEXT_FLAG);
-		librariesHeaderText.setPaintFlags(librariesHeaderText.getPaintFlags() | Paint.ANTI_ALIAS_FLAG | Paint.FAKE_BOLD_TEXT_FLAG | Paint.SUBPIXEL_TEXT_FLAG);
-		
-		//Apply the Browser ListView's adapter.
-		List<String> titles = Arrays.asList(getActivity().getResources().getStringArray(R.array.sliding_menu_array));
-		NavigationDrawerAdapter slidingMenuAdapter = new NavigationDrawerAdapter(getActivity(), new ArrayList<String>(titles));
-		browsersListView.setAdapter(slidingMenuAdapter);
-		browsersListView.setOnItemClickListener(browsersClickListener);
-		setListViewHeightBasedOnChildren(browsersListView);
-		
+    private Cursor cursor;
+    private DBAccessHelper userLibrariesDBHelper;
+
+    @SuppressLint("NewApi")
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.navigation_drawer_layout, null);
+        mApp = (Common) getActivity().getApplicationContext();
+
+        browsersListView = (ListView) rootView.findViewById(R.id.browsers_list_view);
+        librariesListView = (ListView) rootView.findViewById(R.id.libraries_list_view);
+        browsersHeaderText = (TextView) rootView.findViewById(R.id.browsers_header_text);
+        librariesHeaderText = (TextView) rootView.findViewById(R.id.libraries_header_text);
+        librariesColorTagImageView = (ImageView) rootView.findViewById(R.id.library_color_tag);
+        librariesIcon = (ImageView) rootView.findViewById(R.id.libraries_icon);
+        librariesIcon.setImageResource(UIElementsHelper.getIcon(getActivity(), "libraries"));
+
+        Drawable backgroundDrawable;
+        if (mApp.getCurrentTheme() == Common.DARK_THEME) {
+            backgroundDrawable = new ColorDrawable(0x191919);
+        } else {
+            backgroundDrawable = getResources().getDrawable(R.drawable.holo_white_selector);
+        }
+
+        int currentAPI = android.os.Build.VERSION.SDK_INT;
+        if (currentAPI < android.os.Build.VERSION_CODES.JELLY_BEAN) {
+            rootView.setBackgroundDrawable(backgroundDrawable);
+        } else {
+            rootView.setBackground(backgroundDrawable);
+        }
+
+        //Set the header text fonts/colors.
+        browsersHeaderText.setTypeface(TypefaceHelper.getTypeface(getActivity(), "RobotoCondensed-Light"));
+        librariesHeaderText.setTypeface(TypefaceHelper.getTypeface(getActivity(), "RobotoCondensed-Light"));
+        browsersHeaderText.setPaintFlags(browsersHeaderText.getPaintFlags() | Paint.ANTI_ALIAS_FLAG | Paint.FAKE_BOLD_TEXT_FLAG | Paint.SUBPIXEL_TEXT_FLAG);
+        librariesHeaderText.setPaintFlags(librariesHeaderText.getPaintFlags() | Paint.ANTI_ALIAS_FLAG | Paint.FAKE_BOLD_TEXT_FLAG | Paint.SUBPIXEL_TEXT_FLAG);
+
+        //Apply the Browser ListView's adapter.
+        List<String> titles = Arrays.asList(getActivity().getResources().getStringArray(R.array.sliding_menu_array));
+        NavigationDrawerAdapter slidingMenuAdapter = new NavigationDrawerAdapter(getActivity(), new ArrayList<String>(titles));
+        browsersListView.setAdapter(slidingMenuAdapter);
+        browsersListView.setOnItemClickListener(browsersClickListener);
+        setListViewHeightBasedOnChildren(browsersListView);
+
 		/*//Apply the Libraries ListView's adapter.
 		userLibrariesDBHelper = new DBAccessHelper(getActivity().getApplicationContext());
 		cursor = userLibrariesDBHelper.getAllUniqueLibraries();
 		NavigationDrawerLibrariesAdapter slidingMenuLibrariesAdapter = new NavigationDrawerLibrariesAdapter(getActivity(), cursor);
 		librariesListView.setAdapter(slidingMenuLibrariesAdapter);
 		setListViewHeightBasedOnChildren(librariesListView);*/
-		librariesListView.setVisibility(View.GONE);
-		librariesHeaderText.setVisibility(View.GONE);
-		librariesIcon.setVisibility(View.GONE);
+        librariesListView.setVisibility(View.GONE);
+        librariesHeaderText.setVisibility(View.GONE);
+        librariesIcon.setVisibility(View.GONE);
 
-		return rootView;
-	}
-	
-	private OnItemClickListener browsersClickListener = new OnItemClickListener() {
+        return rootView;
+    }
 
-		@Override
-		public void onItemClick(AdapterView<?> adapterView, View view, int position, long dbID) {
-			Intent intent = null;
-			switch (position) {
-			case 0:
-				intent = new Intent(getActivity(), MainActivity.class);
-				intent.putExtra("TARGET_FRAGMENT", "ARTISTS");
-				//intent.setFlags(intent.getFlags() | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-				startActivity(intent);
-				break;
-			case 1:
-				intent = new Intent(getActivity(), MainActivity.class);
-				intent.putExtra("TARGET_FRAGMENT", "ALBUM_ARTISTS");
-				//intent.setFlags(intent.getFlags() | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-				startActivity(intent);
-				break;
-			case 2:
-				intent = new Intent(getActivity(), MainActivity.class);
-				intent.putExtra("TARGET_FRAGMENT", "ALBUMS");
-				//intent.setFlags(intent.getFlags() | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-				startActivity(intent);
-				break;
-			case 3:
-				intent = new Intent(getActivity(), MainActivity.class);
-				intent.putExtra("TARGET_FRAGMENT", "SONGS");
-				//intent.setFlags(intent.getFlags() | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-				startActivity(intent);
-				break;
-			case 4:
-				intent = new Intent(getActivity(), MainActivity.class);
-				intent.putExtra("TARGET_FRAGMENT", "PLAYLISTS");
-				//intent.setFlags(intent.getFlags() | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-				startActivity(intent);
-				break;
-			case 5:
-				intent = new Intent(getActivity(), MainActivity.class);
-				intent.putExtra("TARGET_FRAGMENT", "GENRES");
-				//intent.setFlags(intent.getFlags() | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-				startActivity(intent);
-				break;
-			case 6:
-				intent = new Intent(getActivity(), MainActivity.class);
-				intent.putExtra("TARGET_FRAGMENT", "FOLDERS");
-				//intent.setFlags(intent.getFlags() | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-				startActivity(intent);
-				break;
-			}
-			
-		}
-		
-	};
-	
+    private OnItemClickListener browsersClickListener = new OnItemClickListener() {
+
+        @Override
+        public void onItemClick(AdapterView<?> adapterView, View view, int position, long dbID) {
+            Intent intent = null;
+            switch (position) {
+                case 0:
+                    intent = new Intent(getActivity(), MainActivity.class);
+                    intent.putExtra("TARGET_FRAGMENT", "ARTISTS");
+                    //intent.setFlags(intent.getFlags() | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                    startActivity(intent);
+                    break;
+                case 1:
+                    intent = new Intent(getActivity(), MainActivity.class);
+                    intent.putExtra("TARGET_FRAGMENT", "ALBUM_ARTISTS");
+                    //intent.setFlags(intent.getFlags() | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                    startActivity(intent);
+                    break;
+                case 2:
+                    intent = new Intent(getActivity(), MainActivity.class);
+                    intent.putExtra("TARGET_FRAGMENT", "ALBUMS");
+                    //intent.setFlags(intent.getFlags() | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                    startActivity(intent);
+                    break;
+                case 3:
+                    intent = new Intent(getActivity(), MainActivity.class);
+                    intent.putExtra("TARGET_FRAGMENT", "SONGS");
+                    //intent.setFlags(intent.getFlags() | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                    startActivity(intent);
+                    break;
+                case 4:
+                    intent = new Intent(getActivity(), MainActivity.class);
+                    intent.putExtra("TARGET_FRAGMENT", "PLAYLISTS");
+                    //intent.setFlags(intent.getFlags() | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                    startActivity(intent);
+                    break;
+                case 5:
+                    intent = new Intent(getActivity(), MainActivity.class);
+                    intent.putExtra("TARGET_FRAGMENT", "GENRES");
+                    //intent.setFlags(intent.getFlags() | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                    startActivity(intent);
+                    break;
+                case 6:
+                    intent = new Intent(getActivity(), MainActivity.class);
+                    intent.putExtra("TARGET_FRAGMENT", "FOLDERS");
+                    //intent.setFlags(intent.getFlags() | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                    startActivity(intent);
+                    break;
+            }
+
+        }
+
+    };
+
     public static void setListViewHeightBasedOnChildren(ListView listView) {
-        ListAdapter listAdapter = listView.getAdapter(); 
+        ListAdapter listAdapter = listView.getAdapter();
         if (listAdapter == null) {
             // pre-condition
             return;
@@ -186,21 +184,21 @@ public class InnerNavigationDrawerFragment extends Fragment {
         listView.setLayoutParams(params);
         listView.requestLayout();
     }
-    
+
     @Override
     public void onDestroyView() {
-    	super.onDestroyView();
-    	
-    	if (cursor!=null) {
-    		cursor.close();
-    		cursor = null;
-    	}
-		
-    	if (userLibrariesDBHelper!=null) {
-    		userLibrariesDBHelper.close();
-    		userLibrariesDBHelper = null;
-    	}
-		
+        super.onDestroyView();
+
+        if (cursor != null) {
+            cursor.close();
+            cursor = null;
+        }
+
+        if (userLibrariesDBHelper != null) {
+            userLibrariesDBHelper.close();
+            userLibrariesDBHelper = null;
+        }
+
     }
-	
+
 }

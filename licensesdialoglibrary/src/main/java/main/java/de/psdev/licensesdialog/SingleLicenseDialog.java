@@ -16,9 +16,10 @@
 
 package main.java.de.psdev.licensesdialog;
 
-import main.java.de.psdev.licensesdialog.model.Notice;
 import android.content.Context;
+
 import de.psdev.licensesdialog.R;
+import main.java.de.psdev.licensesdialog.model.Notice;
 
 public class SingleLicenseDialog extends LicensesDialog {
 

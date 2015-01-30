@@ -2,14 +2,14 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/card_light" >
+    android:background="@drawable/card_light">
 
     <TextView
         android:id="@+id/playlistNumberOfSongs"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-		android:layout_centerVertical="true"
-		android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
         android:layout_marginRight="40dp"
         android:text="12 songs"
         android:textAppearance="?android:attr/textAppearanceSmall" />
@@ -44,6 +44,6 @@
         android:background="?android:selectableItemBackground"
         android:src="@drawable/ic_action_overflow_universal"
         android:scaleX="0.70"
-        android:scaleY="0.80"/>
-    
+        android:scaleY="0.80" />
+
 </RelativeLayout>

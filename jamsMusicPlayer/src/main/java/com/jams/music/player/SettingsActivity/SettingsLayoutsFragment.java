@@ -96,7 +96,7 @@ public class SettingsLayoutsFragment extends PreferenceFragment {
      * Applies KitKat specific translucency.
      */
     private void applyKitKatTranslucency() {
-        if (Build.VERSION.SDK_INT==Build.VERSION_CODES.KITKAT) {
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
 
             //Calculate ActionBar and navigation bar height.
             TypedValue tv = new TypedValue();
@@ -218,7 +218,7 @@ public class SettingsLayoutsFragment extends PreferenceFragment {
 
         @Override
         public boolean onPreferenceClick(Preference preference) {
-            
+
             //Get the current preference.
             int currentPreference = mApp.getSharedPreferences().getInt(Common.PLAYLISTS_LAYOUT, 0);
 
@@ -249,7 +249,7 @@ public class SettingsLayoutsFragment extends PreferenceFragment {
 
         @Override
         public boolean onPreferenceClick(Preference preference) {
-            
+
             //Get the current preference.
             int currentPreference = mApp.getSharedPreferences().getInt(Common.GENRES_LAYOUT, 0);
 
@@ -280,7 +280,7 @@ public class SettingsLayoutsFragment extends PreferenceFragment {
 
         @Override
         public boolean onPreferenceClick(Preference preference) {
-            
+
             //Get the current preference.
             int currentPreference = mApp.getSharedPreferences().getInt(Common.FOLDERS_LAYOUT, 0);
 
@@ -308,7 +308,7 @@ public class SettingsLayoutsFragment extends PreferenceFragment {
     public void onResume() {
         super.onResume();
 
-        if (Build.VERSION.SDK_INT==Build.VERSION_CODES.KITKAT)
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT)
             getActivity().getActionBar().setBackgroundDrawable(UIElementsHelper.getGeneralActionBarBackground(mContext));
 
     }

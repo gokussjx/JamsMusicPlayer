@@ -27,27 +27,25 @@ import android.os.Bundle;
 
 import com.jams.music.player.Helpers.UIElementsHelper;
 import com.jams.music.player.R;
-import com.jams.music.player.SettingsActivity.SettingsActivity;
-import com.jams.music.player.SettingsActivity.SettingsAppearanceFragment;
 
 public class NowPlayingColorSchemesDialog extends DialogFragment {
 
-	private Activity parentActivity;
-	private int selectedThemeIndex;
-	private DialogFragment dialogFragment;
-	
-	private static final String NOW_PLAYING_COLOR = "NOW_PLAYING_COLOR";
-	private static final String BLUE = "BLUE";
-	private static final String RED = "RED";
-	private static final String GREEN = "GREEN";
-	private static final String ORANGE = "ORANGE";
-	private static final String PURPLE = "PURPLE";
-	private static final String MAGENTA = "MAGENTA";
-	private static final String GRAY = "GRAY";
-	private static final String WHITE = "WHITE";
-	private static final String BLACK = "BLACK";
-	
-	@Override
+    private Activity parentActivity;
+    private int selectedThemeIndex;
+    private DialogFragment dialogFragment;
+
+    private static final String NOW_PLAYING_COLOR = "NOW_PLAYING_COLOR";
+    private static final String BLUE = "BLUE";
+    private static final String RED = "RED";
+    private static final String GREEN = "GREEN";
+    private static final String ORANGE = "ORANGE";
+    private static final String PURPLE = "PURPLE";
+    private static final String MAGENTA = "MAGENTA";
+    private static final String GRAY = "GRAY";
+    private static final String WHITE = "WHITE";
+    private static final String BLACK = "BLACK";
+
+    @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
         parentActivity = getActivity();
@@ -134,5 +132,5 @@ public class NowPlayingColorSchemesDialog extends DialogFragment {
 
         return builder.create();
     }
-	
+
 }

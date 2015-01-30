@@ -2,28 +2,28 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/card_light" >
+    android:background="@drawable/card_light">
 
     <ImageView
         android:id="@+id/file_folder_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-		android:layout_centerVertical="true"
-		android:layout_marginLeft="10dp" />
-    
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="10dp" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="75dp"
         android:layout_centerVertical="true"
         android:layout_toRightOf="@+id/file_folder_icon"
         android:layout_toLeftOf="@+id/overflow_icon"
-        android:orientation="vertical" >
+        android:orientation="vertical">
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" 
-            android:layout_weight="1" >
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
 
             <TextView
                 android:id="@+id/file_folder_title"
@@ -40,14 +40,14 @@
                 android:text="File/Folder"
                 android:layout_marginRight="15dp"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
-            
+
         </RelativeLayout>
-        
+
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" 
-            android:layout_weight="1.25" >
-            
+            android:layout_height="wrap_content"
+            android:layout_weight="1.25">
+
             <TextView
                 android:id="@+id/file_folder_size"
                 android:layout_width="wrap_content"
@@ -62,9 +62,9 @@
                 android:layout_marginRight="15dp"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textColor="#AAAAAA" />
-            
+
         </RelativeLayout>
-        
+
     </LinearLayout>
 
     <ImageButton
@@ -76,6 +76,6 @@
         android:background="?android:selectableItemBackground"
         android:src="@drawable/ic_action_overflow_universal"
         android:scaleX="0.75"
-        android:scaleY="0.75"/>
+        android:scaleY="0.75" />
 
 </RelativeLayout>

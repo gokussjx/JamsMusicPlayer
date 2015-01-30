@@ -17,8 +17,6 @@
  */
 package com.velocityviewpagerindicator;
 
-import java.util.ArrayList;
-
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
@@ -38,6 +36,8 @@ import android.view.View;
 import android.view.ViewConfiguration;
 
 import com.velocity.view.pager.library.VelocityViewPager;
+
+import java.util.ArrayList;
 
 /**
  * A TitlePageIndicator is a PageIndicator which displays the title of left view
@@ -135,7 +135,9 @@ public class VelocityTitlePageIndicator extends View implements VelocityPageIndi
     private float mFooterPadding;
     private float mTitlePadding;
     private float mTopPadding;
-    /** Left and right side padding for not active view titles. */
+    /**
+     * Left and right side padding for not active view titles.
+     */
     private float mClipPadding;
     private float mFooterLineHeight;
 
@@ -207,7 +209,7 @@ public class VelocityTitlePageIndicator extends View implements VelocityPageIndi
 
         Drawable background = a.getDrawable(R.styleable.VelocityTitlePageIndicator_android_background);
         if (background != null) {
-          setBackgroundDrawable(background);
+            setBackgroundDrawable(background);
         }
 
         a.recycle();
@@ -432,7 +434,7 @@ public class VelocityTitlePageIndicator extends View implements VelocityPageIndi
         }
         //Right views starting from the current position
         if (mCurrentPage < countMinusOne) {
-            for (int i = mCurrentPage + 1 ; i < count; i++) {
+            for (int i = mCurrentPage + 1; i < count; i++) {
                 Rect bound = bounds.get(i);
                 //If right side is outside the screen
                 if (bound.right > rightClip) {
@@ -465,13 +467,13 @@ public class VelocityTitlePageIndicator extends View implements VelocityPageIndi
 
                 //Draw text as unselected
                 mPaintText.setColor(mColorText);
-                if(currentPage && currentSelected) {
+                if (currentPage && currentSelected) {
                     //Fade out/in unselected text as the selected text fades in/out
-                    mPaintText.setAlpha(colorTextAlpha - (int)(colorTextAlpha * selectedPercent));
+                    mPaintText.setAlpha(colorTextAlpha - (int) (colorTextAlpha * selectedPercent));
                 }
 
                 //Except if there's an intersection with the right view
-                if (i < boundsSize - 1)  {
+                if (i < boundsSize - 1) {
                     Rect rightBound = bounds.get(i + 1);
                     //Intersection
                     if (bound.right + mTitlePadding > rightBound.left) {
@@ -485,7 +487,7 @@ public class VelocityTitlePageIndicator extends View implements VelocityPageIndi
                 //If we are within the selected bounds draw the selected text
                 if (currentPage && currentSelected) {
                     mPaintText.setColor(mColorSelected);
-                    mPaintText.setAlpha((int)((mColorSelected >>> 24) * selectedPercent));
+                    mPaintText.setAlpha((int) ((mColorSelected >>> 24) * selectedPercent));
                     canvas.drawText(pageTitle, 0, pageTitle.length(), bound.left, bound.bottom + mTopPadding, mPaintText);
                 }
             }
@@ -535,7 +537,7 @@ public class VelocityTitlePageIndicator extends View implements VelocityPageIndi
                 mPath.lineTo(leftMinusPadding, heightMinusLineMinusIndicator);
                 mPath.close();
 
-                mPaintFooterIndicator.setAlpha((int)(0xFF * selectedPercent));
+                mPaintFooterIndicator.setAlpha((int) (0xFF * selectedPercent));
                 canvas.drawPath(mPath, mPaintFooterIndicator);
                 mPaintFooterIndicator.setAlpha(0xFF);
                 break;
@@ -640,10 +642,8 @@ public class VelocityTitlePageIndicator extends View implements VelocityPageIndi
     /**
      * Set bounds for the right textView including clip padding.
      *
-     * @param curViewBound
-     *            current bounds.
-     * @param curViewWidth
-     *            width of the view.
+     * @param curViewBound current bounds.
+     * @param curViewWidth width of the view.
      */
     private void clipViewOnTheRight(Rect curViewBound, float curViewWidth, int right) {
         curViewBound.right = (int) (right - mClipPadding);
@@ -653,10 +653,8 @@ public class VelocityTitlePageIndicator extends View implements VelocityPageIndi
     /**
      * Set bounds for the left textView including clip padding.
      *
-     * @param curViewBound
-     *            current bounds.
-     * @param curViewWidth
-     *            width of the view.
+     * @param curViewBound current bounds.
+     * @param curViewWidth width of the view.
      */
     private void clipViewOnTheLeft(Rect curViewBound, float curViewWidth, int left) {
         curViewBound.left = (int) (left + mClipPadding);
@@ -679,7 +677,7 @@ public class VelocityTitlePageIndicator extends View implements VelocityPageIndi
             Rect bounds = calcBounds(i, paint);
             int w = bounds.right - bounds.left;
             int h = bounds.bottom - bounds.top;
-            bounds.left = (int)(halfWidth - (w / 2f) + ((i - mCurrentPage - mPageOffset) * width));
+            bounds.left = (int) (halfWidth - (w / 2f) + ((i - mCurrentPage - mPageOffset) * width));
             bounds.right = bounds.left + w;
             bounds.top = 0;
             bounds.bottom = h;
@@ -808,14 +806,14 @@ public class VelocityTitlePageIndicator extends View implements VelocityPageIndi
                 height += mFooterIndicatorHeight;
             }
         }
-        final int measuredHeight = (int)height;
+        final int measuredHeight = (int) height;
 
         setMeasuredDimension(measuredWidth, measuredHeight);
     }
 
     @Override
     public void onRestoreInstanceState(Parcelable state) {
-        SavedState savedState = (SavedState)state;
+        SavedState savedState = (SavedState) state;
         super.onRestoreInstanceState(savedState.getSuperState());
         mCurrentPage = savedState.currentPage;
         requestLayout();

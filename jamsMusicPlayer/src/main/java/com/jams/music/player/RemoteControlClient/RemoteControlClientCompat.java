@@ -31,13 +31,13 @@
 
 package com.jams.music.player.RemoteControlClient;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-
 import android.app.PendingIntent;
 import android.graphics.Bitmap;
 import android.os.Looper;
 import android.util.Log;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 /**
  * RemoteControlClient enables exposing information meant to be consumed by remote controls capable
@@ -189,22 +189,23 @@ public class RemoteControlClientCompat {
          * Adds textual information to be displayed.
          * Note that none of the information added after {@link #apply()} has been called,
          * will be displayed.
-         * @param key The identifier of a the metadata field to set. Valid values are
-         *      {@link android.media.MediaMetadataRetriever#METADATA_KEY_ALBUM},
-         *      {@link android.media.MediaMetadataRetriever#METADATA_KEY_ALBUMARTIST},
-         *      {@link android.media.MediaMetadataRetriever#METADATA_KEY_TITLE},
-         *      {@link android.media.MediaMetadataRetriever#METADATA_KEY_ARTIST},
-         *      {@link android.media.MediaMetadataRetriever#METADATA_KEY_AUTHOR},
-         *      {@link android.media.MediaMetadataRetriever#METADATA_KEY_COMPILATION},
-         *      {@link android.media.MediaMetadataRetriever#METADATA_KEY_COMPOSER},
-         *      {@link android.media.MediaMetadataRetriever#METADATA_KEY_DATE},
-         *      {@link android.media.MediaMetadataRetriever#METADATA_KEY_GENRE},
-         *      {@link android.media.MediaMetadataRetriever#METADATA_KEY_TITLE},
-         *      {@link android.media.MediaMetadataRetriever#METADATA_KEY_WRITER}.
+         *
+         * @param key   The identifier of a the metadata field to set. Valid values are
+         *              {@link android.media.MediaMetadataRetriever#METADATA_KEY_ALBUM},
+         *              {@link android.media.MediaMetadataRetriever#METADATA_KEY_ALBUMARTIST},
+         *              {@link android.media.MediaMetadataRetriever#METADATA_KEY_TITLE},
+         *              {@link android.media.MediaMetadataRetriever#METADATA_KEY_ARTIST},
+         *              {@link android.media.MediaMetadataRetriever#METADATA_KEY_AUTHOR},
+         *              {@link android.media.MediaMetadataRetriever#METADATA_KEY_COMPILATION},
+         *              {@link android.media.MediaMetadataRetriever#METADATA_KEY_COMPOSER},
+         *              {@link android.media.MediaMetadataRetriever#METADATA_KEY_DATE},
+         *              {@link android.media.MediaMetadataRetriever#METADATA_KEY_GENRE},
+         *              {@link android.media.MediaMetadataRetriever#METADATA_KEY_TITLE},
+         *              {@link android.media.MediaMetadataRetriever#METADATA_KEY_WRITER}.
          * @param value The text for the given key, or {@code null} to signify there is no valid
-         *      information for the field.
+         *              information for the field.
          * @return Returns a reference to the same MetadataEditor object, so you can chain put
-         *      calls together.
+         * calls together.
          */
         public MetadataEditorCompat putString(int key, String value) {
             if (sHasRemoteControlAPIs) {
@@ -219,11 +220,12 @@ public class RemoteControlClientCompat {
 
         /**
          * Sets the album / artwork picture to be displayed on the remote control.
-         * @param key the identifier of the bitmap to set. The only valid value is
-         *      {@link #METADATA_KEY_ARTWORK}
+         *
+         * @param key    the identifier of the bitmap to set. The only valid value is
+         *               {@link #METADATA_KEY_ARTWORK}
          * @param bitmap The bitmap for the artwork, or null if there isn't any.
          * @return Returns a reference to the same MetadataEditor object, so you can chain put
-         *      calls together.
+         * calls together.
          * @throws IllegalArgumentException
          * @see android.graphics.Bitmap
          */
@@ -242,15 +244,16 @@ public class RemoteControlClientCompat {
          * Adds numerical information to be displayed.
          * Note that none of the information added after {@link #apply()} has been called,
          * will be displayed.
-         * @param key the identifier of a the metadata field to set. Valid values are
-         *      {@link android.media.MediaMetadataRetriever#METADATA_KEY_CD_TRACK_NUMBER},
-         *      {@link android.media.MediaMetadataRetriever#METADATA_KEY_DISC_NUMBER},
-         *      {@link android.media.MediaMetadataRetriever#METADATA_KEY_DURATION} (with a value
-         *      expressed in milliseconds),
-         *      {@link android.media.MediaMetadataRetriever#METADATA_KEY_YEAR}.
+         *
+         * @param key   the identifier of a the metadata field to set. Valid values are
+         *              {@link android.media.MediaMetadataRetriever#METADATA_KEY_CD_TRACK_NUMBER},
+         *              {@link android.media.MediaMetadataRetriever#METADATA_KEY_DISC_NUMBER},
+         *              {@link android.media.MediaMetadataRetriever#METADATA_KEY_DURATION} (with a value
+         *              expressed in milliseconds),
+         *              {@link android.media.MediaMetadataRetriever#METADATA_KEY_YEAR}.
          * @param value The long value for the given key
          * @return Returns a reference to the same MetadataEditor object, so you can chain put
-         *      calls together.
+         * calls together.
          * @throws IllegalArgumentException
          */
         public MetadataEditorCompat putLong(int key, long value) {
@@ -297,8 +300,9 @@ public class RemoteControlClientCompat {
 
     /**
      * Creates a {@link android.media.RemoteControlClient.MetadataEditor}.
+     *
      * @param startEmpty Set to false if you want the MetadataEditor to contain the metadata that
-     *     was previously applied to the RemoteControlClient, or true if it is to be created empty.
+     *                   was previously applied to the RemoteControlClient, or true if it is to be created empty.
      * @return a new MetadataEditor instance.
      */
     public MetadataEditorCompat editMetadata(boolean startEmpty) {
@@ -318,16 +322,17 @@ public class RemoteControlClientCompat {
 
     /**
      * Sets the current playback state.
+     *
      * @param state The current playback state, one of the following values:
-     *       {@link android.media.RemoteControlClient#PLAYSTATE_STOPPED},
-     *       {@link android.media.RemoteControlClient#PLAYSTATE_PAUSED},
-     *       {@link android.media.RemoteControlClient#PLAYSTATE_PLAYING},
-     *       {@link android.media.RemoteControlClient#PLAYSTATE_FAST_FORWARDING},
-     *       {@link android.media.RemoteControlClient#PLAYSTATE_REWINDING},
-     *       {@link android.media.RemoteControlClient#PLAYSTATE_SKIPPING_FORWARDS},
-     *       {@link android.media.RemoteControlClient#PLAYSTATE_SKIPPING_BACKWARDS},
-     *       {@link android.media.RemoteControlClient#PLAYSTATE_BUFFERING},
-     *       {@link android.media.RemoteControlClient#PLAYSTATE_ERROR}.
+     *              {@link android.media.RemoteControlClient#PLAYSTATE_STOPPED},
+     *              {@link android.media.RemoteControlClient#PLAYSTATE_PAUSED},
+     *              {@link android.media.RemoteControlClient#PLAYSTATE_PLAYING},
+     *              {@link android.media.RemoteControlClient#PLAYSTATE_FAST_FORWARDING},
+     *              {@link android.media.RemoteControlClient#PLAYSTATE_REWINDING},
+     *              {@link android.media.RemoteControlClient#PLAYSTATE_SKIPPING_FORWARDS},
+     *              {@link android.media.RemoteControlClient#PLAYSTATE_SKIPPING_BACKWARDS},
+     *              {@link android.media.RemoteControlClient#PLAYSTATE_BUFFERING},
+     *              {@link android.media.RemoteControlClient#PLAYSTATE_ERROR}.
      */
     public void setPlaybackState(int state) {
         if (sHasRemoteControlAPIs) {
@@ -341,15 +346,16 @@ public class RemoteControlClientCompat {
 
     /**
      * Sets the flags for the media transport control buttons that this client supports.
+     *
      * @param transportControlFlags A combination of the following flags:
-     *      {@link android.media.RemoteControlClient#FLAG_KEY_MEDIA_PREVIOUS},
-     *      {@link android.media.RemoteControlClient#FLAG_KEY_MEDIA_REWIND},
-     *      {@link android.media.RemoteControlClient#FLAG_KEY_MEDIA_PLAY},
-     *      {@link android.media.RemoteControlClient#FLAG_KEY_MEDIA_PLAY_PAUSE},
-     *      {@link android.media.RemoteControlClient#FLAG_KEY_MEDIA_PAUSE},
-     *      {@link android.media.RemoteControlClient#FLAG_KEY_MEDIA_STOP},
-     *      {@link android.media.RemoteControlClient#FLAG_KEY_MEDIA_FAST_FORWARD},
-     *      {@link android.media.RemoteControlClient#FLAG_KEY_MEDIA_NEXT}
+     *                              {@link android.media.RemoteControlClient#FLAG_KEY_MEDIA_PREVIOUS},
+     *                              {@link android.media.RemoteControlClient#FLAG_KEY_MEDIA_REWIND},
+     *                              {@link android.media.RemoteControlClient#FLAG_KEY_MEDIA_PLAY},
+     *                              {@link android.media.RemoteControlClient#FLAG_KEY_MEDIA_PLAY_PAUSE},
+     *                              {@link android.media.RemoteControlClient#FLAG_KEY_MEDIA_PAUSE},
+     *                              {@link android.media.RemoteControlClient#FLAG_KEY_MEDIA_STOP},
+     *                              {@link android.media.RemoteControlClient#FLAG_KEY_MEDIA_FAST_FORWARD},
+     *                              {@link android.media.RemoteControlClient#FLAG_KEY_MEDIA_NEXT}
      */
     public void setTransportControlFlags(int transportControlFlags) {
         if (sHasRemoteControlAPIs) {

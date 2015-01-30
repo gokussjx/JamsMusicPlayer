@@ -15,171 +15,171 @@
  */
 package com.jams.music.player.GMusicHelpers;
 
-import java.util.ArrayList;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+
 public class MobileClientPlaylistsSchema implements IJsonObject<MobileClientPlaylistsSchema>, IJsonArray<WebClientSongsSchema> {
-	
-	private String mKind;
-	private String mPlaylistId;
-	private String mCreationTimestamp;
-	private String mLastModifiedTimestamp;
-	private String mRecentTimestamp;
-	private boolean mDeleted;
-	private String mName;
-	private String mType;
-	private String mShareToken;
-	private String mOwnerName;
-	private String mOwnerProfilePhotoUrl;
-	private boolean mAccessControlled;
-	private ArrayList<WebClientSongsSchema> mPlaylist;
 
-	public String getKind() {
-		return mKind;
-	}
+    private String mKind;
+    private String mPlaylistId;
+    private String mCreationTimestamp;
+    private String mLastModifiedTimestamp;
+    private String mRecentTimestamp;
+    private boolean mDeleted;
+    private String mName;
+    private String mType;
+    private String mShareToken;
+    private String mOwnerName;
+    private String mOwnerProfilePhotoUrl;
+    private boolean mAccessControlled;
+    private ArrayList<WebClientSongsSchema> mPlaylist;
 
-	public void setKind(String kind) {
-		this.mKind = kind;
-	}
+    public String getKind() {
+        return mKind;
+    }
 
-	public String getPlaylistId() {
-		return mPlaylistId;
-	}
+    public void setKind(String kind) {
+        this.mKind = kind;
+    }
 
-	public void setPlaylistId(String playlistId) {
-		this.mPlaylistId = playlistId;
-	}
+    public String getPlaylistId() {
+        return mPlaylistId;
+    }
 
-	public String getCreationTimestamp() {
-		return mCreationTimestamp;
-	}
+    public void setPlaylistId(String playlistId) {
+        this.mPlaylistId = playlistId;
+    }
 
-	public void setCreationTimestamp(String creationTimestamp) {
-		this.mCreationTimestamp = creationTimestamp;
-	}
+    public String getCreationTimestamp() {
+        return mCreationTimestamp;
+    }
 
-	public String getLastModifiedTimestamp() {
-		return mLastModifiedTimestamp;
-	}
+    public void setCreationTimestamp(String creationTimestamp) {
+        this.mCreationTimestamp = creationTimestamp;
+    }
 
-	public void setLastModifiedTimestamp(String lastModifiedTimestamp) {
-		this.mLastModifiedTimestamp = lastModifiedTimestamp;
-	}
+    public String getLastModifiedTimestamp() {
+        return mLastModifiedTimestamp;
+    }
 
-	public String getRecentTimestamp() {
-		return mRecentTimestamp;
-	}
+    public void setLastModifiedTimestamp(String lastModifiedTimestamp) {
+        this.mLastModifiedTimestamp = lastModifiedTimestamp;
+    }
 
-	public void setRecentTimestamp(String recentTimestamp) {
-		this.mRecentTimestamp = recentTimestamp;
-	}
+    public String getRecentTimestamp() {
+        return mRecentTimestamp;
+    }
 
-	public boolean isDeleted() {
-		return mDeleted;
-	}
+    public void setRecentTimestamp(String recentTimestamp) {
+        this.mRecentTimestamp = recentTimestamp;
+    }
 
-	public void setDeleted(boolean deleted) {
-		this.mDeleted = deleted;
-	}
+    public boolean isDeleted() {
+        return mDeleted;
+    }
 
-	public String getName() {
-		return mName;
-	}
+    public void setDeleted(boolean deleted) {
+        this.mDeleted = deleted;
+    }
 
-	public void setName(String name) {
-		this.mName = name;
-	}
+    public String getName() {
+        return mName;
+    }
 
-	public String getType() {
-		return mType;
-	}
+    public void setName(String name) {
+        this.mName = name;
+    }
 
-	public void setType(String type) {
-		this.mType = type;
-	}
+    public String getType() {
+        return mType;
+    }
 
-	public String getShareToken() {
-		return mShareToken;
-	}
+    public void setType(String type) {
+        this.mType = type;
+    }
 
-	public void setShareToken(String shareToken) {
-		this.mShareToken = shareToken;
-	}
+    public String getShareToken() {
+        return mShareToken;
+    }
 
-	public String getOwnerName() {
-		return mOwnerName;
-	}
+    public void setShareToken(String shareToken) {
+        this.mShareToken = shareToken;
+    }
 
-	public void setOwnerName(String ownerName) {
-		this.mOwnerName = ownerName;
-	}
+    public String getOwnerName() {
+        return mOwnerName;
+    }
 
-	public String getOwnerProfilePhotoUrl() {
-		return mOwnerProfilePhotoUrl;
-	}
+    public void setOwnerName(String ownerName) {
+        this.mOwnerName = ownerName;
+    }
 
-	public void setOwnerProfilePhotoUrl(String ownerProfilePhotoUrl) {
-		this.mOwnerProfilePhotoUrl = ownerProfilePhotoUrl;
-	}
+    public String getOwnerProfilePhotoUrl() {
+        return mOwnerProfilePhotoUrl;
+    }
 
-	public boolean ismAccessControlled() {
-		return mAccessControlled;
-	}
+    public void setOwnerProfilePhotoUrl(String ownerProfilePhotoUrl) {
+        this.mOwnerProfilePhotoUrl = ownerProfilePhotoUrl;
+    }
 
-	public void setAccessControlled(boolean accessControlled) {
-		this.mAccessControlled = accessControlled;
-	}
+    public boolean ismAccessControlled() {
+        return mAccessControlled;
+    }
 
-	public ArrayList<WebClientSongsSchema> getPlaylist() {
-		return mPlaylist;
-	}
+    public void setAccessControlled(boolean accessControlled) {
+        this.mAccessControlled = accessControlled;
+    }
 
-	public void setPlaylist(ArrayList<WebClientSongsSchema> playlist) {
-		this.mPlaylist = playlist;
-	}
+    public ArrayList<WebClientSongsSchema> getPlaylist() {
+        return mPlaylist;
+    }
 
-	@Override
-	public MobileClientPlaylistsSchema fromJsonObject(JSONObject jsonObject) {
-		if(jsonObject != null) {
-			mKind = jsonObject.optString("kind", null);
-			mPlaylistId = jsonObject.optString("id", null);
-			mCreationTimestamp = jsonObject.optString("creationTimestamp");
-			mLastModifiedTimestamp = jsonObject.optString("lastModifiedTimestamp", null);
-			mRecentTimestamp = jsonObject.optString("recentTimestamp");
-			mDeleted = jsonObject.optBoolean("deleted");
-			mName = jsonObject.optString("name");
-			mType = jsonObject.optString("type");
-			mShareToken = jsonObject.optString("shareToken");
-			mOwnerName = jsonObject.optString("ownerName");
-			mOwnerProfilePhotoUrl = jsonObject.optString("ownerProfilePhotoUrl");
-			mAccessControlled = jsonObject.optBoolean("accessControlled");
-		}
+    public void setPlaylist(ArrayList<WebClientSongsSchema> playlist) {
+        this.mPlaylist = playlist;
+    }
 
-		//This method returns itself to support chaining.
-		return this;
-	}
+    @Override
+    public MobileClientPlaylistsSchema fromJsonObject(JSONObject jsonObject) {
+        if (jsonObject != null) {
+            mKind = jsonObject.optString("kind", null);
+            mPlaylistId = jsonObject.optString("id", null);
+            mCreationTimestamp = jsonObject.optString("creationTimestamp");
+            mLastModifiedTimestamp = jsonObject.optString("lastModifiedTimestamp", null);
+            mRecentTimestamp = jsonObject.optString("recentTimestamp");
+            mDeleted = jsonObject.optBoolean("deleted");
+            mName = jsonObject.optString("name");
+            mType = jsonObject.optString("type");
+            mShareToken = jsonObject.optString("shareToken");
+            mOwnerName = jsonObject.optString("ownerName");
+            mOwnerProfilePhotoUrl = jsonObject.optString("ownerProfilePhotoUrl");
+            mAccessControlled = jsonObject.optBoolean("accessControlled");
+        }
 
-	@Override
-	public ArrayList<WebClientSongsSchema> fromJsonArray(JSONArray jsonArray) {
-		
-		ArrayList<WebClientSongsSchema> songList = new ArrayList<WebClientSongsSchema>();
-		if(jsonArray != null && jsonArray.length() > 0) {
-			for(int i = 0; i < jsonArray.length(); i++) {
-				try {
-					WebClientSongsSchema song = new WebClientSongsSchema().fromJsonObject(jsonArray.getJSONObject(i));
-					songList.add(song);
-					
-				} catch(JSONException e) {
-					e.printStackTrace();
-				}
-				
-			}
-			
-		}
-		return songList;
-	}
-	
+        //This method returns itself to support chaining.
+        return this;
+    }
+
+    @Override
+    public ArrayList<WebClientSongsSchema> fromJsonArray(JSONArray jsonArray) {
+
+        ArrayList<WebClientSongsSchema> songList = new ArrayList<WebClientSongsSchema>();
+        if (jsonArray != null && jsonArray.length() > 0) {
+            for (int i = 0; i < jsonArray.length(); i++) {
+                try {
+                    WebClientSongsSchema song = new WebClientSongsSchema().fromJsonObject(jsonArray.getJSONObject(i));
+                    songList.add(song);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+
+        }
+        return songList;
+    }
+
 }

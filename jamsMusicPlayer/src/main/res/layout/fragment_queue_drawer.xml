@@ -7,7 +7,7 @@
         android:id="@+id/queue_drawer_mini_player_layout"
         android:layout_width="match_parent"
         android:layout_height="120dp"
-        android:visibility="gone" >
+        android:visibility="gone">
 
         <ImageView
             android:id="@+id/queue_drawer_album_art"
@@ -31,7 +31,7 @@
             android:layout_marginTop="10dp"
             android:layout_marginRight="15dp"
             android:ellipsize="marquee"
-            android:marqueeRepeatLimit ="marquee_forever"
+            android:marqueeRepeatLimit="marquee_forever"
             android:singleLine="true"
             android:text="Unknown Song Title"
             android:scrollHorizontally="true"
@@ -51,7 +51,7 @@
             android:layout_below="@+id/songName"
             android:layout_marginBottom="10dp"
             android:ellipsize="marquee"
-            android:marqueeRepeatLimit ="marquee_forever"
+            android:marqueeRepeatLimit="marquee_forever"
             android:focusable="true"
             android:focusableInTouchMode="true"
             android:scrollHorizontally="true"
@@ -69,7 +69,7 @@
             android:layout_height="48dp"
             android:layout_alignParentBottom="true"
             android:layout_marginBottom="5dp"
-            android:orientation="horizontal" >
+            android:orientation="horizontal">
 
             <ImageButton
                 android:id="@+id/previousButton"
@@ -88,7 +88,7 @@
                 android:layout_gravity="center"
                 android:background="@drawable/shadowed_circle_red"
                 android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true" >
+                android:layout_centerVertical="true">
 
                 <ImageButton
                     android:id="@+id/playPauseButton"
@@ -117,8 +117,7 @@
 
     </RelativeLayout>
 
-    <com.mobeta.android.dslv.DragSortListView
-        xmlns:dslv="http://schemas.android.com/apk/res/com.jams.music.player"
+    <com.mobeta.android.dslv.DragSortListView xmlns:dslv="http://schemas.android.com/apk/res/com.jams.music.player"
         android:id="@+id/queue_drawer_list_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

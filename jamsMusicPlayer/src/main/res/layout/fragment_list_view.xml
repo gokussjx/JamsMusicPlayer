@@ -4,8 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:descendantFocusability="beforeDescendants"
-	android:focusableInTouchMode="true" >
-	    
+    android:focusableInTouchMode="true">
+
     <RelativeLayout
         android:id="@+id/search_layout"
         android:layout_width="match_parent"
@@ -16,8 +16,8 @@
         android:layout_marginTop="30dp"
         android:layout_marginLeft="15dp"
         android:layout_marginRight="15dp"
-        android:visibility="gone" >
-        
+        android:visibility="gone">
+
         <EditText
             android:id="@+id/search_field"
             android:layout_width="match_parent"
@@ -25,53 +25,53 @@
             android:background="@null"
             android:padding="15dp"
             android:layout_centerInParent="true" />
-        
+
     </RelativeLayout>
-    
+
     <RelativeLayout
         android:id="@+id/list_fragment_front_layout"
         android:layout_width="match_parent"
-	    android:layout_height="match_parent"
-	    android:layout_centerInParent="true"
-	    android:layout_below="@+id/search_layout" >
-    
-	    <ListView
-	        android:id="@+id/generalListView"
-	        android:layout_width="match_parent"
-	        android:layout_height="wrap_content"
-	        android:layout_centerHorizontal="true"
-	        android:layout_centerVertical="true"
-	        android:layout_alignParentTop="true"
-	        android:visibility="visible"
-	        android:layout_alignParentRight="true"
-	        android:drawSelectorOnTop="true" >
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"
+        android:layout_below="@+id/search_layout">
 
-	    </ListView>
-	    
-	    <com.andraskindler.quickscroll.QuickScroll
-			android:id="@+id/quickscroll"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_alignParentRight="true"
-			android:layout_alignTop="@+id/generalListView"
-			android:layout_alignBottom="@+id/generalListView"
-			android:layout_marginTop="20dp"
-			android:layout_marginBottom="20dp"
-			android:layout_marginRight="10dp" />
-	
-	    <TextView
-	        android:id="@+id/empty_view_text"
-	        android:visibility="invisible"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:layout_centerHorizontal="true"
-	        android:layout_centerVertical="true"
-	        android:hint="@string/no_songs_found_info"
-	        android:gravity="center"
-	        android:layout_marginLeft="25dp"
-	        android:layout_marginRight="25dp"
-	        android:textAppearance="?android:attr/textAppearanceMedium" />
-	    
-	</RelativeLayout>
+        <ListView
+            android:id="@+id/generalListView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_alignParentTop="true"
+            android:visibility="visible"
+            android:layout_alignParentRight="true"
+            android:drawSelectorOnTop="true">
+
+        </ListView>
+
+        <com.andraskindler.quickscroll.QuickScroll
+            android:id="@+id/quickscroll"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignTop="@+id/generalListView"
+            android:layout_alignBottom="@+id/generalListView"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
+            android:layout_marginRight="10dp" />
+
+        <TextView
+            android:id="@+id/empty_view_text"
+            android:visibility="invisible"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:hint="@string/no_songs_found_info"
+            android:gravity="center"
+            android:layout_marginLeft="25dp"
+            android:layout_marginRight="25dp"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    </RelativeLayout>
 
 </RelativeLayout>

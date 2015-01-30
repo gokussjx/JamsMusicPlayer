@@ -15,29 +15,25 @@
  */
 package com.jams.music.player.GMusicHelpers;
 
-import org.apache.http.HttpEntity;
-
 import android.content.Context;
 
 import com.loopj.android.http.SyncHttpClient;
 
-public class GMusicHttpClient extends SyncHttpClient
-{
+import org.apache.http.HttpEntity;
 
-	public GMusicHttpClient()
-	{
-		super();
-	}
+public class GMusicHttpClient extends SyncHttpClient {
 
-	public String post(Context context, String url, HttpEntity entity, String contentType)
-	{
-		post(context, url, entity, contentType, responseHandler);
-		return result;
-	}
+    public GMusicHttpClient() {
+        super();
+    }
 
-	@Override
-	public String onRequestFailed(Throwable error, String content)
-	{
-		return null;
-	}
+    public String post(Context context, String url, HttpEntity entity, String contentType) {
+        post(context, url, entity, contentType, responseHandler);
+        return result;
+    }
+
+    @Override
+    public String onRequestFailed(Throwable error, String content) {
+        return null;
+    }
 }
