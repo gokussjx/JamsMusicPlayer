@@ -16,17 +16,17 @@
 
 package main.java.de.psdev.licensesdialog;
 
-import android.util.Xml;
-
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-
 import java.io.IOException;
 import java.io.InputStream;
 
 import main.java.de.psdev.licensesdialog.licenses.License;
 import main.java.de.psdev.licensesdialog.model.Notice;
 import main.java.de.psdev.licensesdialog.model.Notices;
+
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+
+import android.util.Xml;
 
 public final class NoticesXmlParser {
 
@@ -64,7 +64,7 @@ public final class NoticesXmlParser {
     }
 
     private static Notice readNotice(final XmlPullParser parser) throws IOException,
-            XmlPullParserException {
+        XmlPullParserException {
         parser.require(XmlPullParser.START_TAG, null, "notice");
         String name = null;
         String url = null;

@@ -23,17 +23,17 @@ import java.util.NoSuchElementException;
 public class ReadFromM3UPlaylist {
 
     public ReadFromM3UPlaylist() throws Exception {
-        //Constructor.
+    	//Constructor.
     }
 
     public String convertStreamToString(java.io.InputStream is) {
-
-        try {
-            return new java.util.Scanner(is).useDelimiter("\\A").next();
-        } catch (NoSuchElementException e) {
-            return "";
-        }
-
+    	
+	    try {
+	    	return new java.util.Scanner(is).useDelimiter("\\A").next();
+	    } catch (NoSuchElementException e) {
+	    	return "";
+	    }
+	    
     }
 
     public M3UHolder parseFile(File f) throws FileNotFoundException {
@@ -70,7 +70,7 @@ public class ReadFromM3UPlaylist {
 
         public int getSize() {
             if (url != null)
-                return url.length;
+                    return url.length;
             return 0;
         }
 
@@ -81,7 +81,7 @@ public class ReadFromM3UPlaylist {
         public String getUrl(int n) {
             return url[n];
         }
-
+        
     }
-
+    
 }

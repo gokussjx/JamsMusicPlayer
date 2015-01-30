@@ -27,7 +27,11 @@ import android.database.Cursor;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v4.app.Fragment;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ImageView;
@@ -35,9 +39,11 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.jams.music.player.AsyncTasks.AsyncSaveMusicFoldersTask;
 import com.jams.music.player.DBHelpers.DBAccessHelper;
 import com.jams.music.player.Helpers.TypefaceHelper;
 import com.jams.music.player.Helpers.UIElementsHelper;
+import com.jams.music.player.MusicFoldersSelectionFragment.MultiselectListViewAdapter;
 import com.jams.music.player.R;
 import com.jams.music.player.Utils.Common;
 import com.jams.music.player.WelcomeActivity.WelcomeActivity;
@@ -49,30 +55,30 @@ import java.util.HashMap;
 import java.util.List;
 
 public class SettingsMusicFoldersDialog extends DialogFragment {
-
-    private Context mContext;
-    private Common mApp;
-    private boolean mWelcomeSetup = false;
+	
+	private Context mContext;
+	private Common mApp;
+	private boolean mWelcomeSetup = false;
 
     private RelativeLayout mUpLayout;
     private ImageView mUpIcon;
     private TextView mUpText;
     private TextView mCurrentFolderText;
 
-    private ListView mFoldersListView;
-    private Cursor mCursor;
-
-    private String mRootDir;
-    private String mCurrentDir;
-
-    private List<String> mFileFolderNamesList;
-    private List<String> mFileFolderPathsList;
-    private List<String> mFileFolderSizesList;
-    private HashMap<String, Boolean> mMusicFolders;
+	private ListView mFoldersListView;
+	private Cursor mCursor;
+	
+	private String mRootDir;
+	private String mCurrentDir;
+	
+	private List<String> mFileFolderNamesList; 
+	private List<String> mFileFolderPathsList;
+	private List<String> mFileFolderSizesList;
+	private HashMap<String, Boolean> mMusicFolders;
 
     @Override
     public Dialog onCreateDialog(Bundle onSavedInstanceState) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        AlertDialog.Builder builder =  new  AlertDialog.Builder(getActivity());
 
         mContext = getActivity().getApplicationContext();
         mApp = (Common) mContext;
@@ -111,7 +117,7 @@ public class SettingsMusicFoldersDialog extends DialogFragment {
         } else {
             mUpIcon.setImageResource(UIElementsHelper.getIcon(mContext, "up"));
 
-            if (mApp.getCurrentTheme() == Common.DARK_THEME) {
+            if (mApp.getCurrentTheme()==Common.DARK_THEME) {
                 mUpIcon.setImageResource(R.drawable.icon_list_divider_light);
             } else {
                 mUpIcon.setImageResource(R.drawable.icon_list_divider);
@@ -127,7 +133,7 @@ public class SettingsMusicFoldersDialog extends DialogFragment {
         mCursor = mApp.getDBAccessHelper().getAllMusicFolderPaths();
 
         //Get a list of all the paths that are currently stored in the DB.
-        for (int i = 0; i < mCursor.getCount(); i++) {
+        for (int i=0; i < mCursor.getCount(); i++) {
             mCursor.moveToPosition(i);
 
             //Filter out any double slashes.
@@ -140,7 +146,7 @@ public class SettingsMusicFoldersDialog extends DialogFragment {
         }
 
         //Close the cursor.
-        if (mCursor != null)
+        if (mCursor!=null)
             mCursor.close();
 
         //Get the folder hierarchy of the selected folder.
@@ -193,23 +199,23 @@ public class SettingsMusicFoldersDialog extends DialogFragment {
     private void setCurrentDirText() {
         mCurrentFolderText.setText(mCurrentDir);
     }
-
-    /**
-     * Retrieves the folder hierarchy for the specified folder
-     * (this method is NOT recursive and doesn't go into the parent
-     * folder's subfolders.
-     */
+	
+	/**
+	 * Retrieves the folder hierarchy for the specified folder 
+	 * (this method is NOT recursive and doesn't go into the parent 
+	 * folder's subfolders. 
+	 */
     private void getDir(String dirPath) {
 
-        mFileFolderNamesList = new ArrayList<String>();
-        mFileFolderPathsList = new ArrayList<String>();
-        mFileFolderSizesList = new ArrayList<String>();
-
-        File f = new File(dirPath);
-        File[] files = f.listFiles();
-        Arrays.sort(files);
-
-        if (files != null) {
+		mFileFolderNamesList = new ArrayList<String>();
+		mFileFolderPathsList = new ArrayList<String>();
+		mFileFolderSizesList = new ArrayList<String>();
+		
+		File f = new File(dirPath);
+		File[] files = f.listFiles();
+		Arrays.sort(files);
+		 
+		if (files!=null) {
 
             for (File file : files) {
 
@@ -218,7 +224,7 @@ public class SettingsMusicFoldersDialog extends DialogFragment {
                     if (file.isDirectory()) {
 
 						/*
-                         * Starting with Android 4.2, /storage/emulated/legacy/...
+						 * Starting with Android 4.2, /storage/emulated/legacy/... 
 						 * is a symlink that points to the actual directory where 
 						 * the user's files are stored. We need to detect the 
 						 * actual directory's file path here.
@@ -248,65 +254,65 @@ public class SettingsMusicFoldersDialog extends DialogFragment {
                 }
 
             }
-
-        }
-
-        boolean dirChecked = false;
+			
+		}
+		
+		boolean dirChecked = false;
 
         //Get the directory and the parent dir.
         String concatatedString = "";
-        int secondSlashIndex = dirPath.lastIndexOf("/", dirPath.lastIndexOf("/") - 1);
-        if ((secondSlashIndex < dirPath.length()) && secondSlashIndex != -1)
+        int secondSlashIndex = dirPath.lastIndexOf("/", dirPath.lastIndexOf("/")-1);
+        if ((secondSlashIndex < dirPath.length()) && secondSlashIndex!=-1)
             concatatedString = dirPath.substring(secondSlashIndex, dirPath.length());
 
-        if (getMusicFoldersHashMap().get(concatatedString) != null)
-            dirChecked = getMusicFoldersHashMap().get(concatatedString);
+		if (getMusicFoldersHashMap().get(concatatedString)!=null)
+			dirChecked = getMusicFoldersHashMap().get(concatatedString);
 
-        SettingsMultiselectAdapter mFoldersListViewAdapter = new SettingsMultiselectAdapter(getActivity(),
-                this,
-                mWelcomeSetup,
-                dirChecked);
-
-        mFoldersListView.setAdapter(mFoldersListViewAdapter);
-        mFoldersListViewAdapter.notifyDataSetChanged();
+		SettingsMultiselectAdapter mFoldersListViewAdapter = new SettingsMultiselectAdapter(getActivity(),
+																							this, 
+																							mWelcomeSetup,
+																							dirChecked);
+		
+		mFoldersListView.setAdapter(mFoldersListViewAdapter);
+		mFoldersListViewAdapter.notifyDataSetChanged();
 
         mCurrentDir = dirPath;
         setCurrentDirText();
-
+		
     }
-
+    
     /**
-     * Resolves the /storage/emulated/legacy paths to
-     * their true folder path representations. Required
+     * Resolves the /storage/emulated/legacy paths to 
+     * their true folder path representations. Required 
      * for Nexuses and other devices with no SD card.
      */
-    @SuppressLint("SdCardPath")
+    @SuppressLint("SdCardPath") 
     private String getRealFilePath(String filePath) {
+    	
+    	if (filePath.equals("/storage/emulated/0") || 
+    		filePath.equals("/storage/emulated/0/") ||
+    		filePath.equals("/storage/emulated/legacy") ||
+    		filePath.equals("/storage/emulated/legacy/") ||
+    		filePath.equals("/storage/sdcard0") || 
+    		filePath.equals("/storage/sdcard0/") ||
+    		filePath.equals("/sdcard") || 
+    		filePath.equals("/sdcard/") || 
+    		filePath.equals("/mnt/sdcard") || 
+    		filePath.equals("/mnt/sdcard/")) {
+    		
+    		return Environment.getExternalStorageDirectory().toString();
+    	}
 
-        if (filePath.equals("/storage/emulated/0") ||
-                filePath.equals("/storage/emulated/0/") ||
-                filePath.equals("/storage/emulated/legacy") ||
-                filePath.equals("/storage/emulated/legacy/") ||
-                filePath.equals("/storage/sdcard0") ||
-                filePath.equals("/storage/sdcard0/") ||
-                filePath.equals("/sdcard") ||
-                filePath.equals("/sdcard/") ||
-                filePath.equals("/mnt/sdcard") ||
-                filePath.equals("/mnt/sdcard/")) {
-
-            return Environment.getExternalStorageDirectory().toString();
-        }
-
-        return filePath;
+    	return filePath;
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
+	@Override
+	public void onDestroyView() {
+		super.onDestroyView();
 
-        if (isRemoving()) {
-            mCursor.close();
-            mCursor = null;
+		if (isRemoving()) {
+			mCursor.close();
+			mCursor = null;
 
             //Clear the DB and insert the new selections (along with the old ones).
             mApp.getDBAccessHelper().deleteAllMusicFolderPaths();
@@ -316,13 +322,13 @@ public class SettingsMusicFoldersDialog extends DialogFragment {
                 //Retrieve a list of all keys in the hash map (key = music folder path).
                 ArrayList<String> mPathsList = new ArrayList<String>(mMusicFolders.keySet());
 
-                for (int i = 0; i < mMusicFolders.size(); i++) {
+                for (int i=0; i < mMusicFolders.size(); i++) {
                     String path = mPathsList.get(i);
                     boolean include = mMusicFolders.get(path);
 
                     //Trim down the folder path to include only the folder and its parent.
-                    int secondSlashIndex = path.lastIndexOf("/", path.lastIndexOf("/") - 1);
-                    if ((secondSlashIndex < path.length()) && secondSlashIndex != -1)
+                    int secondSlashIndex = path.lastIndexOf("/", path.lastIndexOf("/")-1);
+                    if ((secondSlashIndex < path.length()) && secondSlashIndex!=-1)
                         path = path.substring(secondSlashIndex, path.length());
 
                     ContentValues values = new ContentValues();
@@ -339,32 +345,32 @@ public class SettingsMusicFoldersDialog extends DialogFragment {
                 mApp.getDBAccessHelper().getWritableDatabase().endTransaction();
             }
 
-        }
-
-    }
-
-    /*
-     * Getter methods.
-     */
-    public HashMap<String, Boolean> getMusicFoldersHashMap() {
-        return mMusicFolders;
-    }
-
-    public ArrayList<String> getMusicFolderPaths() {
-        return new ArrayList<String>(mMusicFolders.keySet());
-    }
-
-    public List<String> getFileFolderNamesList() {
-        return mFileFolderNamesList;
-    }
-
-    public List<String> getFileFolderSizesList() {
-        return mFileFolderSizesList;
-    }
-
-    public List<String> getFileFolderPathsList() {
-        return mFileFolderPathsList;
-    }
-
+		}
+		
+	}
+	
+	/*
+	 * Getter methods.
+	 */
+	public HashMap<String, Boolean> getMusicFoldersHashMap() {
+		return mMusicFolders;
+	}
+	
+	public ArrayList<String> getMusicFolderPaths() {
+		return new ArrayList<String>(mMusicFolders.keySet());
+	}
+	
+	public List<String> getFileFolderNamesList() {
+		return mFileFolderNamesList;
+	}
+	
+	public List<String> getFileFolderSizesList() {
+		return mFileFolderSizesList;
+	}
+	
+	public List<String> getFileFolderPathsList() {
+		return mFileFolderPathsList;
+	}
+	
 }
 

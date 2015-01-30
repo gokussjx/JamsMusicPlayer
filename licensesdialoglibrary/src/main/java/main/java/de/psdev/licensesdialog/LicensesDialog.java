@@ -16,19 +16,18 @@
 
 package main.java.de.psdev.licensesdialog;
 
+import java.util.List;
+
+import main.java.de.psdev.licensesdialog.licenses.ApacheSoftwareLicense20;
+import main.java.de.psdev.licensesdialog.model.Notice;
+import main.java.de.psdev.licensesdialog.model.Notices;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.webkit.WebView;
-
-import java.util.List;
-
 import de.psdev.licensesdialog.R;
-import main.java.de.psdev.licensesdialog.licenses.ApacheSoftwareLicense20;
-import main.java.de.psdev.licensesdialog.model.Notice;
-import main.java.de.psdev.licensesdialog.model.Notices;
 
 public class LicensesDialog {
     public static final Notice LICENSES_DIALOG_NOTICE = new Notice("LicensesDialog", "http://psdev.de/LicensesDialog", "Copyright 2013 Philip Schiffer",

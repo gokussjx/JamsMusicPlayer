@@ -1,12 +1,13 @@
 package com.mobeta.android.dslv;
 
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.Point;
+import android.graphics.Color;
+import android.widget.ListView;
+import android.widget.ImageView;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.ListView;
+import android.util.Log;
 
 /**
  * Simple implementation of the FloatViewManager class. Uses list

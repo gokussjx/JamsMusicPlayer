@@ -15,47 +15,48 @@
  */
 package com.jams.music.player.AsyncTasks;
 
+import java.io.File;
+
+import org.apache.commons.io.FileUtils;
+
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.widget.Toast;
 
-import com.jams.music.player.FoldersFragment.FilesFoldersFragment;
 import com.jams.music.player.R;
-
-import org.apache.commons.io.FileUtils;
-
-import java.io.File;
+import com.jams.music.player.FoldersFragment.FilesFoldersFragment;
 
 public class AsyncCopyMoveTask extends AsyncTask<String, Void, Boolean> {
-
+	
     private Context mContext;
     private ProgressDialog pd;
     private FilesFoldersFragment mFragment;
     private boolean mShouldMove;
-
-    private File mSourceFile;
-    private File mDestinationFile;
-
+	
+	private File mSourceFile;
+	private File mDestinationFile;
+    
     public AsyncCopyMoveTask(Context context,
                              File sourceFile,
                              File destinationFile,
                              FilesFoldersFragment fragment,
                              boolean shouldMove) {
-
-        mContext = context;
-        mSourceFile = sourceFile;
+    	
+    	mContext = context;
+    	mSourceFile = sourceFile;
         mFragment = fragment;
-        mDestinationFile = destinationFile;
+    	mDestinationFile = destinationFile;
         mShouldMove = shouldMove;
     }
-
+    
     protected void onPreExecute() {
-        pd = new ProgressDialog(mFragment.getActivity());
-        pd.setCancelable(false);
-        pd.setIndeterminate(false);
+		pd = new ProgressDialog(mFragment.getActivity());
+		pd.setCancelable(false);
+		pd.setIndeterminate(false);
 
         if (mShouldMove) {
             pd.setTitle(R.string.move);
@@ -65,27 +66,27 @@ public class AsyncCopyMoveTask extends AsyncTask<String, Void, Boolean> {
             pd.setMessage(mContext.getResources().getString(R.string.copying_file));
         }
 
-        pd.setButton(DialogInterface.BUTTON_NEUTRAL, mContext.getResources()
-                        .getString(R.string.run_in_background),
-                new OnClickListener() {
+		pd.setButton(DialogInterface.BUTTON_NEUTRAL, mContext.getResources()
+															 .getString(R.string.run_in_background), 
+															 new OnClickListener() {
 
-                    @Override
-                    public void onClick(DialogInterface arg0, int arg1) {
-                        pd.dismiss();
-
-                    }
-
-                });
-
-        pd.show();
-
+			@Override
+			public void onClick(DialogInterface arg0, int arg1) {
+				pd.dismiss();
+				
+			}
+			
+		});
+		
+		pd.show();
+    	
     }
-
+ 
     @Override
     protected Boolean doInBackground(String... params) {
 
         try {
-            if (mSourceFile.getCanonicalPath() == mDestinationFile.getCanonicalPath()) {
+            if (mSourceFile.getCanonicalPath()==mDestinationFile.getCanonicalPath()) {
                 Toast.makeText(mContext, R.string.source_target_same, Toast.LENGTH_LONG).show();
                 return false;
             }
@@ -94,51 +95,51 @@ public class AsyncCopyMoveTask extends AsyncTask<String, Void, Boolean> {
             return false;
         }
 
-        if (mSourceFile.isDirectory()) {
-
-            try {
+    	if (mSourceFile.isDirectory()) {
+    		
+    		try {
                 if (mShouldMove)
-                    FileUtils.moveDirectoryToDirectory(mSourceFile, mDestinationFile, true);
+				    FileUtils.moveDirectoryToDirectory(mSourceFile, mDestinationFile, true);
                 else
                     FileUtils.copyDirectoryToDirectory(mSourceFile, mDestinationFile);
 
-            } catch (Exception e) {
-                return false;
-            }
-
-        } else {
-
-            try {
+			} catch (Exception e) {
+				return false;
+			}
+    		
+    	} else {
+    		
+    		try {
                 if (mShouldMove)
-                    FileUtils.moveFileToDirectory(mSourceFile, mDestinationFile, true);
+    			    FileUtils.moveFileToDirectory(mSourceFile, mDestinationFile, true);
                 else
                     FileUtils.copyFile(mSourceFile, mDestinationFile);
 
-            } catch (Exception e) {
-                return false;
-            }
+    		} catch (Exception e) {
+    			return false;
+    		}
+    		
+    	}
 
-        }
-
-        return true;
+    	return true;
     }
 
     @Override
-    protected void onPostExecute(Boolean result) {
-        super.onPostExecute(result);
-
-        pd.dismiss();
-        if (result == true) {
+	protected void onPostExecute(Boolean result) {
+		super.onPostExecute(result);
+		
+    	pd.dismiss();
+    	if (result==true) {
             if (mShouldMove)
-                Toast.makeText(mContext, R.string.done_move, Toast.LENGTH_SHORT).show();
+        	    Toast.makeText(mContext, R.string.done_move, Toast.LENGTH_SHORT).show();
             else
                 Toast.makeText(mContext, R.string.done_copy, Toast.LENGTH_SHORT).show();
-        } else {
+    	} else {
             if (mShouldMove)
-                Toast.makeText(mContext, R.string.file_could_not_be_written_new_location, Toast.LENGTH_LONG).show();
+        	    Toast.makeText(mContext, R.string.file_could_not_be_written_new_location, Toast.LENGTH_LONG).show();
             else
                 Toast.makeText(mContext, R.string.file_could_not_be_written_new_location, Toast.LENGTH_LONG).show();
-        }
+    	}
 
         try {
             mFragment.refreshListView();
@@ -147,7 +148,7 @@ public class AsyncCopyMoveTask extends AsyncTask<String, Void, Boolean> {
         } catch (Error er) {
             er.printStackTrace();
         }
-
-    }
+		
+	}
 
 }

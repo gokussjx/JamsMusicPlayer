@@ -27,7 +27,6 @@ import com.squareup.picasso.Transformation;
 public class PicassoBlurTransformer implements Transformation {
 
     RenderScript rs;
-
     public PicassoBlurTransformer(Context context) {
         super();
         rs = RenderScript.create(context);

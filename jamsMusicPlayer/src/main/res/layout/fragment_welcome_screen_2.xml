@@ -1,7 +1,6 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
+<RelativeLayout android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@drawable/now_playing_controls_background_light">
+    android:background="@drawable/now_playing_controls_background_light" xmlns:android="http://schemas.android.com/apk/res/android">
 
     <TextView
         android:id="@+id/welcome_header"
@@ -22,7 +21,7 @@
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/welcome_header"
         android:layout_below="@+id/welcome_header"
-        android:layout_marginTop="25dp">
+        android:layout_marginTop="25dp" >
 
         <RadioButton
             android:id="@+id/get_all_songs_radio"
@@ -44,14 +43,14 @@
         android:id="@+id/folders_fragment_holder"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
-        android:layout_below="@+id/music_library_welcome_radio_group"
-        android:layout_marginBottom="15dp"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
-        android:layout_marginTop="15dp">
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="15dp"
+        android:layout_below="@+id/music_library_welcome_radio_group"
+        android:layout_alignParentBottom="true" >
 
     </RelativeLayout>
 

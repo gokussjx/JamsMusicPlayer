@@ -1,10 +1,11 @@
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
-    android:configure="com.jams.music.player.WidgetProviders.LargeWidgetConfigActivity"
-    android:initialKeyguardLayout="@layout/medium_widget_layout"
-    android:initialLayout="@layout/medium_widget_layout"
-    android:minHeight="75dp"
-    android:minWidth="300dp"
-    android:previewImage="@drawable/medium_widget_preview"
-    android:resizeMode="vertical|horizontal"
+	android:minHeight="75dp"
+	android:minWidth="300dp"
+	android:previewImage="@drawable/medium_widget_preview"
     android:updatePeriodMillis="86400000"
-    android:widgetCategory="home_screen|keyguard"></appwidget-provider>
+    android:initialLayout="@layout/medium_widget_layout"
+    android:widgetCategory="home_screen|keyguard"
+    android:initialKeyguardLayout="@layout/medium_widget_layout"
+    android:configure="com.jams.music.player.WidgetProviders.LargeWidgetConfigActivity"
+    android:resizeMode="vertical|horizontal" >
+</appwidget-provider>

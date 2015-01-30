@@ -31,6 +31,8 @@ import com.jams.music.player.Utils.Common;
  */
 public class UIElementsHelper {
 
+    private static Common mApp;
+
     private static final String NOW_PLAYING_COLOR = "NOW_PLAYING_COLOR";
     private static final String BLUE = "BLUE";
     private static final String RED = "RED";
@@ -41,7 +43,6 @@ public class UIElementsHelper {
     private static final String GRAY = "GRAY";
     private static final String WHITE = "WHITE";
     private static final String BLACK = "BLACK";
-    private static Common mApp;
 
     /**
      * Text color.

@@ -15,6 +15,8 @@
  */
 package com.jams.music.player.Dialogs;
 
+import java.io.File;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -30,36 +32,34 @@ import android.widget.TextView;
 
 import com.jams.music.player.R;
 
-import java.io.File;
-
 public class TrialExpiryDialog extends DialogFragment {
 
-    private Activity parentActivity;
-    private DialogFragment dialogFragment;
-    private TextView trialExpiryText;
-    private TextView daysTextView;
-    private TextView numberOfDaysLeftTextView;
-    private TextView trialCounterDummyInfoTextView;
-
-    private SharedPreferences sharedPreferences;
-    private boolean EXPIRED_FLAG = false;
-
-    @Override
+	private Activity parentActivity;
+	private DialogFragment dialogFragment;
+	private TextView trialExpiryText;
+	private TextView daysTextView;
+	private TextView numberOfDaysLeftTextView;
+	private TextView trialCounterDummyInfoTextView;
+	
+	private SharedPreferences sharedPreferences;
+	private boolean EXPIRED_FLAG = false;
+	
+	@Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-
-        parentActivity = getActivity();
-        dialogFragment = this;
-
-        View rootView = (View) parentActivity.getLayoutInflater().inflate(R.layout.trial_expiry_dialog, null);
-        sharedPreferences = getActivity().getSharedPreferences("com.jams.music.player", Context.MODE_PRIVATE);
-
-        //Check if the BETA version has expired.
+		
+		parentActivity = getActivity();
+		dialogFragment = this;
+		
+		View rootView = (View) parentActivity.getLayoutInflater().inflate(R.layout.trial_expiry_dialog, null);
+		sharedPreferences = getActivity().getSharedPreferences("com.jams.music.player", Context.MODE_PRIVATE);
+		
+		//Check if the BETA version has expired.
         File file = new File(Environment.getExternalStorageDirectory() + "/.beta2");
         if (file.exists()) {
-            //The app has expired.
-            EXPIRED_FLAG = true;
+        	//The app has expired.
+        	EXPIRED_FLAG = true;
         } else {
-            EXPIRED_FLAG = false;
+        	EXPIRED_FLAG = false;
         }
         
 /*        //Change the dialog message based on the expiry status of the app.
@@ -104,7 +104,7 @@ public class TrialExpiryDialog extends DialogFragment {
     		daysTextView.setTypeface(TypefaceHelper.getTypeface(parentActivity, "RobotoCondensed-Light"));
     		daysTextView.setPaintFlags(daysTextView.getPaintFlags() | Paint.ANTI_ALIAS_FLAG | Paint.SUBPIXEL_TEXT_FLAG);
         }*/
-
+		
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
         //Set the dialog title.
@@ -112,19 +112,19 @@ public class TrialExpiryDialog extends DialogFragment {
         builder.setView(rootView);
         builder.setPositiveButton(R.string.ok, new OnClickListener() {
 
-            @Override
-            public void onClick(DialogInterface arg0, int arg1) {
-                dialogFragment.dismiss();
-
-                if (EXPIRED_FLAG) {
-                    getActivity().finish();
-                }
-
-            }
-
+			@Override
+			public void onClick(DialogInterface arg0, int arg1) {
+				dialogFragment.dismiss();
+				
+				if (EXPIRED_FLAG) {
+					getActivity().finish();
+				}
+				
+			}
+        	
         });
 
         return builder.create();
     }
-
+	
 }

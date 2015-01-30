@@ -2,43 +2,43 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/card_light">
+    android:background="@drawable/card_light" >
 
     <TextView
         android:id="@+id/songDurationListView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_centerVertical="true"
+		android:layout_centerVertical="true"
+		android:layout_alignParentRight="true"
         android:layout_marginRight="15dp"
-        android:ellipsize="end"
-        android:lines="1"
         android:text="0:00"
+        android:lines="1" 
+      	android:ellipsize="end" 
         android:textAppearance="?android:attr/textAppearanceSmall" />
 
     <RelativeLayout
         android:id="@+id/albumArtLayout"
         android:layout_width="75dp"
         android:layout_height="75dp"
-        android:layout_centerVertical="true"
-        android:padding="3dp">
-
+		android:layout_centerVertical="true"
+		android:padding="3dp" >
+        
         <com.jams.music.player.Views.RoundedImageView
-            android:id="@+id/songsListAlbumThumbnail"
-            android:layout_width="75dp"
-            android:layout_height="75dp"
-            android:layout_alignParentLeft="true"
-            android:layout_centerVertical="true" />
+	        android:id="@+id/songsListAlbumThumbnail"
+	        android:layout_width="75dp"
+	        android:layout_height="75dp"
+	        android:layout_alignParentLeft="true"
+	        android:layout_centerVertical="true" />
 
         <com.jams.music.player.Views.RoundedImageView
             android:id="@+id/dimmer"
             android:layout_width="fill_parent"
+            android:alpha="1.0"
             android:layout_height="fill_parent"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
-            android:alpha="1.0"
             android:src="@drawable/transparent_black_patch" />
-
+        
         <TextView
             android:id="@+id/top_25_played_rank_text"
             android:layout_width="fill_parent"
@@ -46,24 +46,24 @@
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:gravity="center"
-            android:text="#25"
             android:textColor="#FFFFFF"
-            android:textSize="25sp" />
-
+            android:textSize="25sp"
+            android:text="#25" />
+        
     </RelativeLayout>
 
-    <LinearLayout
+	<LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="75dp"
         android:layout_centerVertical="true"
-        android:layout_toLeftOf="@+id/songDurationListView"
         android:layout_toRightOf="@+id/albumArtLayout"
-        android:orientation="vertical">
+        android:layout_toLeftOf="@+id/songDurationListView"
+        android:orientation="vertical" >
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1">
+            android:layout_height="wrap_content" 
+            android:layout_weight="1" >
 
             <TextView
                 android:id="@+id/songNameListView"
@@ -72,32 +72,32 @@
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentLeft="true"
                 android:layout_marginLeft="10dp"
+                android:text="Song Name"
+                android:singleLine="true"
                 android:ellipsize="marquee"
                 android:gravity="bottom"
-                android:singleLine="true"
-                android:text="Song Name"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
-
+            
         </RelativeLayout>
-
+        
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1.25">
-
+            android:layout_height="wrap_content" 
+            android:layout_weight="1.25" >
+            
             <TextView
                 android:id="@+id/artistNameSongListView"
                 android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
-                android:layout_alignParentLeft="true"
                 android:layout_alignParentTop="true"
+                android:layout_alignParentLeft="true"
                 android:layout_marginLeft="10dp"
-                android:gravity="top"
                 android:text="Artist Name"
+                android:gravity="top"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
-
+            
         </RelativeLayout>
-
+        
     </LinearLayout>
 
 </RelativeLayout>

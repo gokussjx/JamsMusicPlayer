@@ -34,7 +34,7 @@ import com.jams.music.player.Utils.Common;
 
 *//**
  * Builds the cursor that will be used by the app's main service.
- *
+ * 
  * @author Saravan Pantham
  *//*
 public class AsyncBuildServiceCursorTask extends AsyncTask<String, Integer, Boolean> {

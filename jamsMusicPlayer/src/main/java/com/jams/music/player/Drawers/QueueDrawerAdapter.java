@@ -16,6 +16,7 @@
 package com.jams.music.player.Drawers;
 
 import android.content.Context;
+import android.graphics.Paint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +24,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.jams.music.player.DBHelpers.DBAccessHelper;
 import com.jams.music.player.Helpers.SongHelper;
 import com.jams.music.player.Helpers.TypefaceHelper;
 import com.jams.music.player.Helpers.UIElementsHelper;
@@ -45,12 +47,12 @@ public class QueueDrawerAdapter extends ArrayAdapter<Integer> {
         mColors = UIElementsHelper.getQuickScrollColors(context);
     }
 
-    public View getView(final int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent){
 
         QueueDrawerHolder holder;
-        if (convertView == null) {
+        if (convertView==null) {
             convertView = LayoutInflater.from(mContext)
-                    .inflate(R.layout.queue_drawer_list_layout, parent, false);
+                                        .inflate(R.layout.queue_drawer_list_layout, parent, false);
 
             holder = new QueueDrawerHolder();
             holder.songTitleText = (TextView) convertView.findViewById(R.id.queue_song_title);
@@ -76,13 +78,13 @@ public class QueueDrawerAdapter extends ArrayAdapter<Integer> {
 
         //Apply the item's colors.
         try {
-            if (position == mApp.getService().getCurrentSongIndex()) {
+            if (position==mApp.getService().getCurrentSongIndex()) {
                 holder.songTitleText.setTextColor(mColors[0]);
                 holder.artistText.setTextColor(mColors[0]);
-            } else if (mApp.getCurrentTheme() == Common.LIGHT_THEME) {
+            } else if (mApp.getCurrentTheme()==Common.LIGHT_THEME) {
                 holder.songTitleText.setTextColor(UIElementsHelper.getThemeBasedTextColor(mContext));
                 holder.artistText.setTextColor(UIElementsHelper.getSmallTextColor(mContext));
-            } else if (mApp.getCurrentTheme() == Common.DARK_THEME) {
+            } else if (mApp.getCurrentTheme()==Common.DARK_THEME) {
                 holder.songTitleText.setTextColor(UIElementsHelper.getThemeBasedTextColor(mContext));
                 holder.artistText.setTextColor(UIElementsHelper.getSmallTextColor(mContext));
             }

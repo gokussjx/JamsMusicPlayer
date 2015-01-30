@@ -15,6 +15,12 @@
  */
 package com.jams.music.player.AsyncTasks;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+
+import org.json.JSONArray;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -26,154 +32,149 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.PowerManager;
 
-import com.jams.music.player.DBHelpers.DBAccessHelper;
 import com.jams.music.player.R;
+import com.jams.music.player.DBHelpers.DBAccessHelper;
+import com.jams.music.player.Services.BuildMusicLibraryService;
 import com.jams.music.player.Services.AudioPlaybackService;
 import com.jams.music.player.Utils.Common;
-
-import org.json.JSONArray;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
 
 /**
  * Checks if the Google Play Music app is installed on the user's device. If it
  * is, grabs the user's song data from Google Play Music's content mApp.
  */
 public class AsyncGetGooglePlayMusicMetadataTask extends AsyncTask<String, String, String> {
-
+	
     private Context mContext;
-    private Common mApp;
-
-    private HashMap<String, String> playlistIdsNameMap = new HashMap<String, String>();
-    private JSONArray playlistsJSONArray = new JSONArray();
-    private JSONArray playlistEntriesJSONArray = new JSONArray();
-    private ArrayList<String> genresList = new ArrayList<String>();
-
-    private int targetVolume = 0;
-    private int currentVolume;
-    private int stepDownValue = 1;
-    private AudioManager am;
-
-    private String currentTask = "";
-    private int currentProgressValue = 0;
-    private int numberOfSongs = 0;
-    private int numberOfPlaylists = 0;
-    private Date date = new Date();
-
-    private PowerManager pm;
-    private PowerManager.WakeLock wakeLock;
-
+	private Common mApp;
+	
+	private HashMap<String, String> playlistIdsNameMap = new HashMap<String, String>();
+	private JSONArray playlistsJSONArray = new JSONArray();
+	private JSONArray playlistEntriesJSONArray = new JSONArray();
+	private ArrayList<String> genresList = new ArrayList<String>();
+	
+	private int targetVolume = 0;
+	private int currentVolume;
+	private int stepDownValue = 1;
+	private AudioManager am;
+	
+	private String currentTask = "";
+	private int currentProgressValue = 0;
+	private int numberOfSongs = 0;
+	private int numberOfPlaylists = 0;
+	private Date date = new Date();
+	
+	private PowerManager pm;
+	private PowerManager.WakeLock wakeLock;
+    
     public AsyncGetGooglePlayMusicMetadataTask(Context context) {
-        mContext = context;
-        mApp = (Common) mContext;
-
+    	mContext = context;
+    	mApp = (Common) mContext;
+    	
     }
-
+ 
     @Override
     protected void onPreExecute() {
-        super.onPreExecute();
-
-        //Hide the actionbar.
-        mApp.setIsBuildingLibrary(true);
-
-        //Acquire a wakelock to prevent the CPU from sleeping while the process is running.
-        pm = (PowerManager) mContext.getSystemService(Context.POWER_SERVICE);
-        wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "com.jams.music.player.AsyncTasks.AsyncGetGooglePlayMusicMetadata");
-        wakeLock.acquire();
-
-        //Set the initial setting of the progressbar as indeterminate.
-        currentTask = mContext.getResources().getString(R.string.contacting_google_play_music);
-
+    	super.onPreExecute();
+    	
+    	//Hide the actionbar.
+    	mApp.setIsBuildingLibrary(true);
+    	
+    	//Acquire a wakelock to prevent the CPU from sleeping while the process is running.
+    	pm = (PowerManager) mContext.getSystemService(Context.POWER_SERVICE);
+    	wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "com.jams.music.player.AsyncTasks.AsyncGetGooglePlayMusicMetadata");
+    	wakeLock.acquire();
+    	
+    	//Set the initial setting of the progressbar as indeterminate.
+    	currentTask = mContext.getResources().getString(R.string.contacting_google_play_music);
+    	
     }
-
+    
     @Override
     protected String doInBackground(String... params) {
-
-        //Check if any music is playing and fade it out.
-        am = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
-        if (mApp.isServiceRunning()) {
-
-            if (mApp.getService().isPlayingMusic()) {
-                targetVolume = 0;
-                currentVolume = am.getStreamVolume(AudioManager.STREAM_MUSIC);
-                while (currentVolume > targetVolume) {
-                    am.setStreamVolume(AudioManager.STREAM_MUSIC, (currentVolume - stepDownValue), 0);
-                    currentVolume = am.getStreamVolume(AudioManager.STREAM_MUSIC);
-
-                }
-
-                mContext.stopService(new Intent(mContext, AudioPlaybackService.class));
-
-            }
-
-        }
-
-        //Check if the Google Play Music app is installed.
-        PackageManager pm = mContext.getPackageManager();
-        boolean installed = false;
-        try {
-            pm.getPackageInfo("com.google.android.music", PackageManager.GET_ACTIVITIES);
-            installed = true;
-        } catch (NameNotFoundException e1) {
-            //The app isn't installed.
-            installed = false;
-        }
-
-        String result = "GENERIC_EXCEPTION";
-        if (installed == false) {
-            //Can't do anything here anymore. Quit.
-            mApp.getSharedPreferences().edit().putBoolean("GOOGLE_PLAY_MUSIC_ENABLED", false).commit();
-            return null;
-        } else {
-            //Grab music metadata from Google Play Music's public content mApp.
-            result = getMetadataFromGooglePlayMusicApp();
-        }
-        return result;
+    	
+    	//Check if any music is playing and fade it out.
+    	am = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
+    	if (mApp.isServiceRunning()) {
+    		
+    		if (mApp.getService().isPlayingMusic()) {
+    			targetVolume = 0;
+    			currentVolume = am.getStreamVolume(AudioManager.STREAM_MUSIC);		
+    			while(currentVolume > targetVolume) {
+    			    am.setStreamVolume(AudioManager.STREAM_MUSIC, (currentVolume - stepDownValue), 0);
+    			    currentVolume = am.getStreamVolume(AudioManager.STREAM_MUSIC);
+    			    
+    			}
+    			
+    			mContext.stopService(new Intent(mContext, AudioPlaybackService.class));
+    			
+    		}
+    		
+    	}
+    	
+    	//Check if the Google Play Music app is installed.
+    	PackageManager pm = mContext.getPackageManager();
+    	boolean installed = false;
+    	try {
+			pm.getPackageInfo("com.google.android.music", PackageManager.GET_ACTIVITIES);
+			installed = true;
+		} catch (NameNotFoundException e1) {
+			//The app isn't installed.
+			installed = false;
+		}
+    	
+    	String result = "GENERIC_EXCEPTION";
+    	if (installed==false) {
+    		//Can't do anything here anymore. Quit.
+    		mApp.getSharedPreferences().edit().putBoolean("GOOGLE_PLAY_MUSIC_ENABLED", false).commit();
+    		return null;
+    	} else {
+    		//Grab music metadata from Google Play Music's public content mApp.
+    		result = getMetadataFromGooglePlayMusicApp();
+    	}
+    	return result;
     }
-
+    
     //Grab music metadata from Google Play Music's public content mApp.
-    public String getMetadataFromGooglePlayMusicApp() {
-
-        //Grab a handle on the mApp.
-        Uri googlePlayMusicContentProviderUri = Uri.parse("content://com.google.android.music.MusicContent/audio");
-        String[] projection = {"title", "artist", "album", "AlbumArtist",
-                "duration", "track", "year", "Genre", "TrackType AS track_type",
-                                /*"_count",*/ "Rating", "AlbumArtLocation AS album_art", "SourceType AS source_type",
-                "SourceId", "ArtistArtLocation", /*, "artistId",*/ "StoreAlbumId"};
-
+	public String getMetadataFromGooglePlayMusicApp() {
+    	
+    	//Grab a handle on the mApp.
+    	Uri googlePlayMusicContentProviderUri = Uri.parse("content://com.google.android.music.MusicContent/audio");
+    	String[] projection = { "title", "artist", "album", "AlbumArtist",
+    							"duration", "track", "year", "Genre", "TrackType AS track_type",
+    							/*"_count",*/ "Rating", "AlbumArtLocation AS album_art", "SourceType AS source_type",
+    							"SourceId", "ArtistArtLocation", /*, "artistId",*/ "StoreAlbumId" };
+    	
     	/* source_type values:
     	 * 0: Local file (not used).
     	 * 1: Unknown.
     	 * 2: Personal, free GMusic library (used).
     	 * 3: All Access (not used).
     	 */
-        String selection = "source_type=2 AND track_type=0";
-
-        //Catch any exceptions that may be thrown as a result of unknown columns in GMusic's content mApp.
-        Cursor cursor = null;
-        boolean projectionFailed = false;
-        try {
-            cursor = mContext.getContentResolver().query(googlePlayMusicContentProviderUri, projection, selection, null, null);
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-
-            //Problematic columns are commented out here.
-            String[] failSafeProjection = {"title", "artist", "album", "AlbumArtist",
-                    "duration", "track", "year", "Genre", "TrackType AS track_type",
+    	String selection = "source_type=2 AND track_type=0";
+    	
+    	//Catch any exceptions that may be thrown as a result of unknown columns in GMusic's content mApp.
+    	Cursor cursor = null;
+    	boolean projectionFailed = false;
+    	try {
+    		cursor = mContext.getContentResolver().query(googlePlayMusicContentProviderUri, projection, selection, null, null);
+    	} catch (IllegalArgumentException e) {
+    		e.printStackTrace();
+    		
+    		//Problematic columns are commented out here.
+    		String[] failSafeProjection = { "title", "artist", "album", "AlbumArtist",
+						   					"duration", "track", "year", "Genre", "TrackType AS track_type",
 						   					/*"_count",*/ "Rating", "AlbumArtLocation AS album_art", /* "SourceType AS source_type", */
-                    "SourceId", /* "ArtistArtLocation", "artistId",*/ "StoreAlbumId"};
+						   					"SourceId", /* "ArtistArtLocation", "artistId",*/ "StoreAlbumId" };
+    		
+    		cursor = mContext.getContentResolver().query(googlePlayMusicContentProviderUri, failSafeProjection, "track_type=0", null, null);
+    		projectionFailed = true;
+    		
+    	}
 
-            cursor = mContext.getContentResolver().query(googlePlayMusicContentProviderUri, failSafeProjection, "track_type=0", null, null);
-            projectionFailed = true;
-
-        }
-
-        //Clear out all the current Google Play Music songs in the database.
-        mApp.getDBAccessHelper().deleteAllGooglePlayMusicSongs();
-
-        //Insert the songs and their metadata into Jams' local database.
+    	//Clear out all the current Google Play Music songs in the database.
+    	mApp.getDBAccessHelper().deleteAllGooglePlayMusicSongs();
+    	
+    	//Insert the songs and their metadata into Jams' local database.
     	/* To improve database insertion performance, we'll use a single transaction 
     	 * for the entire operation. SQLite journals each database insertion and 
     	 * creates a new transaction by default. We'll override this functionality 
@@ -181,161 +182,161 @@ public class AsyncGetGooglePlayMusicMetadataTask extends AsyncTask<String, Strin
     	 * In theory, this should reduce NAND memory overhead times and result in 
     	 * a 2x to 5x performance increase.
     	 */
-        try {
-            //We'll initialize the DB transaction manually.
-            mApp.getDBAccessHelper().getWritableDatabase().beginTransaction();
+    	try {
+    		//We'll initialize the DB transaction manually.
+    		mApp.getDBAccessHelper().getWritableDatabase().beginTransaction();
 
-            //Avoid "Divide by zero" errors.
-            int scanningSongsIncrement;
-            if (cursor != null) {
-                if (cursor.getCount() != 0) {
-                    scanningSongsIncrement = 800000 / cursor.getCount();
-                } else {
-                    scanningSongsIncrement = 800000 / 1;
-                }
-
-            } else {
-                return "FAIL";
-            }
-
-            currentTask = mContext.getResources().getString(R.string.syncing_with_google_play_music);
-            for (int i = 0; i < cursor.getCount(); i++) {
-
-                cursor.moveToPosition(i);
-                currentProgressValue = currentProgressValue + scanningSongsIncrement;
-                publishProgress();
-
-                //Get the song's metadata.
-                String songTitle = cursor.getString(cursor.getColumnIndex("title"));
-                String songArtist = cursor.getString(cursor.getColumnIndex("Artist"));
-                String songAlbum = cursor.getString(cursor.getColumnIndex("Album"));
-                String songAlbumArtist = cursor.getString(cursor.getColumnIndex("AlbumArtist"));
-                String songDuration = cursor.getString(cursor.getColumnIndex("Duration"));
-                String songTrackNumber = cursor.getString(cursor.getColumnIndex("Track"));
-                String songYear = cursor.getString(cursor.getColumnIndex("Year"));
-                String songGenre = cursor.getString(cursor.getColumnIndex("Genre"));
-                //String songPlayCount = cursor.getString(cursor.getColumnIndex("_count"));
-                String songRating = cursor.getString(cursor.getColumnIndex("Rating"));
-                String songSource = DBAccessHelper.GMUSIC;
-                String songAlbumArtPath = cursor.getString(cursor.getColumnIndex("album_art"));
-                String songID = cursor.getString(cursor.getColumnIndex("SourceId"));
-                //String artistID = cursor.getString(cursor.getColumnIndex("artistId"));
-                String storeAlbumID = cursor.getString(cursor.getColumnIndex("StoreAlbumId"));
-
-                String songArtistArtPath = "";
-                if (projectionFailed == false) {
-                    songArtistArtPath = cursor.getString(cursor.getColumnIndex("ArtistArtLocation"));
-                } else {
-                    //Fall back on album art.
-                    songArtistArtPath = cursor.getString(cursor.getColumnIndex("album_art"));
-                }
-
-                //Prepare the genres ArrayList.
-                if (!genresList.contains(songGenre)) {
-                    genresList.add(songGenre);
-                }
-
-                //Filter out track numbers and remove any bogus values.
-                if (songTrackNumber != null) {
-                    if (songTrackNumber.contains("/")) {
-                        int index = songTrackNumber.lastIndexOf("/");
-                        songTrackNumber = songTrackNumber.substring(0, index);
-                    }
-
-                }
-
-                if (songYear.equals("0")) {
-                    songYear = "";
-                }
-
-                //Check if any of the other tags were empty/null and set them to "Unknown xxx" values.
-                if (songArtist == null || songArtist.isEmpty() || songArtist.equals(" ")) {
-                    songArtist = "Unknown Artist";
-                }
-
-                if (songAlbumArtist == null || songAlbumArtist.isEmpty() || songAlbumArtist.equals(" ")) {
-                    songAlbumArtist = "Unknown Album Artist";
-                }
-
-                if (songAlbum == null || songAlbum.isEmpty() || songAlbum.equals(" ")) {
-                    songAlbum = "Unknown Album";
-                }
-
-                if (songGenre == null || songGenre.isEmpty() || songGenre.equals(" ")) {
-                    songGenre = "Unknown Genre";
-                }
-
-                ContentValues values = new ContentValues();
-                values.put(DBAccessHelper.SONG_TITLE, songTitle);
-                values.put(DBAccessHelper.SONG_ARTIST, songArtist);
-                values.put(DBAccessHelper.SONG_ALBUM, songAlbum);
-                values.put(DBAccessHelper.SONG_ALBUM_ARTIST, songAlbumArtist);
-                values.put(DBAccessHelper.SONG_DURATION, songDuration);
-                values.put(DBAccessHelper.SONG_FILE_PATH, songID);
-                values.put(DBAccessHelper.SONG_TRACK_NUMBER, songTrackNumber);
-                values.put(DBAccessHelper.SONG_GENRE, songGenre);
-                //values.put(DBAccessHelper.SONG_PLAY_COUNT, songPlayCount);
-                values.put(DBAccessHelper.SONG_YEAR, songYear);
-                values.put(DBAccessHelper.SONG_LAST_MODIFIED, "");
-                values.put(DBAccessHelper.BLACKLIST_STATUS, "FALSE"); //Keep the song whitelisted by default.
-                values.put(DBAccessHelper.ADDED_TIMESTAMP, date.getTime());
-                values.put(DBAccessHelper.RATING, songRating);
-                values.put(DBAccessHelper.SONG_SOURCE, songSource);
-                values.put(DBAccessHelper.SONG_ALBUM_ART_PATH, songAlbumArtPath);
-                values.put(DBAccessHelper.SONG_ID, songID);
-                values.put(DBAccessHelper.ARTIST_ART_LOCATION, songArtistArtPath);
-                //values.put(DBAccessHelper.ARTIST_ID, artistID);
-                values.put(DBAccessHelper.ALBUM_ID, storeAlbumID);
+    		//Avoid "Divide by zero" errors.
+    		int scanningSongsIncrement;
+    		if (cursor!=null) {
+        		if (cursor.getCount()!=0) {
+        			scanningSongsIncrement = 800000/cursor.getCount();
+        		} else {
+        			scanningSongsIncrement = 800000/1;
+        		}
+        		
+    		} else {
+    			return "FAIL";
+    		}
+    		
+    		currentTask = mContext.getResources().getString(R.string.syncing_with_google_play_music);
+            for (int i=0; i < cursor.getCount(); i++) {
+            	
+            	cursor.moveToPosition(i);
+            	currentProgressValue = currentProgressValue + scanningSongsIncrement;
+            	publishProgress();
+            	
+            	//Get the song's metadata.
+            	String songTitle = cursor.getString(cursor.getColumnIndex("title"));
+            	String songArtist = cursor.getString(cursor.getColumnIndex("Artist"));
+            	String songAlbum = cursor.getString(cursor.getColumnIndex("Album"));
+            	String songAlbumArtist = cursor.getString(cursor.getColumnIndex("AlbumArtist"));
+            	String songDuration = cursor.getString(cursor.getColumnIndex("Duration"));
+            	String songTrackNumber =cursor.getString(cursor.getColumnIndex("Track"));
+            	String songYear = cursor.getString(cursor.getColumnIndex("Year"));
+            	String songGenre = cursor.getString(cursor.getColumnIndex("Genre"));
+            	//String songPlayCount = cursor.getString(cursor.getColumnIndex("_count"));
+            	String songRating = cursor.getString(cursor.getColumnIndex("Rating"));
+            	String songSource = DBAccessHelper.GMUSIC;
+            	String songAlbumArtPath = cursor.getString(cursor.getColumnIndex("album_art"));
+            	String songID = cursor.getString(cursor.getColumnIndex("SourceId"));
+            	//String artistID = cursor.getString(cursor.getColumnIndex("artistId"));
+            	String storeAlbumID = cursor.getString(cursor.getColumnIndex("StoreAlbumId"));
+            	
+            	String songArtistArtPath = "";
+            	if (projectionFailed==false) {
+            		songArtistArtPath = cursor.getString(cursor.getColumnIndex("ArtistArtLocation"));
+            	} else {
+            		//Fall back on album art.
+            		songArtistArtPath = cursor.getString(cursor.getColumnIndex("album_art"));
+            	}
+            	
+            	//Prepare the genres ArrayList.
+            	if (!genresList.contains(songGenre)) {
+            		genresList.add(songGenre);
+            	}
+            	
+            	//Filter out track numbers and remove any bogus values.
+            	if (songTrackNumber!=null) {
+        			if (songTrackNumber.contains("/")) {
+        				int index = songTrackNumber.lastIndexOf("/");
+        				songTrackNumber = songTrackNumber.substring(0, index);
+        			}
+                	
+            	}
+            	
+            	if (songYear.equals("0")) {
+            		songYear = "";
+            	}
+            	
+            	//Check if any of the other tags were empty/null and set them to "Unknown xxx" values.
+            	if (songArtist==null || songArtist.isEmpty() || songArtist.equals(" ")) {
+            		songArtist = "Unknown Artist";
+            	}
+            	
+            	if (songAlbumArtist==null || songAlbumArtist.isEmpty() || songAlbumArtist.equals(" ")) {
+            		songAlbumArtist = "Unknown Album Artist";
+            	}
+            	
+            	if (songAlbum==null || songAlbum.isEmpty() || songAlbum.equals(" ")) {
+            		songAlbum = "Unknown Album";
+            	}
+            	
+            	if (songGenre==null || songGenre.isEmpty() || songGenre.equals(" ")) {
+            		songGenre = "Unknown Genre";
+            	}
+            	
+            	ContentValues values = new ContentValues();
+            	values.put(DBAccessHelper.SONG_TITLE, songTitle);
+            	values.put(DBAccessHelper.SONG_ARTIST, songArtist);
+            	values.put(DBAccessHelper.SONG_ALBUM, songAlbum);
+            	values.put(DBAccessHelper.SONG_ALBUM_ARTIST, songAlbumArtist);
+            	values.put(DBAccessHelper.SONG_DURATION, songDuration);
+            	values.put(DBAccessHelper.SONG_FILE_PATH, songID);
+            	values.put(DBAccessHelper.SONG_TRACK_NUMBER, songTrackNumber);
+            	values.put(DBAccessHelper.SONG_GENRE, songGenre);
+            	//values.put(DBAccessHelper.SONG_PLAY_COUNT, songPlayCount);
+            	values.put(DBAccessHelper.SONG_YEAR, songYear);
+            	values.put(DBAccessHelper.SONG_LAST_MODIFIED, "");
+            	values.put(DBAccessHelper.BLACKLIST_STATUS, "FALSE"); //Keep the song whitelisted by default.
+            	values.put(DBAccessHelper.ADDED_TIMESTAMP, date.getTime());
+            	values.put(DBAccessHelper.RATING, songRating);
+            	values.put(DBAccessHelper.SONG_SOURCE, songSource);
+            	values.put(DBAccessHelper.SONG_ALBUM_ART_PATH, songAlbumArtPath);
+            	values.put(DBAccessHelper.SONG_ID, songID);
+            	values.put(DBAccessHelper.ARTIST_ART_LOCATION, songArtistArtPath);
+            	//values.put(DBAccessHelper.ARTIST_ID, artistID);
+            	values.put(DBAccessHelper.ALBUM_ID, storeAlbumID);
             	
             	/* We're gonna have to save the song ID into the SONG_FILE_PATH 
             	 * field. Google Play Music playlist songs don't have a file path, but we're using a 
             	 * JOIN in PlaylistsFlippedFragment that relies on this field, so we'll need to use the 
             	 * song ID as a placeholder instead.
             	 */
-                values.put(DBAccessHelper.SONG_FILE_PATH, songID);
-
-                //Add all the entries to the database to build the songs library.
-                mApp.getDBAccessHelper().getWritableDatabase().insert(DBAccessHelper.MUSIC_LIBRARY_TABLE,
-                        null,
-                        values);
-
+            	values.put(DBAccessHelper.SONG_FILE_PATH, songID);
+            	
+            	//Add all the entries to the database to build the songs library.
+            	mApp.getDBAccessHelper().getWritableDatabase().insert(DBAccessHelper.MUSIC_LIBRARY_TABLE, 
+            												 		  null, 
+            												 		  values);	
+            	
             }
-
+            
             mApp.getDBAccessHelper().getWritableDatabase().setTransactionSuccessful();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            //Close the transaction.
-            mApp.getDBAccessHelper().getWritableDatabase().endTransaction();
-
-            if (cursor != null) {
-                cursor.close();
-                cursor = null;
-            }
-
-        }
-
-        /****************************************************************************
-         * BUILD PLAYLISTS LIBRARY
-         ****************************************************************************/
-        //getPlaylistsWebClient();
-        //getPlaylistsMobileClient();
-
-        //Update the genres library.
-        updateGenreSongCount();
-
-        return "SUCCESS";
+    		
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    	} finally {
+    		//Close the transaction.
+    		mApp.getDBAccessHelper().getWritableDatabase().endTransaction();
+    		
+    		if (cursor!=null) {
+    			cursor.close();
+    			cursor = null;
+    		}
+    		
+    	}
+    	
+    	/****************************************************************************
+    	 * BUILD PLAYLISTS LIBRARY
+    	 ****************************************************************************/
+    	//getPlaylistsWebClient();
+    	//getPlaylistsMobileClient();
+    	
+    	//Update the genres library.
+    	updateGenreSongCount();
+    	
+    	return "SUCCESS";
     }
-
+    
     /**
      * Downloads and stores song metadata from Google's servers.
-     *
-     * @deprecated Grabbing metadata directly from Google's servers can potentially
+     * 
+     * @deprecated Grabbing metadata directly from Google's servers can potentially 
      * cause them to shutdown the "sj" service for this app. The official GMusic app
      * has a ContentProvider that can provide all the metadata for offline usage.
      */
-    public String downloadMetadataFromGoogle() {
+     public String downloadMetadataFromGoogle() {
      /* //Retrieve a list of songs stored on Google Play Music and their metadata.
     	GMusicClientCalls gMusicClientCalls = GMusicClientCalls.getInstance(mContext);
     	try {
@@ -565,9 +566,9 @@ public class AsyncGetGooglePlayMusicMetadataTask extends AsyncTask<String, Strin
     	updateGenreSongCount();
     	
     	return "SUCCESS"; */
-        return null;
+    	return null;
     }
-
+     
     /**
      * Retrieves the user's playlists and their contents using the WebClient protocol.
      */
@@ -658,18 +659,16 @@ public class AsyncGetGooglePlayMusicMetadataTask extends AsyncTask<String, Strin
     	}
     	
     }*/
-
-    /**
-     * **********************************************************************************
+    
+    /*************************************************************************************
      * Retrieves the user's playlists and their contents using the MobileClient protocol.
-     *
-     * @deprecated The entryIds that we're fetching from the MobileClient protocol seem
-     * to be broken. They don't work with reordering playlist songs. I'll fix this if/when
+     * 
+     * @deprecated The entryIds that we're fetching from the MobileClient protocol seem 
+     * to be broken. They don't work with reordering playlist songs. I'll fix this if/when 
      * I have time. Until then, I'm gonna use getPlaylistsWebClient().
-     * ***********************************************************************************
-     */
+     *************************************************************************************/
     @SuppressWarnings("static-access")
-    private void getPlaylistsMobileClient() {
+	private void getPlaylistsMobileClient() {
     	
 /*    	//Clear out all the current Google Play Music playlists in the database.
     	DBAccessHelper musicLibraryPlaylistsDBHelper = new DBAccessHelper(mContext);
@@ -688,10 +687,10 @@ public class AsyncGetGooglePlayMusicMetadataTask extends AsyncTask<String, Strin
     		musicLibraryPlaylistsDBHelper.getWritableDatabase().beginTransaction();
     		
     		*//*****************************************************************************
-         * The following calls are based on the MobileClient endpoints. Unfortunately,
-         * we can't get the correct entryIds for each song with these calls, so we'll
-         * have to revert to using the WebClient calls.
-         *****************************************************************************//*
+    		 * The following calls are based on the MobileClient endpoints. Unfortunately, 
+    		 * we can't get the correct entryIds for each song with these calls, so we'll 
+    		 * have to revert to using the WebClient calls.
+    		 *****************************************************************************//*
     		//Instantiate the GMusic API and retrieve an array of all playlists.
         	GMusicClientCalls gMusicClientCalls = GMusicClientCalls.getInstance(mContext);
         	try {
@@ -791,67 +790,65 @@ public class AsyncGetGooglePlayMusicMetadataTask extends AsyncTask<String, Strin
     		musicLibraryPlaylistsDBHelper.getWritableDatabase().endTransaction();
     		musicLibraryPlaylistsDBHelper.close();
     	}*/
-
+    	
     }
-
-    /**
-     * *************************************************************************************
-     * Scans the entire Music Library for songs, fetches their genres, and inputs the total
+    
+    /****************************************************************************************
+     * Scans the entire Music Library for songs, fetches their genres, and inputs the total 
      * count for that genre into each song's genre.
-     * **************************************************************************************
-     */
+     ****************************************************************************************/
     public void updateGenreSongCount() {
+    	
+    	//We'll get the number of songs in a particular genre and apply that tag to all songs.
+    	String genre = "";
+    	int songCount = 0;
+    	int buildingGenresIncrement;
+    	currentTask = "Building Genres";
+    	if (genresList.size()!=0) {
+    		buildingGenresIncrement = 100000/genresList.size();
+    	} else {
+        	buildingGenresIncrement = 100000/1;
+    	}
 
-        //We'll get the number of songs in a particular genre and apply that tag to all songs.
-        String genre = "";
-        int songCount = 0;
-        int buildingGenresIncrement;
-        currentTask = "Building Genres";
-        if (genresList.size() != 0) {
-            buildingGenresIncrement = 100000 / genresList.size();
-        } else {
-            buildingGenresIncrement = 100000 / 1;
-        }
+		//Open a single transaction connection to keep the operation as efficient as possible.    	
+    	for (int i=0; i < genresList.size(); i++) {
+    		
+        	currentProgressValue = currentProgressValue + buildingGenresIncrement;
+        	publishProgress();
+    		
+    		try {
+        		genre = genresList.get(i);
+        		
+        		if (genre.contains("'")) {
+        			genre = genre.replace("'", "''");
+        		}
+        		
+        		//Get the number of songs in this genre.
+        		songCount = mApp.getDBAccessHelper().getGenreSongCount(genre);
+        		mApp.getDBAccessHelper().insertNumberOfSongsInGenre(genre, songCount);
+        		
+    		} catch (Exception e) {
+    			e.printStackTrace();
+    			continue;
+    		}
 
-        //Open a single transaction connection to keep the operation as efficient as possible.
-        for (int i = 0; i < genresList.size(); i++) {
-
-            currentProgressValue = currentProgressValue + buildingGenresIncrement;
-            publishProgress();
-
-            try {
-                genre = genresList.get(i);
-
-                if (genre.contains("'")) {
-                    genre = genre.replace("'", "''");
-                }
-
-                //Get the number of songs in this genre.
-                songCount = mApp.getDBAccessHelper().getGenreSongCount(genre);
-                mApp.getDBAccessHelper().insertNumberOfSongsInGenre(genre, songCount);
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                continue;
-            }
-
-        }
-
+    	}
+    	
     }
-
+    
     /**
      * Public method that provides access to the onProgressUpdate() method.
      * Used to update the progress bar from a different class/activity.
-     *
-     * @param progressParams
+     * 
+     * @param progressParams 
      */
     public void callOnProgressUpdate(String... progressParams) {
-        publishProgress(progressParams);
+    	publishProgress(progressParams);
     }
-
+    
     @Override
     protected void onProgressUpdate(String... progressParams) {
-        super.onProgressUpdate(progressParams);
+    	super.onProgressUpdate(progressParams);
     	
     	/*//Update the notification.
     	BuildMusicLibraryService.mBuilder.setTicker(null);
@@ -862,15 +859,15 @@ public class AsyncGetGooglePlayMusicMetadataTask extends AsyncTask<String, Strin
     	BuildMusicLibraryService.mNotification = BuildMusicLibraryService.mBuilder.build();
     	BuildMusicLibraryService.mNotifyManager.notify(BuildMusicLibraryService.mNotificationId, 
     												   BuildMusicLibraryService.mNotification);*/
-
+    	
     }
 
     @Override
     protected void onPostExecute(String arg0) {
-
-        //Release the wakelock.
-        wakeLock.release();
-
+    	
+    	//Release the wakelock.
+    	wakeLock.release();
+        	
     }
 
 }

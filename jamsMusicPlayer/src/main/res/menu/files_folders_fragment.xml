@@ -4,23 +4,23 @@
 
     <item
         android:id="@+id/action_cancel"
-        android:icon="@drawable/cross_light"
         android:orderInCategory="102"
-        android:showAsAction="always"
-        android:title="@string/cancel" />
+        android:title="@string/cancel"
+        android:icon="@drawable/cross_light"
+        android:showAsAction="always" />
 
     <item
         android:id="@+id/action_paste"
-        android:icon="@drawable/ic_action_paste"
         android:orderInCategory="101"
-        android:showAsAction="always"
-        android:title="@string/paste_here" />
+        android:title="@string/paste_here"
+        android:icon="@drawable/ic_action_paste"
+        android:showAsAction="always" />
 
     <item
         android:id="@+id/action_up"
-        android:icon="@drawable/up_light"
         android:orderInCategory="100"
-        android:showAsAction="always"
-        android:title="@string/up" />
+        android:title="@string/up"
+        android:icon="@drawable/up_light"
+        android:showAsAction="always" />
 
 </menu>

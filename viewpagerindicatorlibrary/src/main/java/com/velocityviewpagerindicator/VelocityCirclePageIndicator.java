@@ -16,6 +16,9 @@
  */
 package com.velocityviewpagerindicator;
 
+import static android.graphics.Paint.ANTI_ALIAS_FLAG;
+import static android.widget.LinearLayout.HORIZONTAL;
+import static android.widget.LinearLayout.VERTICAL;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
@@ -35,21 +38,17 @@ import android.view.ViewConfiguration;
 
 import com.velocity.view.pager.library.VelocityViewPager;
 
-import static android.graphics.Paint.ANTI_ALIAS_FLAG;
-import static android.widget.LinearLayout.HORIZONTAL;
-import static android.widget.LinearLayout.VERTICAL;
-
 /**
  * Draws circles (one for each view). The current view position is filled and
  * others are only stroked.
  */
 public class VelocityCirclePageIndicator extends View implements VelocityPageIndicator {
     private static final int INVALID_POINTER = -1;
-    private int mActivePointerId = INVALID_POINTER;
+
+    private float mRadius;
     private final Paint mPaintPageFill = new Paint(ANTI_ALIAS_FLAG);
     private final Paint mPaintStroke = new Paint(ANTI_ALIAS_FLAG);
     private final Paint mPaintFill = new Paint(ANTI_ALIAS_FLAG);
-    private float mRadius;
     private VelocityViewPager mVelocityViewPager;
     private VelocityViewPager.OnPageChangeListener mListener;
     private int mCurrentPage;
@@ -59,8 +58,10 @@ public class VelocityCirclePageIndicator extends View implements VelocityPageInd
     private int mOrientation;
     private boolean mCentered;
     private boolean mSnap;
+
     private int mTouchSlop;
     private float mLastMotionX = -1;
+    private int mActivePointerId = INVALID_POINTER;
     private boolean mIsDragging;
 
 
@@ -104,7 +105,7 @@ public class VelocityCirclePageIndicator extends View implements VelocityPageInd
 
         Drawable background = a.getDrawable(R.styleable.VelocityCirclePageIndicator_android_background);
         if (background != null) {
-            setBackgroundDrawable(background);
+          setBackgroundDrawable(background);
         }
 
         a.recycle();
@@ -113,17 +114,14 @@ public class VelocityCirclePageIndicator extends View implements VelocityPageInd
         mTouchSlop = ViewConfigurationCompat.getScaledPagingTouchSlop(configuration);
     }
 
-    public boolean isCentered() {
-        return mCentered;
-    }
 
     public void setCentered(boolean centered) {
         mCentered = centered;
         invalidate();
     }
 
-    public int getPageColor() {
-        return mPaintPageFill.getColor();
+    public boolean isCentered() {
+        return mCentered;
     }
 
     public void setPageColor(int pageColor) {
@@ -131,8 +129,8 @@ public class VelocityCirclePageIndicator extends View implements VelocityPageInd
         invalidate();
     }
 
-    public int getFillColor() {
-        return mPaintFill.getColor();
+    public int getPageColor() {
+        return mPaintPageFill.getColor();
     }
 
     public void setFillColor(int fillColor) {
@@ -140,8 +138,8 @@ public class VelocityCirclePageIndicator extends View implements VelocityPageInd
         invalidate();
     }
 
-    public int getOrientation() {
-        return mOrientation;
+    public int getFillColor() {
+        return mPaintFill.getColor();
     }
 
     public void setOrientation(int orientation) {
@@ -157,8 +155,8 @@ public class VelocityCirclePageIndicator extends View implements VelocityPageInd
         }
     }
 
-    public int getStrokeColor() {
-        return mPaintStroke.getColor();
+    public int getOrientation() {
+        return mOrientation;
     }
 
     public void setStrokeColor(int strokeColor) {
@@ -166,8 +164,8 @@ public class VelocityCirclePageIndicator extends View implements VelocityPageInd
         invalidate();
     }
 
-    public float getStrokeWidth() {
-        return mPaintStroke.getStrokeWidth();
+    public int getStrokeColor() {
+        return mPaintStroke.getColor();
     }
 
     public void setStrokeWidth(float strokeWidth) {
@@ -175,8 +173,8 @@ public class VelocityCirclePageIndicator extends View implements VelocityPageInd
         invalidate();
     }
 
-    public float getRadius() {
-        return mRadius;
+    public float getStrokeWidth() {
+        return mPaintStroke.getStrokeWidth();
     }
 
     public void setRadius(float radius) {
@@ -184,13 +182,17 @@ public class VelocityCirclePageIndicator extends View implements VelocityPageInd
         invalidate();
     }
 
-    public boolean isSnap() {
-        return mSnap;
+    public float getRadius() {
+        return mRadius;
     }
 
     public void setSnap(boolean snap) {
         mSnap = snap;
         invalidate();
+    }
+
+    public boolean isSnap() {
+        return mSnap;
     }
 
     @Override
@@ -452,7 +454,8 @@ public class VelocityCirclePageIndicator extends View implements VelocityPageInd
     /**
      * Determines the width of this view
      *
-     * @param measureSpec A measureSpec packed into an int
+     * @param measureSpec
+     *            A measureSpec packed into an int
      * @return The width of the view, honoring constraints from measureSpec
      */
     private int measureLong(int measureSpec) {
@@ -466,7 +469,7 @@ public class VelocityCirclePageIndicator extends View implements VelocityPageInd
         } else {
             //Calculate the width according the views count
             final int count = mVelocityViewPager.getAdapter().getCount();
-            result = (int) (getPaddingLeft() + getPaddingRight()
+            result = (int)(getPaddingLeft() + getPaddingRight()
                     + (count * 2 * mRadius) + (count - 1) * mRadius + 1);
             //Respect AT_MOST value if that was what is called for by measureSpec
             if (specMode == MeasureSpec.AT_MOST) {
@@ -479,7 +482,8 @@ public class VelocityCirclePageIndicator extends View implements VelocityPageInd
     /**
      * Determines the height of this view
      *
-     * @param measureSpec A measureSpec packed into an int
+     * @param measureSpec
+     *            A measureSpec packed into an int
      * @return The height of the view, honoring constraints from measureSpec
      */
     private int measureShort(int measureSpec) {
@@ -492,7 +496,7 @@ public class VelocityCirclePageIndicator extends View implements VelocityPageInd
             result = specSize;
         } else {
             //Measure the height
-            result = (int) (2 * mRadius + getPaddingTop() + getPaddingBottom() + 1);
+            result = (int)(2 * mRadius + getPaddingTop() + getPaddingBottom() + 1);
             //Respect AT_MOST value if that was what is called for by measureSpec
             if (specMode == MeasureSpec.AT_MOST) {
                 result = Math.min(result, specSize);
@@ -503,7 +507,7 @@ public class VelocityCirclePageIndicator extends View implements VelocityPageInd
 
     @Override
     public void onRestoreInstanceState(Parcelable state) {
-        SavedState savedState = (SavedState) state;
+        SavedState savedState = (SavedState)state;
         super.onRestoreInstanceState(savedState.getSuperState());
         mCurrentPage = savedState.currentPage;
         mSnapPage = savedState.currentPage;
@@ -519,18 +523,6 @@ public class VelocityCirclePageIndicator extends View implements VelocityPageInd
     }
 
     static class SavedState extends BaseSavedState {
-        @SuppressWarnings("UnusedDeclaration")
-        public static final Parcelable.Creator<SavedState> CREATOR = new Parcelable.Creator<SavedState>() {
-            @Override
-            public SavedState createFromParcel(Parcel in) {
-                return new SavedState(in);
-            }
-
-            @Override
-            public SavedState[] newArray(int size) {
-                return new SavedState[size];
-            }
-        };
         int currentPage;
 
         public SavedState(Parcelable superState) {
@@ -547,5 +539,18 @@ public class VelocityCirclePageIndicator extends View implements VelocityPageInd
             super.writeToParcel(dest, flags);
             dest.writeInt(currentPage);
         }
+
+        @SuppressWarnings("UnusedDeclaration")
+        public static final Parcelable.Creator<SavedState> CREATOR = new Parcelable.Creator<SavedState>() {
+            @Override
+            public SavedState createFromParcel(Parcel in) {
+                return new SavedState(in);
+            }
+
+            @Override
+            public SavedState[] newArray(int size) {
+                return new SavedState[size];
+            }
+        };
     }
 }

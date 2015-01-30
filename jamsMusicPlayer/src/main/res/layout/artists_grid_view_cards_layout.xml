@@ -1,39 +1,39 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
-
+    android:layout_height="wrap_content" >
+    
     <LinearLayout
-        android:id="@+id/artist_card_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="3dp"
-        android:layout_marginLeft="3.5dp"
-        android:layout_marginRight="3.5dp"
         android:layout_marginTop="3dp"
+        android:layout_marginRight="3.5dp"
+        android:layout_marginLeft="3.5dp"
+        android:layout_marginBottom="3dp"
         android:background="@drawable/card_gridview_dark"
-        android:orientation="vertical">
-
+        android:orientation="vertical"
+        android:id="@+id/artist_card_layout" >
+        
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1">
-
-            <com.jams.music.player.Views.RoundedImageView
-                android:id="@+id/artistsGridViewImage"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true"
-                android:adjustViewBounds="true"
-                android:scaleType="centerCrop" />
-
+            android:layout_weight="1" >
+            
+           	<com.jams.music.player.Views.RoundedImageView
+	        	android:id="@+id/artistsGridViewImage"
+	        	android:layout_width="match_parent"
+	        	android:layout_height="match_parent"
+	        	android:layout_centerVertical="true"
+	        	android:layout_centerHorizontal="true"
+	        	android:adjustViewBounds="true"
+	        	android:scaleType="centerCrop" />
+            
         </RelativeLayout>
-
+        
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="4">
-
+            android:layout_weight="4" >
+            
             <TextView
                 android:id="@+id/artistName"
                 android:layout_width="fill_parent"
@@ -47,21 +47,21 @@
                 android:text="Artist Name"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:textColor="#FFFFFF" />
-
-            <ImageButton
-                android:id="@+id/overflow_icon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_centerVertical="true"
-                android:layout_marginLeft="-5dp"
-                android:background="?android:selectableItemBackground"
-                android:scaleX="0.75"
-                android:scaleY="0.75"
-                android:src="@drawable/ic_action_overflow_universal" />
-
+		
+		    <ImageButton
+		        android:id="@+id/overflow_icon"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:background="?android:selectableItemBackground"
+		        android:layout_centerVertical="true"
+		        android:layout_alignParentLeft="true"
+		        android:src="@drawable/ic_action_overflow_universal"
+		        android:layout_marginLeft="-5dp"
+		        android:scaleX="0.75"
+		        android:scaleY="0.75" />
+            
         </RelativeLayout>
-
+        
     </LinearLayout>
 
     <RelativeLayout
@@ -69,5 +69,5 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#00000000" />
-
+    
 </RelativeLayout>

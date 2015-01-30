@@ -22,6 +22,8 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.Shader;
 
+import com.squareup.picasso.Transformation;
+
 public class PicassoRoundedRectTransformer implements com.squareup.picasso.Transformation {
     private final int radius;
     private final int margin;  // dp

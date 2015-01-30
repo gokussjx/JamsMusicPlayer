@@ -41,7 +41,7 @@ import com.velocityviewpagerindicator.R;
  */
 public class LinePageIndicator extends View implements PageIndicator {
     private static final int INVALID_POINTER = -1;
-    private int mActivePointerId = INVALID_POINTER;
+
     private final Paint mPaintUnselected = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint mPaintSelected = new Paint(Paint.ANTI_ALIAS_FLAG);
     private ViewPager mViewPager;
@@ -50,8 +50,10 @@ public class LinePageIndicator extends View implements PageIndicator {
     private boolean mCentered;
     private float mLineWidth;
     private float mGapWidth;
+
     private int mTouchSlop;
     private float mLastMotionX = -1;
+    private int mActivePointerId = INVALID_POINTER;
     private boolean mIsDragging;
 
 
@@ -89,7 +91,7 @@ public class LinePageIndicator extends View implements PageIndicator {
 
         Drawable background = a.getDrawable(R.styleable.VelocityLinePageIndicator_android_background);
         if (background != null) {
-            setBackgroundDrawable(background);
+          setBackgroundDrawable(background);
         }
 
         a.recycle();
@@ -98,17 +100,14 @@ public class LinePageIndicator extends View implements PageIndicator {
         mTouchSlop = ViewConfigurationCompat.getScaledPagingTouchSlop(configuration);
     }
 
-    public boolean isCentered() {
-        return mCentered;
-    }
 
     public void setCentered(boolean centered) {
         mCentered = centered;
         invalidate();
     }
 
-    public int getUnselectedColor() {
-        return mPaintUnselected.getColor();
+    public boolean isCentered() {
+        return mCentered;
     }
 
     public void setUnselectedColor(int unselectedColor) {
@@ -116,8 +115,8 @@ public class LinePageIndicator extends View implements PageIndicator {
         invalidate();
     }
 
-    public int getSelectedColor() {
-        return mPaintSelected.getColor();
+    public int getUnselectedColor() {
+        return mPaintUnselected.getColor();
     }
 
     public void setSelectedColor(int selectedColor) {
@@ -125,8 +124,8 @@ public class LinePageIndicator extends View implements PageIndicator {
         invalidate();
     }
 
-    public float getLineWidth() {
-        return mLineWidth;
+    public int getSelectedColor() {
+        return mPaintSelected.getColor();
     }
 
     public void setLineWidth(float lineWidth) {
@@ -134,8 +133,8 @@ public class LinePageIndicator extends View implements PageIndicator {
         invalidate();
     }
 
-    public float getStrokeWidth() {
-        return mPaintSelected.getStrokeWidth();
+    public float getLineWidth() {
+        return mLineWidth;
     }
 
     public void setStrokeWidth(float lineHeight) {
@@ -144,13 +143,17 @@ public class LinePageIndicator extends View implements PageIndicator {
         invalidate();
     }
 
-    public float getGapWidth() {
-        return mGapWidth;
+    public float getStrokeWidth() {
+        return mPaintSelected.getStrokeWidth();
     }
 
     public void setGapWidth(float gapWidth) {
         mGapWidth = gapWidth;
         invalidate();
+    }
+
+    public float getGapWidth() {
+        return mGapWidth;
     }
 
     @Override
@@ -348,7 +351,8 @@ public class LinePageIndicator extends View implements PageIndicator {
     /**
      * Determines the width of this view
      *
-     * @param measureSpec A measureSpec packed into an int
+     * @param measureSpec
+     *            A measureSpec packed into an int
      * @return The width of the view, honoring constraints from measureSpec
      */
     private int measureWidth(int measureSpec) {
@@ -368,13 +372,14 @@ public class LinePageIndicator extends View implements PageIndicator {
                 result = Math.min(result, specSize);
             }
         }
-        return (int) FloatMath.ceil(result);
+        return (int)FloatMath.ceil(result);
     }
 
     /**
      * Determines the height of this view
      *
-     * @param measureSpec A measureSpec packed into an int
+     * @param measureSpec
+     *            A measureSpec packed into an int
      * @return The height of the view, honoring constraints from measureSpec
      */
     private int measureHeight(int measureSpec) {
@@ -393,12 +398,12 @@ public class LinePageIndicator extends View implements PageIndicator {
                 result = Math.min(result, specSize);
             }
         }
-        return (int) FloatMath.ceil(result);
+        return (int)FloatMath.ceil(result);
     }
 
     @Override
     public void onRestoreInstanceState(Parcelable state) {
-        SavedState savedState = (SavedState) state;
+        SavedState savedState = (SavedState)state;
         super.onRestoreInstanceState(savedState.getSuperState());
         mCurrentPage = savedState.currentPage;
         requestLayout();
@@ -413,18 +418,6 @@ public class LinePageIndicator extends View implements PageIndicator {
     }
 
     static class SavedState extends BaseSavedState {
-        @SuppressWarnings("UnusedDeclaration")
-        public static final Parcelable.Creator<SavedState> CREATOR = new Parcelable.Creator<SavedState>() {
-            @Override
-            public SavedState createFromParcel(Parcel in) {
-                return new SavedState(in);
-            }
-
-            @Override
-            public SavedState[] newArray(int size) {
-                return new SavedState[size];
-            }
-        };
         int currentPage;
 
         public SavedState(Parcelable superState) {
@@ -441,5 +434,18 @@ public class LinePageIndicator extends View implements PageIndicator {
             super.writeToParcel(dest, flags);
             dest.writeInt(currentPage);
         }
+
+        @SuppressWarnings("UnusedDeclaration")
+        public static final Parcelable.Creator<SavedState> CREATOR = new Parcelable.Creator<SavedState>() {
+            @Override
+            public SavedState createFromParcel(Parcel in) {
+                return new SavedState(in);
+            }
+
+            @Override
+            public SavedState[] newArray(int size) {
+                return new SavedState[size];
+            }
+        };
     }
 }

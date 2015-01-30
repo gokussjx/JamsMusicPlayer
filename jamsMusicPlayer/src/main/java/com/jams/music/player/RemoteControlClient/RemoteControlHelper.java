@@ -31,10 +31,10 @@
 
 package com.jams.music.player.RemoteControlClient;
 
+import java.lang.reflect.Method;
+
 import android.media.AudioManager;
 import android.util.Log;
-
-import java.lang.reflect.Method;
 
 /**
  * Contains methods to handle registering/unregistering remote control clients.  These methods only
@@ -71,7 +71,7 @@ public class RemoteControlHelper {
     }
 
     public static void registerRemoteControlClient(AudioManager audioManager,
-                                                   RemoteControlClientCompat remoteControlClient) {
+            RemoteControlClientCompat remoteControlClient) {
         if (!sHasRemoteControlAPIs) {
             return;
         }
@@ -86,7 +86,7 @@ public class RemoteControlHelper {
 
 
     public static void unregisterRemoteControlClient(AudioManager audioManager,
-                                                     RemoteControlClientCompat remoteControlClient) {
+            RemoteControlClientCompat remoteControlClient) {
         if (!sHasRemoteControlAPIs) {
             return;
         }

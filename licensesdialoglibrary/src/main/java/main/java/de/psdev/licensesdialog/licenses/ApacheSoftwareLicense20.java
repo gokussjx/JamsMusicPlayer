@@ -17,7 +17,6 @@
 package main.java.de.psdev.licensesdialog.licenses;
 
 import android.content.Context;
-
 import de.psdev.licensesdialog.R;
 
 public class ApacheSoftwareLicense20 extends License {

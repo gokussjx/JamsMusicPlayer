@@ -16,14 +16,13 @@
 
 package main.java.de.psdev.licensesdialog;
 
+import main.java.de.psdev.licensesdialog.model.Notices;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.os.Bundle;
-
 import de.psdev.licensesdialog.R;
-import main.java.de.psdev.licensesdialog.model.Notices;
 
 public class LicensesDialogFragment extends DialogFragment {
 
@@ -40,9 +39,6 @@ public class LicensesDialogFragment extends DialogFragment {
 
     private DialogInterface.OnDismissListener mOnDismissListener;
 
-    public LicensesDialogFragment() {
-    }
-
     public static LicensesDialogFragment newInstance(final int rawNoticesResourceId, final boolean includeOwnLicense) {
         final LicensesDialogFragment licensesDialogFragment = new LicensesDialogFragment();
         final Bundle args = new Bundle();
@@ -50,6 +46,9 @@ public class LicensesDialogFragment extends DialogFragment {
         args.putBoolean(ARGUMENT_INCLUDE_OWN_LICENSE, includeOwnLicense);
         licensesDialogFragment.setArguments(args);
         return licensesDialogFragment;
+    }
+
+    public LicensesDialogFragment() {
     }
 
     @Override
@@ -66,7 +65,7 @@ public class LicensesDialogFragment extends DialogFragment {
             mCloseButtonText = resources.getString(R.string.notices_close);
             try {
                 final Notices notices = NoticesXmlParser.parse(resources.openRawResource(getNoticesXmlResourceId()));
-                if (getArguments() != null && getArguments().getBoolean(ARGUMENT_INCLUDE_OWN_LICENSE, false)) {
+                if(getArguments() != null && getArguments().getBoolean(ARGUMENT_INCLUDE_OWN_LICENSE, false)) {
                     notices.getNotices().add(LicensesDialog.LICENSES_DIALOG_NOTICE);
                 }
                 mLicensesText = NoticesHtmlBuilder.create(getActivity()).setNotices(notices).build();

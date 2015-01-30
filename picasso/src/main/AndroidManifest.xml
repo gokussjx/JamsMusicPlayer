@@ -1,7 +1,5 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.squareup.picasso"
-    android:versionCode="1"
-    android:versionName="2.3.2">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.squareup.picasso"
+    android:versionCode="1" android:versionName="2.3.2">
 
     <!--<uses-sdk tools:node="replace" />-->
 

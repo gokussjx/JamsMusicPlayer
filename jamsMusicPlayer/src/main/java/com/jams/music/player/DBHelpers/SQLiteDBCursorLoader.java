@@ -15,6 +15,10 @@
  */
 package com.jams.music.player.DBHelpers;
 
+import java.io.FileDescriptor;
+import java.io.PrintWriter;
+import java.util.Arrays;
+
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.ContentObserver;
@@ -22,25 +26,19 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.support.v4.content.AsyncTaskLoader;
 
-import java.io.FileDescriptor;
-import java.io.PrintWriter;
-import java.util.Arrays;
-
-/**
- * ******************************************************************************
+/*********************************************************************************
  * Custom CursorLoader class that adds support for SQLite databases.
  * The default CursorLoader that's supplied through the Android
- * compatibility library only supports ContentProviders.
- * <p/>
- * Since this app maintains it's own music library/database and doesn't depend
- * on Android's MediaStore ContentProvider, we need a way to channel
- * queries directly to a raw SQLite database. This class simply replaces
- * every instance of a ContentProvider query with queries that connect
+ * compatibility library only supports ContentProviders. 
+ * 
+ * Since this app maintains it's own music library/database and doesn't depend 
+ * on Android's MediaStore ContentProvider, we need a way to channel 
+ * queries directly to a raw SQLite database. This class simply replaces 
+ * every instance of a ContentProvider query with queries that connect 
  * directly to an SQLite database.
- *
+ * 
  * @author Saravan Pantham
- *         *******************************************************************************
- */
+ *********************************************************************************/
 public class SQLiteDBCursorLoader extends AsyncTaskLoader<Cursor> {
     final ForceLoadContentObserver mObserver;
 
@@ -56,110 +54,16 @@ public class SQLiteDBCursorLoader extends AsyncTaskLoader<Cursor> {
     boolean mDistinctGenres = false;
     String mDistinctField = "";
 
-    /**
-     * Creates an empty unspecified CursorLoader.  You must follow this with
-     * calls to {@link #setUri(Uri)}, {@link #setSelection(String)}, etc
-     * to specify the query to perform.
-     */
-    public SQLiteDBCursorLoader(Context context) {
-        super(context);
-        mObserver = new ForceLoadContentObserver();
-    }
-
-    /**
-     * Creates a fully-specified CursorLoader.  See
-     * {@link ContentResolver#query(Uri, String[], String, String[], String)
-     * ContentResolver.query()} for documentation on the meaning of the
-     * parameters.  These will be passed as-is to that call.
-     */
-    public SQLiteDBCursorLoader(Context context, String tableName, String[] projection, String selection,
-                                String[] selectionArgs, String sortOrder) {
-        super(context);
-
-        mObserver = new ForceLoadContentObserver();
-        mTableName = tableName;
-        mProjection = projection;
-        mSelection = selection;
-        mSelectionArgs = selectionArgs;
-        mSortOrder = sortOrder;
-    }
-
-    /**
-     * Creates a fully-specified CursorLoader.  See
-     * {@link ContentResolver#query(Uri, String[], String, String[], String)
-     * ContentResolver.query()} for documentation on the meaning of the
-     * parameters.  These will be passed as-is to that call.
-     */
-    public SQLiteDBCursorLoader(Context context, String tableName, String[] projection, String selection,
-                                String[] selectionArgs, String sortOrder, String limit) {
-        super(context);
-
-        mObserver = new ForceLoadContentObserver();
-        mTableName = tableName;
-        mProjection = projection;
-        mSelection = selection;
-        mSelectionArgs = selectionArgs;
-        mSortOrder = sortOrder;
-        mLimit = limit;
-    }
-
-    /**
-     * Creates a fully-specified, DISTINCT CursorLoader.  See
-     * {@link ContentResolver#query(Uri, String[], String, String[], String)
-     * ContentResolver.query()} for documentation on the meaning of the
-     * parameters.  These will be passed as-is to that call.
-     */
-    public SQLiteDBCursorLoader(Context context, boolean distinctPlaylists) {
-        super(context);
-
-        mDistinctPlaylists = distinctPlaylists;
-        mObserver = new ForceLoadContentObserver();
-
-    }
-
-    /**
-     * Creates a fully-specified, DISTINCT CursorLoader.  See
-     * {@link ContentResolver#query(Uri, String[], String, String[], String)
-     * ContentResolver.query()} for documentation on the meaning of the
-     * parameters.  These will be passed as-is to that call.
-     * <p/>
-     * boolean dummy is a dummy variable, used to differentiate constructors.
-     */
-    public SQLiteDBCursorLoader(Context context, boolean distinctGenres, boolean dummy) {
-        super(context);
-
-        mDistinctGenres = distinctGenres;
-        mObserver = new ForceLoadContentObserver();
-
-    }
-
-    /**
-     * Creates a fully-specified, DISTINCT CursorLoader.  See
-     * {@link ContentResolver#query(Uri, String[], String, String[], String)
-     * ContentResolver.query()} for documentation on the meaning of the
-     * parameters.  These will be passed as-is to that call.
-     * <p/>
-     * boolean dummy is a dummy variable, used to differentiate constructors.
-     */
-    public SQLiteDBCursorLoader(Context context, String distinctField, String selection) {
-        super(context);
-
-        mDistinctField = distinctField;
-        mSelection = selection;
-        mObserver = new ForceLoadContentObserver();
-
-    }
-
     /* Runs on a worker thread */
     @Override
     public Cursor loadInBackground() {
-
+    	
     /*	//Retrieve the appropriate cursor based on @param mDistinctField;
-        Cursor cursor = null;
+    	Cursor cursor = null;
     	if (mDistinctField.equals("PLAYLISTS")) {
     		DBAccessHelper playlistsDBHelper = new DBAccessHelper(getContext());
     		cursor = playlistsDBHelper.getAllUniquePlaylists(mSelection);
-
+    		
     	} else if (mDistinctField.equals("GENRES")) {
     		DBAccessHelper dBHelper = new DBAccessHelper(getContext());
     		cursor = dBHelper.getAllUniqueGenres(mSelection);
@@ -167,55 +71,55 @@ public class SQLiteDBCursorLoader extends AsyncTaskLoader<Cursor> {
     	} else if (mDistinctField.equals("ARTISTS")) {
     		DBAccessHelper dBHelper = new DBAccessHelper(getContext());
     		cursor = dBHelper.getAllUniqueArtists(mSelection);
-
+    		
     	} else if (mDistinctField.equals("ALBUMS")) {
     		DBAccessHelper dBHelper = new DBAccessHelper(getContext());
     		cursor = dBHelper.getAllUniqueAlbums(mSelection);
-
+    		
     	} else if (mDistinctField.equals("SONGS")) {
     		DBAccessHelper dBHelper = new DBAccessHelper(getContext());
     		cursor = dBHelper.getAllSongsSearchable(mSelection);
-
+    		
     	} else if (mDistinctField.equals("ARTISTS_FLIPPED")) {
     		DBAccessHelper dBHelper = new DBAccessHelper(getContext());
     		cursor = dBHelper.getAllUniqueAlbumsByArtist(mSelection);
-
+    		
     	} else if (mDistinctField.equals("ARTISTS_FLIPPED_SONGS")) {
     		DBAccessHelper dBHelper = new DBAccessHelper(getContext());
     		cursor = dBHelper.getAllSongsByArtistAlbum(mSelection);
-
+    		
     	} else if (mDistinctField.equals("ALBUMS_FLIPPED")) {
     		DBAccessHelper dBHelper = new DBAccessHelper(getContext());
     		cursor = dBHelper.getAllSongsByArtistAlbum(mSelection);
-
+    		
     	} else if (mDistinctField.equals("TOP_25_PLAYED")) {
     		DBAccessHelper dBHelper = new DBAccessHelper(getContext());
     		cursor = dBHelper.getTop25PlayedTracks(mSelection);
-
+    		
     	} else if (mDistinctField.equals("RECENTLY_ADDED")) {
     		DBAccessHelper dBHelper = new DBAccessHelper(getContext());
     		cursor = dBHelper.getRecentlyAddedSongs(mSelection);
-
+    		
     	} else if (mDistinctField.equals("TOP_RATED")) {
     		DBAccessHelper dBHelper = new DBAccessHelper(getContext());
     		cursor = dBHelper.getTopRatedSongs(mSelection);
-
+    		
     	} else if (mDistinctField.equals("RECENTLY_PLAYED")) {
     		DBAccessHelper dBHelper = new DBAccessHelper(getContext());
     		cursor = dBHelper.getRecentlyPlayedSongs(mSelection);
-
+    		
     	} else if (mDistinctField.equals("GENRES_FLIPPED")) {
     		DBAccessHelper dBHelper = new DBAccessHelper(getContext());
     		cursor = dBHelper.getAllSongsInGenre(mSelection);
-
+    		
     	}
-
+        
         if (cursor != null) {
             // Ensure the cursor window is filled
             cursor.getCount();
             registerContentObserver(cursor, mObserver);
         }*/
-
+        
         return null;
     }
 
@@ -250,10 +154,104 @@ public class SQLiteDBCursorLoader extends AsyncTaskLoader<Cursor> {
     }
 
     /**
+     * Creates an empty unspecified CursorLoader.  You must follow this with
+     * calls to {@link #setUri(Uri)}, {@link #setSelection(String)}, etc
+     * to specify the query to perform.
+     */
+    public SQLiteDBCursorLoader(Context context) {
+        super(context);
+        mObserver = new ForceLoadContentObserver();
+    }
+
+    /**
+     * Creates a fully-specified CursorLoader.  See
+     * {@link ContentResolver#query(Uri, String[], String, String[], String)
+     * ContentResolver.query()} for documentation on the meaning of the
+     * parameters.  These will be passed as-is to that call.
+     */
+    public SQLiteDBCursorLoader(Context context, String tableName, String[] projection, String selection,
+            String[] selectionArgs, String sortOrder) {
+        super(context);
+        
+        mObserver = new ForceLoadContentObserver();
+        mTableName = tableName;
+        mProjection = projection;
+        mSelection = selection;
+        mSelectionArgs = selectionArgs;
+        mSortOrder = sortOrder;
+    }
+    
+    /**
+     * Creates a fully-specified CursorLoader.  See
+     * {@link ContentResolver#query(Uri, String[], String, String[], String)
+     * ContentResolver.query()} for documentation on the meaning of the
+     * parameters.  These will be passed as-is to that call.
+     */
+    public SQLiteDBCursorLoader(Context context, String tableName, String[] projection, String selection,
+            String[] selectionArgs, String sortOrder, String limit) {
+        super(context);
+        
+        mObserver = new ForceLoadContentObserver();
+        mTableName = tableName;
+        mProjection = projection;
+        mSelection = selection;
+        mSelectionArgs = selectionArgs;
+        mSortOrder = sortOrder;
+        mLimit = limit;
+    }
+    
+    /**
+     * Creates a fully-specified, DISTINCT CursorLoader.  See
+     * {@link ContentResolver#query(Uri, String[], String, String[], String)
+     * ContentResolver.query()} for documentation on the meaning of the
+     * parameters.  These will be passed as-is to that call.
+     */
+    public SQLiteDBCursorLoader(Context context, boolean distinctPlaylists) {
+        super(context);
+        
+        mDistinctPlaylists = distinctPlaylists;
+        mObserver = new ForceLoadContentObserver();
+
+    }
+    
+    /**
+     * Creates a fully-specified, DISTINCT CursorLoader.  See
+     * {@link ContentResolver#query(Uri, String[], String, String[], String)
+     * ContentResolver.query()} for documentation on the meaning of the
+     * parameters.  These will be passed as-is to that call.
+     * 
+     * boolean dummy is a dummy variable, used to differentiate constructors.
+     */
+    public SQLiteDBCursorLoader(Context context, boolean distinctGenres, boolean dummy) {
+        super(context);
+        
+        mDistinctGenres = distinctGenres;
+        mObserver = new ForceLoadContentObserver();
+
+    }
+    
+    /**
+     * Creates a fully-specified, DISTINCT CursorLoader.  See
+     * {@link ContentResolver#query(Uri, String[], String, String[], String)
+     * ContentResolver.query()} for documentation on the meaning of the
+     * parameters.  These will be passed as-is to that call.
+     * 
+     * boolean dummy is a dummy variable, used to differentiate constructors.
+     */
+    public SQLiteDBCursorLoader(Context context, String distinctField, String selection) {
+        super(context);
+        
+        mDistinctField = distinctField;
+        mSelection = selection;
+        mObserver = new ForceLoadContentObserver();
+
+    }
+
+    /**
      * Starts an asynchronous load of the contacts list data. When the result is ready the callbacks
      * will be called on the UI thread. If a previous load has been completed and is still valid
      * the result may be passed to the callbacks immediately.
-     * <p/>
+     *
      * Must be called from the UI thread
      */
     @Override
@@ -285,7 +283,7 @@ public class SQLiteDBCursorLoader extends AsyncTaskLoader<Cursor> {
     @Override
     protected void onReset() {
         super.onReset();
-
+        
         // Ensure the loader is stopped
         onStopLoading();
 
@@ -338,25 +336,14 @@ public class SQLiteDBCursorLoader extends AsyncTaskLoader<Cursor> {
     @Override
     public void dump(String prefix, FileDescriptor fd, PrintWriter writer, String[] args) {
         super.dump(prefix, fd, writer, args);
-        writer.print(prefix);
-        writer.print("mUri=");
-        writer.println(mTableName);
-        writer.print(prefix);
-        writer.print("mProjection=");
-        writer.println(Arrays.toString(mProjection));
-        writer.print(prefix);
-        writer.print("mSelection=");
-        writer.println(mSelection);
-        writer.print(prefix);
-        writer.print("mSelectionArgs=");
-        writer.println(Arrays.toString(mSelectionArgs));
-        writer.print(prefix);
-        writer.print("mSortOrder=");
-        writer.println(mSortOrder);
-        writer.print(prefix);
-        writer.print("mCursor=");
-        writer.println(mCursor);
-        writer.print(prefix);
-        writer.print("mContentChanged="); //writer.println(mContentChanged);
+        writer.print(prefix); writer.print("mUri="); writer.println(mTableName);
+        writer.print(prefix); writer.print("mProjection=");
+                writer.println(Arrays.toString(mProjection));
+        writer.print(prefix); writer.print("mSelection="); writer.println(mSelection);
+        writer.print(prefix); writer.print("mSelectionArgs=");
+                writer.println(Arrays.toString(mSelectionArgs));
+        writer.print(prefix); writer.print("mSortOrder="); writer.println(mSortOrder);
+        writer.print(prefix); writer.print("mCursor="); writer.println(mCursor);
+        writer.print(prefix); writer.print("mContentChanged="); //writer.println(mContentChanged);
     }
 }

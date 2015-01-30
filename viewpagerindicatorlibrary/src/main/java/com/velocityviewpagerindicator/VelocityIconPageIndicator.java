@@ -16,6 +16,8 @@
  */
 package com.velocityviewpagerindicator;
 
+import static android.view.ViewGroup.LayoutParams.FILL_PARENT;
+import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 import android.content.Context;
 import android.support.v4.view.PagerAdapter;
 import android.util.AttributeSet;
@@ -26,9 +28,6 @@ import android.widget.ImageView;
 
 import com.velocity.view.pager.library.VelocityViewPager;
 import com.velocity.view.pager.library.VelocityViewPager.OnPageChangeListener;
-
-import static android.view.ViewGroup.LayoutParams.FILL_PARENT;
-import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
 /**
  * This widget implements the dynamic action bar tab behavior that can change

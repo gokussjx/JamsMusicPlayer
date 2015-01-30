@@ -25,24 +25,24 @@ import com.jams.music.player.AsyncTasks.AsyncUpdateSmallWidgetTask;
 import org.jetbrains.annotations.NotNull;
 
 public class SmallWidgetProvider extends AppWidgetProvider {
+	
+	private Context mContext;
+	
+	@Override
+	public void onReceive(@NotNull Context context, @NotNull Intent intent) {
+		super.onReceive(context, intent);
 
-    private Context mContext;
-
-    @Override
-    public void onReceive(@NotNull Context context, @NotNull Intent intent) {
-        super.onReceive(context, intent);
-
-    }
-
-    @Override
+	}
+	
+	@Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
-        super.onUpdate(context, appWidgetManager, appWidgetIds);
-        mContext = context;
+		super.onUpdate(context, appWidgetManager, appWidgetIds);
+		mContext = context;
         final int N = appWidgetIds.length;
 
         AsyncUpdateSmallWidgetTask task = new AsyncUpdateSmallWidgetTask(mContext, N, appWidgetIds, appWidgetManager);
         task.execute();
-
+ 
     }
-
+    
 }

@@ -40,34 +40,38 @@ import com.velocity.view.pager.library.VelocityViewPager;
  */
 public class VelocityUnderlinePageIndicator extends View implements VelocityPageIndicator {
     private static final int INVALID_POINTER = -1;
-    private int mActivePointerId = INVALID_POINTER;
     private static final int FADE_FRAME_MS = 30;
+
     private final Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+
     private boolean mFades;
     private int mFadeDelay;
     private int mFadeLength;
     private int mFadeBy;
-    private final Runnable mFadeRunnable = new Runnable() {
-        @Override
-        public void run() {
-            if (!mFades) return;
 
-            final int alpha = Math.max(mPaint.getAlpha() - mFadeBy, 0);
-            mPaint.setAlpha(alpha);
-            invalidate();
-            if (alpha > 0) {
-                postDelayed(this, FADE_FRAME_MS);
-            }
-        }
-    };
     private VelocityViewPager mVelocityViewPager;
     private VelocityViewPager.OnPageChangeListener mListener;
     private int mScrollState;
     private int mCurrentPage;
     private float mPositionOffset;
+
     private int mTouchSlop;
     private float mLastMotionX = -1;
+    private int mActivePointerId = INVALID_POINTER;
     private boolean mIsDragging;
+
+    private final Runnable mFadeRunnable = new Runnable() {
+      @Override public void run() {
+        if (!mFades) return;
+
+        final int alpha = Math.max(mPaint.getAlpha() - mFadeBy, 0);
+        mPaint.setAlpha(alpha);
+        invalidate();
+        if (alpha > 0) {
+          postDelayed(this, FADE_FRAME_MS);
+        }
+      }
+    };
 
     public VelocityUnderlinePageIndicator(Context context) {
         this(context, null);
@@ -99,7 +103,7 @@ public class VelocityUnderlinePageIndicator extends View implements VelocityPage
 
         Drawable background = a.getDrawable(R.styleable.VelocityUnderlinePageIndicator_android_background);
         if (background != null) {
-            setBackgroundDrawable(background);
+          setBackgroundDrawable(background);
         }
 
         a.recycle();
@@ -174,9 +178,9 @@ public class VelocityUnderlinePageIndicator extends View implements VelocityPage
         final float right = left + pageWidth;
         final float top = getPaddingTop();
         final float bottom = getHeight() - getPaddingBottom();
-
+        
         Log.e("DEBUG", ">>>LEFT:" + left + " >>>RIGHT: " + right + " >>>>TOP: " + top + " >>>>BOTTOM: " + bottom);
-
+        
         canvas.drawRect(left, top, right, bottom, mPaint);
     }
 
@@ -279,8 +283,7 @@ public class VelocityUnderlinePageIndicator extends View implements VelocityPage
         mVelocityViewPager.setOnPageChangeListener(this);
         invalidate();
         post(new Runnable() {
-            @Override
-            public void run() {
+            @Override public void run() {
                 if (mFades) {
                     post(mFadeRunnable);
                 }
@@ -357,7 +360,7 @@ public class VelocityUnderlinePageIndicator extends View implements VelocityPage
 
     @Override
     public void onRestoreInstanceState(Parcelable state) {
-        SavedState savedState = (SavedState) state;
+        SavedState savedState = (SavedState)state;
         super.onRestoreInstanceState(savedState.getSuperState());
         mCurrentPage = savedState.currentPage;
         requestLayout();
@@ -372,18 +375,6 @@ public class VelocityUnderlinePageIndicator extends View implements VelocityPage
     }
 
     static class SavedState extends BaseSavedState {
-        @SuppressWarnings("UnusedDeclaration")
-        public static final Creator<SavedState> CREATOR = new Creator<SavedState>() {
-            @Override
-            public SavedState createFromParcel(Parcel in) {
-                return new SavedState(in);
-            }
-
-            @Override
-            public SavedState[] newArray(int size) {
-                return new SavedState[size];
-            }
-        };
         int currentPage;
 
         public SavedState(Parcelable superState) {
@@ -400,5 +391,18 @@ public class VelocityUnderlinePageIndicator extends View implements VelocityPage
             super.writeToParcel(dest, flags);
             dest.writeInt(currentPage);
         }
+
+        @SuppressWarnings("UnusedDeclaration")
+        public static final Creator<SavedState> CREATOR = new Creator<SavedState>() {
+            @Override
+            public SavedState createFromParcel(Parcel in) {
+                return new SavedState(in);
+            }
+
+            @Override
+            public SavedState[] newArray(int size) {
+                return new SavedState[size];
+            }
+        };
     }
 }

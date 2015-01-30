@@ -16,12 +16,11 @@
 
 package main.java.de.psdev.licensesdialog;
 
-import android.content.Context;
-
-import de.psdev.licensesdialog.R;
 import main.java.de.psdev.licensesdialog.licenses.License;
 import main.java.de.psdev.licensesdialog.model.Notice;
 import main.java.de.psdev.licensesdialog.model.Notices;
+import android.content.Context;
+import de.psdev.licensesdialog.R;
 
 public final class NoticesHtmlBuilder {
 
@@ -31,14 +30,14 @@ public final class NoticesHtmlBuilder {
     private String mStyle;
     private boolean mShowFullLicenseText;
 
+    public static NoticesHtmlBuilder create(final Context context) {
+        return new NoticesHtmlBuilder(context);
+    }
+
     private NoticesHtmlBuilder(final Context context) {
         mContext = context;
         mStyle = context.getResources().getString(R.string.notices_default_style);
         mShowFullLicenseText = false;
-    }
-
-    public static NoticesHtmlBuilder create(final Context context) {
-        return new NoticesHtmlBuilder(context);
     }
 
     public NoticesHtmlBuilder setNotices(final Notices notices) {

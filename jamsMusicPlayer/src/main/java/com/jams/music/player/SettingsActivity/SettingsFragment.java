@@ -15,6 +15,7 @@
  */
 package com.jams.music.player.SettingsActivity;
 
+import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.preference.PreferenceFragment;

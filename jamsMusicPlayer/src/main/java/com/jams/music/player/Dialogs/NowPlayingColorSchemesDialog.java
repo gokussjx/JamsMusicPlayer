@@ -27,9 +27,15 @@ import android.os.Bundle;
 
 import com.jams.music.player.Helpers.UIElementsHelper;
 import com.jams.music.player.R;
+import com.jams.music.player.SettingsActivity.SettingsActivity;
+import com.jams.music.player.SettingsActivity.SettingsAppearanceFragment;
 
 public class NowPlayingColorSchemesDialog extends DialogFragment {
 
+	private Activity parentActivity;
+	private int selectedThemeIndex;
+	private DialogFragment dialogFragment;
+	
 	private static final String NOW_PLAYING_COLOR = "NOW_PLAYING_COLOR";
 	private static final String BLUE = "BLUE";
 	private static final String RED = "RED";
@@ -40,10 +46,7 @@ public class NowPlayingColorSchemesDialog extends DialogFragment {
 	private static final String GRAY = "GRAY";
 	private static final String WHITE = "WHITE";
 	private static final String BLACK = "BLACK";
-    private Activity parentActivity;
-    private int selectedThemeIndex;
-    private DialogFragment dialogFragment;
-
+	
 	@Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
