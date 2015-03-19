@@ -39,7 +39,6 @@ import android.media.MediaPlayer.OnPreparedListener;
 import android.media.RemoteControlClient;
 import android.media.audiofx.PresetReverb;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.PowerManager;
@@ -790,11 +789,11 @@ public class AudioPlaybackService extends Service {
 
         //Check if audio is playing and set the appropriate play/pause button.
         if (mApp.getService().isPlayingMusic()) {
-            notificationView.setImageViewResource(R.id.notification_base_play, R.drawable.btn_playback_pause_light);
-            expNotificationView.setImageViewResource(R.id.notification_expanded_base_play, R.drawable.btn_playback_pause_light);
+            notificationView.setImageViewResource(R.id.notification_base_play, R.drawable.btn_playback_pause);
+            expNotificationView.setImageViewResource(R.id.notification_expanded_base_play, R.drawable.btn_playback_pause);
         } else {
-            notificationView.setImageViewResource(R.id.notification_base_play, R.drawable.btn_playback_play_light);
-            expNotificationView.setImageViewResource(R.id.notification_expanded_base_play, R.drawable.btn_playback_play_light);
+            notificationView.setImageViewResource(R.id.notification_base_play, R.drawable.btn_playback_play);
+            expNotificationView.setImageViewResource(R.id.notification_expanded_base_play, R.drawable.btn_playback_play);
         }
 
         //Set the notification content.
@@ -861,8 +860,13 @@ public class AudioPlaybackService extends Service {
         notificationView.setOnClickPendingIntent(R.id.notification_base_collapse, stopServicePendingIntent);
 
         //Set the album art.
-        expNotificationView.setImageViewBitmap(R.id.notification_expanded_base_image, songHelper.getAlbumArt());
-        notificationView.setImageViewBitmap(R.id.notification_base_image, songHelper.getAlbumArt());
+        if (songHelper.getAlbumArt() != null) {
+            expNotificationView.setImageViewBitmap(R.id.notification_expanded_base_image, songHelper.getAlbumArt());
+            notificationView.setImageViewBitmap(R.id.notification_base_image, songHelper.getAlbumArt());
+        } else {
+            songHelper.setAlbumArt(null);
+        }
+
 
         //Attach the shrunken layout to the notification.
         mNotificationBuilder.setContent(notificationView);
@@ -917,9 +921,9 @@ public class AudioPlaybackService extends Service {
 
         //Check if audio is playing and set the appropriate play/pause button.
         if (mApp.getService().isPlayingMusic()) {
-            notificationView.setImageViewResource(R.id.notification_base_play, R.drawable.btn_playback_pause_light);
+            notificationView.setImageViewResource(R.id.notification_base_play, R.drawable.btn_playback_pause);
         } else {
-            notificationView.setImageViewResource(R.id.notification_base_play, R.drawable.btn_playback_play_light);
+            notificationView.setImageViewResource(R.id.notification_base_play, R.drawable.btn_playback_play);
         }
 
         //Set the notification content.
@@ -980,10 +984,10 @@ public class AudioPlaybackService extends Service {
      * API level.
      */
     private Notification buildNotification(SongHelper songHelper) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
             return buildJBNotification(songHelper);
-        else
-            return buildICSNotification(songHelper);
+//        else
+//            return buildICSNotification(songHelper);
     }
 
     /**
@@ -992,10 +996,10 @@ public class AudioPlaybackService extends Service {
      */
     public void updateNotification(SongHelper songHelper) {
         Notification notification = null;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
             notification = buildJBNotification(songHelper);
-        else
-            notification = buildICSNotification(songHelper);
+//        else
+//            notification = buildICSNotification(songHelper);
 
         //Update the current notification.
         NotificationManager notifManager = (NotificationManager) mApp.getSystemService(Context.NOTIFICATION_SERVICE);

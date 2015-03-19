@@ -4,7 +4,7 @@
         Base application theme, dependent on API level. This theme is replaced
         by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
     -->
-    <style name="AppBaseTheme" parent="android:Theme.Light">
+    <style name="AppBaseTheme" parent="android:Theme.Material">
         <!--
             Theme customizations available in newer API levels can go in
             res/values-vXX/styles.xml, while customizations related to
@@ -21,7 +21,7 @@
         All customizations that are NOT specific to a particular API-level can go here.
     </style> -->
 
-    <style name="AppTheme" parent="android:Theme.Holo">
+    <style name="AppTheme" parent="android:Theme.Material">
         <item name="android:actionBarItemBackground">@drawable/selectable_background_apptheme</item>
         <item name="android:popupMenuStyle">@style/PopupMenu.Apptheme</item>
         <item name="android:dropDownListViewStyle">@style/DropDownListView.Apptheme</item>
@@ -37,7 +37,7 @@
     </style>
 
 
-    <style name="NowPlayingTheme" parent="android:Theme.Holo.NoActionBar">
+    <style name="NowPlayingTheme" parent="android:Theme.Material.NoActionBar">
         <item name="android:actionBarItemBackground">@drawable/selectable_background_apptheme</item>
         <item name="android:popupMenuStyle">@style/PopupMenu.Apptheme</item>
         <item name="android:dropDownListViewStyle">@style/DropDownListView.Apptheme</item>
@@ -91,12 +91,12 @@
     </style>
 
     <!-- this style is only referenced in a Light.DarkActionBar based theme -->
-    <style name="Theme.Apptheme.Widget" parent="@android:style/Theme.Holo">
+    <style name="Theme.Apptheme.Widget" parent="@android:style/Theme.Material">
         <item name="android:popupMenuStyle">@style/PopupMenu.Apptheme</item>
         <item name="android:dropDownListViewStyle">@style/DropDownListView.Apptheme</item>
     </style>
 
-    <style name="AppThemeTransparentLight" parent="android:Theme.Holo.Light">
+    <style name="AppThemeTransparentLight" parent="android:Theme.Material.Light">
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowContentOverlay">@drawable/ab_solid_shadow_holo</item>
@@ -105,7 +105,7 @@
         <item name="android:backgroundDimEnabled">false</item>
     </style>
 
-    <style name="AppThemeTransparent" parent="android:Theme.Holo">
+    <style name="AppThemeTransparent" parent="android:Theme.Material">
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowContentOverlay">@drawable/ab_solid_shadow_holo</item>
@@ -115,7 +115,7 @@
     </style>
 
     <!-- Application Theme (Light) -->
-    <style name="AppThemeLight" parent="@android:style/Theme.Holo.Light.DarkActionBar">
+    <style name="AppThemeLight" parent="@android:style/Theme.Material.Light.DarkActionBar">
         <item name="android:actionBarItemBackground">@drawable/selectable_background_appthemelight
         </item>
         <item name="android:dropDownListViewStyle">@style/DropDownListView.Appthemelight</item>
@@ -156,7 +156,7 @@
 
     </style>
 
-    <style name="NowPlayingThemeLight" parent="@android:style/Theme.Holo.Light.NoActionBar">
+    <style name="NowPlayingThemeLight" parent="@android:style/Theme.Material.Light.NoActionBar">
         <item name="android:actionBarItemBackground">@drawable/selectable_background_appthemelight
         </item>
         <item name="android:dropDownListViewStyle">@style/DropDownListView.Appthemelight</item>
@@ -213,16 +213,16 @@
     </style>
 
     <!-- this style is only referenced in a Light.DarkActionBar based theme -->
-    <style name="Theme.Appthemelight.Widget" parent="@android:style/Theme.Holo">
+    <style name="Theme.Appthemelight.Widget" parent="@android:style/Theme.Material">
         <item name="android:popupMenuStyle">@style/PopupMenu.Appthemelight</item>
         <item name="android:dropDownListViewStyle">@style/DropDownListView.Appthemelight</item>
     </style>
 
-    <style name="AppThemeNoActionBar" parent="android:Theme.Holo.NoActionBar">
+    <style name="AppThemeNoActionBar" parent="android:Theme.Material.NoActionBar">
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
     </style>
 
-    <style name="AppThemeNoActionBarLight" parent="android:Theme.Holo.Light.NoActionBar">
+    <style name="AppThemeNoActionBarLight" parent="android:Theme.Material.Light.NoActionBar">
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
     </style>
 
@@ -241,16 +241,33 @@
         <item name="android:visibility">gone</item>
     </style>
 
+    <style name="NotificationAction.Previous.Dark" parent="@style/NotificationAction">
+        <item name="android:src">@drawable/btn_playback_previous</item>
+        <item name="android:visibility">gone</item>
+    </style>
+
     <style name="NotificationAction.Play" parent="@style/NotificationAction">
         <item name="android:src">@drawable/btn_playback_play_light</item>
+    </style>
+
+    <style name="NotificationAction.Play.Dark" parent="@style/NotificationAction">
+        <item name="android:src">@drawable/btn_playback_play</item>
     </style>
 
     <style name="NotificationAction.Next" parent="@style/NotificationAction">
         <item name="android:src">@drawable/btn_playback_next_light</item>
     </style>
 
+    <style name="NotificationAction.Next.Dark" parent="@style/NotificationAction">
+        <item name="android:src">@drawable/btn_playback_next</item>
+    </style>
+
     <style name="NotificationAction.Collapse" parent="@style/NotificationAction">
         <item name="android:src">@drawable/btn_notification_collapse</item>
+    </style>
+
+    <style name="NotificationAction.Collapse.Dark" parent="@style/NotificationAction">
+        <item name="android:src">@drawable/btn_notification_collapse_dark</item>
     </style>
 
     <!-- Notification bar event text -->
@@ -262,12 +279,12 @@
         <item name="android:singleLine">true</item>
     </style>
 
-    <style name="HoloTransparentLight" parent="android:Theme.Holo.Light">
+    <style name="HoloTransparentLight" parent="android:Theme.Material.Light">
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowBackground">@android:color/transparent</item>
     </style>
 
-    <style name="HoloTransparent" parent="android:Theme.Holo">
+    <style name="HoloTransparent" parent="android:Theme.Material">
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowBackground">@android:color/transparent</item>
     </style>

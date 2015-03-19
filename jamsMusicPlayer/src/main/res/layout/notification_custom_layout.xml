@@ -20,7 +20,7 @@
         android:layout_gravity="center_vertical"
         android:layout_weight="1"
         android:orientation="vertical"
-        android:paddingLeft="@dimen/notification_info_container_padding_left"
+        android:paddingStart="@dimen/notification_info_container_padding_left"
         android:paddingBottom="@dimen/notification_info_container_padding_bottom">
 
         <TextView
@@ -43,13 +43,13 @@
         android:id="@+id/notification_base_previous"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        style="@style/NotificationAction.Previous" />
+        style="@style/NotificationAction.Previous.Dark" />
 
     <ImageButton
         android:id="@+id/notification_base_play"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        style="@style/NotificationAction.Play"
+        style="@style/NotificationAction.Play.Dark"
         android:paddingLeft="15dp"
         android:paddingRight="15dp" />
 
@@ -57,14 +57,14 @@
         android:id="@+id/notification_base_next"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        style="@style/NotificationAction.Next" />
+        style="@style/NotificationAction.Next.Dark" />
 
     <ImageButton
         android:id="@+id/notification_base_collapse"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        style="@style/NotificationAction.Collapse"
-        android:paddingLeft="15dp"
-        android:paddingRight="10dp" />
+        style="@style/NotificationAction.Collapse.Dark"
+        android:paddingStart="15dp"
+        android:paddingEnd="10dp" />
 
 </LinearLayout>

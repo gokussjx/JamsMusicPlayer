@@ -12,7 +12,7 @@
         android:layout_width="@dimen/notification_expanded_height"
         android:layout_height="@dimen/notification_expanded_height"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
         android:scaleType="fitXY" />
 
     <LinearLayout
@@ -20,8 +20,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_toRightOf="@+id/notification_expanded_base_image"
+        android:layout_alignParentEnd="true"
+        android:layout_toEndOf="@+id/notification_expanded_base_image"
         android:divider="?android:listDivider"
         android:dividerPadding="@dimen/notification_expanded_buttons_divider_padding"
         android:gravity="center_vertical"
@@ -36,7 +36,7 @@
             android:background="?android:selectableItemBackground"
             android:padding="@dimen/notification_expanded_button_padding"
             android:scaleType="fitCenter"
-            android:src="@drawable/btn_playback_previous_light" />
+            android:src="@drawable/btn_playback_previous" />
 
         <ImageButton
             android:id="@+id/notification_expanded_base_play"
@@ -46,7 +46,7 @@
             android:background="?android:selectableItemBackground"
             android:padding="@dimen/notification_expanded_button_padding"
             android:scaleType="fitCenter"
-            android:src="@drawable/btn_playback_pause_light" />
+            android:src="@drawable/btn_playback_pause" />
 
         <ImageButton
             android:id="@+id/notification_expanded_base_next"
@@ -56,36 +56,36 @@
             android:background="?android:selectableItemBackground"
             android:padding="@dimen/notification_expanded_button_padding"
             android:scaleType="fitCenter"
-            android:src="@drawable/btn_playback_next_light" />
+            android:src="@drawable/btn_playback_next" />
     </LinearLayout>
 
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="1dp"
         android:layout_above="@+id/notification_expanded_buttons"
-        android:layout_alignParentRight="true"
-        android:layout_toRightOf="@+id/notification_expanded_base_image"
+        android:layout_alignParentEnd="true"
+        android:layout_toEndOf="@+id/notification_expanded_base_image"
         android:background="?android:dividerHorizontal" />
 
     <ImageButton
         android:id="@+id/notification_expanded_base_collapse"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
         android:layout_alignParentTop="true"
         android:background="?android:selectableItemBackground"
         android:padding="@dimen/notification_expanded_collapse_padding"
-        android:src="@drawable/btn_notification_collapse" />
+        android:src="@drawable/btn_notification_collapse_dark" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_gravity="center_vertical"
-        android:layout_toLeftOf="@+id/notification_expanded_base_collapse"
-        android:layout_toRightOf="@+id/notification_expanded_base_image"
+        android:layout_toStartOf="@+id/notification_expanded_base_collapse"
+        android:layout_toEndOf="@+id/notification_expanded_base_image"
         android:orientation="vertical"
-        android:paddingLeft="@dimen/notification_info_container_padding_left"
+        android:paddingStart="@dimen/notification_info_container_padding_left"
         android:paddingTop="@dimen/notification_expanded_content_padding_top">
 
         <TextView
