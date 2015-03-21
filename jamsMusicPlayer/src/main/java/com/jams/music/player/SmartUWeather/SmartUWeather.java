@@ -41,7 +41,6 @@ public class SmartUWeather extends Activity implements YahooWeatherInfoListener,
         mYahooWeather.setExceptionListener(this);
 
         mTvTitle = (TextView) findViewById(R.id.title_text);
-//        mTvErrorMessage = (TextView) findViewById(R.id.textview_error_message);
 
         mTvWeather = (TextView) findViewById(R.id.weather_text);
         mEtAreaOfCity = (EditText) findViewById(R.id.current_location_edit);
@@ -94,7 +93,7 @@ public class SmartUWeather extends Activity implements YahooWeatherInfoListener,
             if (mYahooWeather.getSearchMode() == YahooWeather.SEARCH_MODE.GPS) {
                 mEtAreaOfCity.setText("YOUR CURRENT LOCATION");
             }
-            mWeatherInfosLayout.removeAllViews();
+
             mTvTitle.setText(
                     weatherInfo.getTitle() + "\n"
                             + weatherInfo.getWOEIDneighborhood() + ", "
@@ -104,27 +103,16 @@ public class SmartUWeather extends Activity implements YahooWeatherInfoListener,
             mTvWeather.setText("weather: " + weatherInfo.getCurrentText() + "\n" +
                             "Visibility: " + weatherInfo.getAtmosphereVisibility()
             );
-//            if (weatherInfo.getCurrentConditionIcon() != null) {
-//                mTvWeather.setImageBitmap(weatherInfo.getCurrentConditionIcon());
-//            }
+
             for (int i = 0; i < YahooWeather.FORECAST_INFO_MAX_SIZE; i++) {
-//                final LinearLayout forecastInfoLayout = (LinearLayout)
-//                        getLayoutInflater().inflate(R.layout.forecastinfo, null);
-//                final TextView tvWeather = (TextView) forecastInfoLayout.findViewById(R.id.textview_forecast_info);
                 final WeatherInfo.ForecastInfo forecastInfo = weatherInfo.getForecastInfoList().get(i);
                 mTvWeather.setText("weather: " + forecastInfo.getForecastText() + "\n");
-//                final ImageView ivForecast = (ImageView) forecastInfoLayout.findViewById(R.id.imageview_forecast_info);
-//                if (forecastInfo.getForecastConditionIcon() != null) {
-//                    ivForecast.setImageBitmap(forecastInfo.getForecastConditionIcon());
-//                }
-//                mWeatherInfosLayout.addView(forecastInfoLayout);
             }
         } else {
             Toast.makeText(getApplicationContext(), "Oops!", Toast.LENGTH_SHORT).show();
 //            setNoResultLayout();
         }
     }
-
 
     @Override
     public void onFailConnection(final Exception e) {
