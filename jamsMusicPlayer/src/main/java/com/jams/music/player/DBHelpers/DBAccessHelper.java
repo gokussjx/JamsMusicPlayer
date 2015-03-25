@@ -93,6 +93,9 @@ public class DBAccessHelper extends SQLiteOpenHelper {
     public static final String SONG_FILE_PATH = "file_path";
     public static final String SONG_TRACK_NUMBER = "track_number";
     public static final String SONG_GENRE = "genre";
+    public static final String SONG_WEATHER = "weather";
+    public static final String SONG_BPM = "bpm";
+    public static final String SONG_TOD = "tod";
     public static final String SONG_PLAY_COUNT = "play_count";
     public static final String SONG_YEAR = "year";
     public static final String SONG_LAST_MODIFIED = "last_modified";
@@ -210,6 +213,7 @@ public class DBAccessHelper extends SQLiteOpenHelper {
         //Music library table.
         String[] musicLibraryTableCols = {SONG_ID, SONG_TITLE, SONG_ARTIST,
                 SONG_ALBUM, SONG_ALBUM_ARTIST,
+                SONG_WEATHER, SONG_BPM, SONG_TOD,
                 SONG_DURATION, SONG_FILE_PATH,
                 SONG_TRACK_NUMBER, SONG_GENRE,
                 SONG_PLAY_COUNT, SONG_YEAR, ALBUMS_COUNT,
@@ -768,6 +772,8 @@ public class DBAccessHelper extends SQLiteOpenHelper {
             case Common.SONGS_FRAGMENT:
                 querySelection += " ORDER BY " + SONG_TITLE + " ASC";
                 return getAllSongsSearchable(querySelection);
+            case Common.SMART_PLAYLISTS_FRAGMENT:
+                //TODO case stub.
             case Common.PLAYLISTS_FRAGMENT:
                 //TODO case stub.
             case Common.GENRES_FRAGMENT:
@@ -810,6 +816,8 @@ public class DBAccessHelper extends SQLiteOpenHelper {
             case Common.SONGS_FRAGMENT:
                 querySelection += " ORDER BY " + SONG_TITLE + " ASC";
                 return getAllSongsInLibrarySearchable(querySelection);
+            case Common.SMART_PLAYLISTS_FRAGMENT:
+                //TODO case stub.
             case Common.PLAYLISTS_FRAGMENT:
                 //TODO case stub.
             case Common.GENRES_FRAGMENT:
