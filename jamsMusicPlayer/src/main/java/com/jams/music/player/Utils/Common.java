@@ -145,16 +145,15 @@ public class Common extends Application {
     public static final int ALBUMS_FRAGMENT = 2;
     public static final int SONGS_FRAGMENT = 3;
     public static final int PLAYLISTS_FRAGMENT = 4;
-    public static final int SMART_PLAYLISTS_FRAGMENT = 5;
-    public static final int GENRES_FRAGMENT = 6;
-    public static final int FOLDERS_FRAGMENT = 7;
-    public static final int ARTISTS_FLIPPED_FRAGMENT = 8;
-    public static final int ARTISTS_FLIPPED_SONGS_FRAGMENT = 9;
-    public static final int ALBUM_ARTISTS_FLIPPED_FRAGMENT = 10;
-    public static final int ALBUM_ARTISTS_FLIPPED_SONGS_FRAGMENT = 11;
-    public static final int ALBUMS_FLIPPED_FRAGMENT = 12;
-    public static final int GENRES_FLIPPED_FRAGMENT = 13;
-    public static final int GENRES_FLIPPED_SONGS_FRAGMENT = 14;
+    public static final int GENRES_FRAGMENT = 5;
+    public static final int FOLDERS_FRAGMENT = 6;
+    public static final int ARTISTS_FLIPPED_FRAGMENT = 7;
+    public static final int ARTISTS_FLIPPED_SONGS_FRAGMENT = 8;
+    public static final int ALBUM_ARTISTS_FLIPPED_FRAGMENT = 9;
+    public static final int ALBUM_ARTISTS_FLIPPED_SONGS_FRAGMENT = 10;
+    public static final int ALBUMS_FLIPPED_FRAGMENT = 11;
+    public static final int GENRES_FLIPPED_FRAGMENT = 12;
+    public static final int GENRES_FLIPPED_SONGS_FRAGMENT = 13;
 
     //Constants for identifying playback routes.
     public static final int PLAY_ALL_SONGS = 0;
@@ -188,9 +187,6 @@ public class Common extends Application {
     public static final String SONG_TITLE = "SongTitle";
     public static final String SONG_ALBUM = "SongAlbum";
     public static final String SONG_ARTIST = "SongArtist";
-    public static final String SONG_WEATHER = "SongWeather";
-    public static final String SONG_BPM = "SongBpm";
-    public static final String SONG_TOD = "SongTod";
     public static final String ALBUM_ART = "AlbumArt";
     public static final String CURRENT_THEME = "CurrentTheme";
     public static final int DARK_THEME = 0;
@@ -212,7 +208,6 @@ public class Common extends Application {
     public static final String ALBUM_ARTISTS_LAYOUT = "AlbumArtistsLayout";
     public static final String ALBUMS_LAYOUT = "AlbumsLayout";
     public static final String PLAYLISTS_LAYOUT = "PlaylistsLayout";
-    public static final String SMART_PLAYLISTS_LAYOUT = "SmartPlaylistsLayout";
     public static final String GENRES_LAYOUT = "GenresLayout";
     public static final String FOLDERS_LAYOUT = "FoldersLayout";
 
