@@ -168,12 +168,15 @@ public class NavigationDrawerFragment extends Fragment {
                     if(mContext instanceof MainActivity) ((MainActivity) getActivity()).setCurrentFragmentId(Common.PLAYLISTS_FRAGMENT);
                     break;
                 case 5:
-                    if(mContext instanceof MainActivity) ((MainActivity) getActivity()).setCurrentFragmentId(Common.GENRES_FRAGMENT);
+                    if(mContext instanceof MainActivity) ((MainActivity) getActivity()).setCurrentFragmentId(Common.SMART_PLAYLISTS_FRAGMENT);
                     break;
                 case 6:
-                    if(mContext instanceof MainActivity) ((MainActivity) getActivity()).setCurrentFragmentId(Common.FOLDERS_FRAGMENT);
+                    if(mContext instanceof MainActivity) ((MainActivity) getActivity()).setCurrentFragmentId(Common.GENRES_FRAGMENT);
                     break;
                 case 7:
+                    if(mContext instanceof MainActivity) ((MainActivity) getActivity()).setCurrentFragmentId(Common.FOLDERS_FRAGMENT);
+                    break;
+                case 8:
                     Intent intent = new Intent(getActivity(), SettingsActivity.class);
                     startActivity(intent);
                     break;
