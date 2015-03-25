@@ -41,6 +41,7 @@ import com.jams.music.player.MainActivity.Callbacks;
 import com.jams.music.player.MainActivity.MainActivity;
 import com.jams.music.player.R;
 import com.jams.music.player.SettingsActivity.SettingsActivity;
+import com.jams.music.player.SmartU.SmartUWeather;
 import com.jams.music.player.Utils.Common;
 
 import java.util.ArrayList;
@@ -151,6 +152,7 @@ public class NavigationDrawerFragment extends Fragment {
 
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int position, long dbID) {
+            Intent intent;
             switch (position) {
                 case 0:
                     if(mContext instanceof Callbacks) ((MainActivity) getActivity()).setCurrentFragmentId(Common.ARTISTS_FRAGMENT);
@@ -168,13 +170,19 @@ public class NavigationDrawerFragment extends Fragment {
                     if(mContext instanceof MainActivity) ((MainActivity) getActivity()).setCurrentFragmentId(Common.PLAYLISTS_FRAGMENT);
                     break;
                 case 5:
-                    if(mContext instanceof MainActivity) ((MainActivity) getActivity()).setCurrentFragmentId(Common.GENRES_FRAGMENT);
+//                    if(mContext instanceof MainActivity) ((MainActivity) getActivity()).setCurrentFragmentId(Common.SMART_PLAYLISTS_FRAGMENT);
+//                    break;
+                    intent = new Intent(getActivity(), SmartUWeather.class);
+                    startActivity(intent);
                     break;
                 case 6:
-                    if(mContext instanceof MainActivity) ((MainActivity) getActivity()).setCurrentFragmentId(Common.FOLDERS_FRAGMENT);
+                    if(mContext instanceof MainActivity) ((MainActivity) getActivity()).setCurrentFragmentId(Common.GENRES_FRAGMENT);
                     break;
                 case 7:
-                    Intent intent = new Intent(getActivity(), SettingsActivity.class);
+                    if(mContext instanceof MainActivity) ((MainActivity) getActivity()).setCurrentFragmentId(Common.FOLDERS_FRAGMENT);
+                    break;
+                case 8:
+                    intent = new Intent(getActivity(), SettingsActivity.class);
                     startActivity(intent);
                     break;
             }

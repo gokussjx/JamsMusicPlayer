@@ -1,4 +1,4 @@
-package com.jams.music.player.SmartUWeather;
+package com.jams.music.player.SmartU;
 
 import android.app.Activity;
 import android.content.Context;

@@ -24,6 +24,7 @@
     <string name="search_albums">Search Albums</string>
     <string name="search_songs">Search Songs</string>
     <string name="playlists">Playlists</string>
+    <string name="smart_playlists">Smart Playlists</string>
     <string name="search_playlists">Search Playlists</string>
     <string name="artists_caps">ARTISTS</string>
     <string name="albums_caps">ALBUMS</string>
@@ -128,6 +129,9 @@
     <string name="artist">Artist:</string>
     <string name="album">Album:</string>
     <string name="genre">Genre:</string>
+    <string name="weather">Weather:</string>
+    <string name="bpm">BPM:</string>
+    <string name="tod">TOD:</string>
     <string name="year">Year:</string>
     <string name="album_artist">Album Artist:</string>
     <string name="composer">Composer:</string>
@@ -177,6 +181,13 @@
     </string-array>
     <string-array name="albums_context_menu_items">
         <item>Edit Album Tags</item>
+        <item>Add to Queue</item>
+        <item>Add To Playlist</item>
+        <item>Get Album Art</item>
+        <item>Remove Album Art</item>
+        <item>Blacklist Album</item>
+    </string-array>
+    <string-array name="smart_playlists_context_menu_items">
         <item>Add to Queue</item>
         <item>Add To Playlist</item>
         <item>Get Album Art</item>

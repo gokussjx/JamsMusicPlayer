@@ -7,10 +7,10 @@
         android:id="@+id/albumArtistNameMusicLibraryEditor"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/albumNameMusicLibraryEditor"
+        android:layout_alignStart="@+id/albumNameMusicLibraryEditor"
         android:layout_below="@+id/albumNameMusicLibraryEditor"
         android:layout_marginTop="25dp"
-        android:layout_toLeftOf="@+id/albumCheckboxMusicLibraryEditor"
+        android:layout_toStartOf="@+id/albumCheckboxMusicLibraryEditor"
         android:ellipsize="end"
         android:lines="1"
         android:paddingBottom="10dp"
@@ -22,15 +22,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
         android:focusable="false"
-        android:layout_marginRight="15dp" />
+        android:layout_marginEnd="15dp" />
 
     <ImageView
         android:id="@+id/albumThumbnailMusicLibraryEditor"
         android:layout_width="75dp"
         android:layout_height="75dp"
-        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
         android:src="@drawable/transparent_drawable" />
 
@@ -39,11 +39,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_marginLeft="15dp"
-        android:layout_toLeftOf="@+id/albumCheckboxMusicLibraryEditor"
-        android:layout_toRightOf="@+id/albumThumbnailMusicLibraryEditor"
+        android:layout_marginStart="15dp"
+        android:layout_toStartOf="@+id/albumCheckboxMusicLibraryEditor"
+        android:layout_toEndOf="@+id/albumThumbnailMusicLibraryEditor"
         android:ellipsize="end"
-        android:gravity="left"
+        android:gravity="start"
         android:lines="1"
         android:text="Album Name"
         android:textAppearance="?android:attr/textAppearanceMedium" />

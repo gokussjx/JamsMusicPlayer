@@ -45,6 +45,7 @@ import com.jams.music.player.GridViewFragment.GridViewFragment;
 import com.jams.music.player.Helpers.UIElementsHelper;
 import com.jams.music.player.ListViewFragment.ListViewFragment;
 import com.jams.music.player.R;
+import com.jams.music.player.SmartUFragment.SmartUFragment;
 import com.jams.music.player.Utils.Common;
 
 public class MainActivity extends FragmentActivity implements Callbacks{
@@ -74,6 +75,7 @@ public class MainActivity extends FragmentActivity implements Callbacks{
     public static final String ALBUM_ARTISTS_FRAGMENT_LAYOUT = "AlbumArtistsFragmentLayout";
     public static final String ALBUMS_FRAGMENT_LAYOUT = "AlbumsFragmentLayout";
     public static final String PLAYLISTS_FRAGMENT_LAYOUT = "PlaylistsFragmentLayout";
+    public static final String SMART_PLAYLISTS_FRAGMENT_LAYOUT = "SmartPlaylistsFragmentLayout";
     public static final String GENRES_FRAGMENT_LAYOUT = "GenresFragmentLayout";
     public static final String FOLDERS_FRAGMENT_LAYOUT = "FoldersFragmentLayout";
     public static final String FRAGMENT_HEADER = "FragmentHeader";
@@ -226,6 +228,10 @@ public class MainActivity extends FragmentActivity implements Callbacks{
                 case Common.PLAYLISTS_FRAGMENT:
                     mCurrentFragment = getLayoutFragment(Common.PLAYLISTS_FRAGMENT);
                     break;
+                case Common.SMART_PLAYLISTS_FRAGMENT:
+//                    mCurrentFragment = getLayoutFragment(Common.SMART_PLAYLISTS_FRAGMENT);
+                    mCurrentFragment = new SmartUFragment();
+                    break;
                 case Common.GENRES_FRAGMENT:
                     mCurrentFragment = getLayoutFragment(Common.GENRES_FRAGMENT);
                     break;
@@ -274,6 +280,11 @@ public class MainActivity extends FragmentActivity implements Callbacks{
                 mCurrentFragmentLayout = mApp.getSharedPreferences().getInt(PLAYLISTS_FRAGMENT_LAYOUT, LIST_LAYOUT);
                 bundle.putInt(Common.FRAGMENT_ID, Common.PLAYLISTS_FRAGMENT);
                 bundle.putString(FRAGMENT_HEADER, mContext.getResources().getString(R.string.playlists));
+                break;
+            case Common.SMART_PLAYLISTS_FRAGMENT:
+                mCurrentFragmentLayout = mApp.getSharedPreferences().getInt(SMART_PLAYLISTS_FRAGMENT_LAYOUT, GRID_LAYOUT);
+                bundle.putInt(Common.FRAGMENT_ID, Common.SMART_PLAYLISTS_FRAGMENT);
+                bundle.putString(FRAGMENT_HEADER, mContext.getResources().getString(R.string.smart_playlists));
                 break;
             case Common.GENRES_FRAGMENT:
                 mCurrentFragmentLayout = mApp.getSharedPreferences().getInt(GENRES_FRAGMENT_LAYOUT, GRID_LAYOUT);

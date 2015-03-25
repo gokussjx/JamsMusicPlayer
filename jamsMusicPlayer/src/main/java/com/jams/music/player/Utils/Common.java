@@ -154,6 +154,8 @@ public class Common extends Application {
     public static final int ALBUMS_FLIPPED_FRAGMENT = 11;
     public static final int GENRES_FLIPPED_FRAGMENT = 12;
     public static final int GENRES_FLIPPED_SONGS_FRAGMENT = 13;
+    public static final int SMART_PLAYLISTS_FRAGMENT = 14;
+    public static final int SMART_PLAYLISTS_FLIPPED_FRAGMENT = 15;
 
     //Constants for identifying playback routes.
     public static final int PLAY_ALL_SONGS = 0;
@@ -187,6 +189,9 @@ public class Common extends Application {
     public static final String SONG_TITLE = "SongTitle";
     public static final String SONG_ALBUM = "SongAlbum";
     public static final String SONG_ARTIST = "SongArtist";
+    public static final String SONG_WEATHER = "SongWeather";
+    public static final String SONG_BPM = "SongBpm";
+    public static final String SONG_TOD = "SongTod";
     public static final String ALBUM_ART = "AlbumArt";
     public static final String CURRENT_THEME = "CurrentTheme";
     public static final int DARK_THEME = 0;
@@ -208,6 +213,7 @@ public class Common extends Application {
     public static final String ALBUM_ARTISTS_LAYOUT = "AlbumArtistsLayout";
     public static final String ALBUMS_LAYOUT = "AlbumsLayout";
     public static final String PLAYLISTS_LAYOUT = "PlaylistsLayout";
+    public static final String SMART_PLAYLISTS_LAYOUT = "SmartPlaylistsLayout";
     public static final String GENRES_LAYOUT = "GenresLayout";
     public static final String FOLDERS_LAYOUT = "FoldersLayout";
 

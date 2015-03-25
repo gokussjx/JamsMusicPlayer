@@ -149,11 +149,17 @@ public class InnerNavigationDrawerFragment extends Fragment {
                     break;
                 case 5:
                     intent = new Intent(getActivity(), MainActivity.class);
-                    intent.putExtra("TARGET_FRAGMENT", "GENRES");
+                    intent.putExtra("TARGET_FRAGMENT", "SMART PLAYLISTS");
                     //intent.setFlags(intent.getFlags() | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                     startActivity(intent);
                     break;
                 case 6:
+                    intent = new Intent(getActivity(), MainActivity.class);
+                    intent.putExtra("TARGET_FRAGMENT", "GENRES");
+                    //intent.setFlags(intent.getFlags() | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                    startActivity(intent);
+                    break;
+                case 7:
                     intent = new Intent(getActivity(), MainActivity.class);
                     intent.putExtra("TARGET_FRAGMENT", "FOLDERS");
                     //intent.setFlags(intent.getFlags() | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);

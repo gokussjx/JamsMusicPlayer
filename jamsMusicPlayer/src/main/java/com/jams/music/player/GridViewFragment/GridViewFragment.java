@@ -187,6 +187,8 @@ public class GridViewFragment extends Fragment {
             Intent intent;
             if (newFragmentId == Common.ALBUMS_FLIPPED_FRAGMENT) {
                 intent = new Intent(mContext, BrowserSubListActivity.class);
+            } else if (newFragmentId == Common.SMART_PLAYLISTS_FRAGMENT) {
+                intent = new Intent(mContext, com.jams.music.player.SmartU.SmartUWeather.class);
             } else {
                 intent = new Intent(mContext, BrowserSubGridActivity.class);
             }
@@ -217,6 +219,8 @@ public class GridViewFragment extends Fragment {
                 return Common.ALBUM_ARTISTS_FLIPPED_FRAGMENT;
             case Common.ALBUMS_FRAGMENT:
                 return Common.ALBUMS_FLIPPED_FRAGMENT;
+            case Common.SMART_PLAYLISTS_FRAGMENT:
+                return Common.SMART_PLAYLISTS_FLIPPED_FRAGMENT;
             case Common.GENRES_FRAGMENT:
                 return Common.GENRES_FLIPPED_FRAGMENT;
             default:
@@ -269,6 +273,8 @@ public class GridViewFragment extends Fragment {
                     mDBColumnsMap.put(GridViewCardsAdapter.FIELD_1, DBAccessHelper.SONG_ARTIST);
                     break;
                 case Common.PLAYLISTS_FRAGMENT:
+                    break;
+                case Common.SMART_PLAYLISTS_FRAGMENT:
                     break;
                 case Common.GENRES_FRAGMENT:
                     mDBColumnsMap.put(GridViewCardsAdapter.TITLE_TEXT, DBAccessHelper.SONG_GENRE);
