@@ -16,8 +16,8 @@ Eclipse projects. Here's how the projects were restructured:
 
 * AndroidManifest.xml => yWeatherGetter4a/src/main/AndroidManifest.xml
 * src/ => yWeatherGetter4a/src/main/java/
-* /run/media/bidyut/Lab/AndroidProjects/YWeatherGetter4a/sample_app-test/res/ => yWeatherGetter4a/src/androidTest/res/
-* /run/media/bidyut/Lab/AndroidProjects/YWeatherGetter4a/sample_app-test/src/ => yWeatherGetter4a/src/androidTest/java/
+* /home/bidyut/Projects/Android/YWeatherGetter4a/sample_app-test/res/ => yWeatherGetter4a/src/androidTest/res/
+* /home/bidyut/Projects/Android/YWeatherGetter4a/sample_app-test/src/ => yWeatherGetter4a/src/androidTest/java/
 
 Next Steps:
 -----------

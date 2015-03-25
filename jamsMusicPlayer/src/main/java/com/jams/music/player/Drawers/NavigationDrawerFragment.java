@@ -16,6 +16,7 @@
 package com.jams.music.player.Drawers;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -36,6 +37,7 @@ import android.widget.TextView;
 
 import com.jams.music.player.Helpers.TypefaceHelper;
 import com.jams.music.player.Helpers.UIElementsHelper;
+import com.jams.music.player.MainActivity.Callbacks;
 import com.jams.music.player.MainActivity.MainActivity;
 import com.jams.music.player.R;
 import com.jams.music.player.SettingsActivity.SettingsActivity;
@@ -49,6 +51,7 @@ public class NavigationDrawerFragment extends Fragment {
 
     private Context mContext;
     private Common mApp;
+    private Callbacks mCallbacks;
 
     private RelativeLayout mLibraryPickerLayout;
     private TextView mLibraryPickerHeaderText;
@@ -150,25 +153,25 @@ public class NavigationDrawerFragment extends Fragment {
         public void onItemClick(AdapterView<?> adapterView, View view, int position, long dbID) {
             switch (position) {
                 case 0:
-                    ((MainActivity) getActivity()).setCurrentFragmentId(Common.ARTISTS_FRAGMENT);
+                    if(mContext instanceof Callbacks) ((MainActivity) getActivity()).setCurrentFragmentId(Common.ARTISTS_FRAGMENT);
                     break;
                 case 1:
-                    ((MainActivity) getActivity()).setCurrentFragmentId(Common.ALBUM_ARTISTS_FRAGMENT);
+                    if(mContext instanceof Callbacks) ((MainActivity) getActivity()).setCurrentFragmentId(Common.ALBUM_ARTISTS_FRAGMENT);
                     break;
                 case 2:
-                    ((MainActivity) getActivity()).setCurrentFragmentId(Common.ALBUMS_FRAGMENT);
+                    if(mContext instanceof Callbacks) ((MainActivity) getActivity()).setCurrentFragmentId(Common.ALBUMS_FRAGMENT);
                     break;
                 case 3:
-                    ((MainActivity) getActivity()).setCurrentFragmentId(Common.SONGS_FRAGMENT);
+                    if(mContext instanceof MainActivity) ((MainActivity) getActivity()).setCurrentFragmentId(Common.SONGS_FRAGMENT);
                     break;
                 case 4:
-                    ((MainActivity) getActivity()).setCurrentFragmentId(Common.PLAYLISTS_FRAGMENT);
+                    if(mContext instanceof MainActivity) ((MainActivity) getActivity()).setCurrentFragmentId(Common.PLAYLISTS_FRAGMENT);
                     break;
                 case 5:
-                    ((MainActivity) getActivity()).setCurrentFragmentId(Common.GENRES_FRAGMENT);
+                    if(mContext instanceof MainActivity) ((MainActivity) getActivity()).setCurrentFragmentId(Common.GENRES_FRAGMENT);
                     break;
                 case 6:
-                    ((MainActivity) getActivity()).setCurrentFragmentId(Common.FOLDERS_FRAGMENT);
+                    if(mContext instanceof MainActivity) ((MainActivity) getActivity()).setCurrentFragmentId(Common.FOLDERS_FRAGMENT);
                     break;
                 case 7:
                     Intent intent = new Intent(getActivity(), SettingsActivity.class);
@@ -182,7 +185,7 @@ public class NavigationDrawerFragment extends Fragment {
             browsersListView.setAdapter(mBrowsersAdapter);
 
             //Update the fragment.
-            ((MainActivity) getActivity()).loadFragment(null);
+            if(mContext instanceof Callbacks) ((MainActivity) getActivity()).loadFragment(null);
 
             //Reset the ActionBar after 500ms.
             mHandler.postDelayed(new Runnable() {
@@ -220,6 +223,16 @@ public class NavigationDrawerFragment extends Fragment {
         params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
         listView.setLayoutParams(params);
         listView.requestLayout();
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            mCallbacks = (Callbacks) activity;
+        } catch(ClassCastException castException){
+            // The activity does not implement the Callbacks
+        }
     }
 
     @Override

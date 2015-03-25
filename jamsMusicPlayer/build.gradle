@@ -12,6 +12,9 @@ android {
         //RenderScript backward compatibility for gaussian blurs.
         renderscriptTargetApi 21
         renderscriptSupportModeEnabled true
+
+        // Enable multidex support
+        multiDexEnabled true
     }
 
     buildTypes {
@@ -43,6 +46,7 @@ dependencies {
     compile project(':viewpagerindicatorlibrary')
     compile project(':circularImageView')
     compile project(':picasso')
+    compile project(':yWeatherGetter4a')
     compile files('libs/android-async-http-1.4.2-66-g4b6eb97.jar')
     compile files('libs/commons-io-2.4.jar')
     compile files('libs/commons-lang3-3.1.jar')
@@ -58,5 +62,5 @@ dependencies {
     //compile files('libs/renderscript-v8.jar')
     compile 'com.android.support:support-v4:+'
     compile 'com.google.android.gms:play-services:+'
-    compile project(':yWeatherGetter4a')
+    compile 'com.android.support:multidex:1.0.0'
 }

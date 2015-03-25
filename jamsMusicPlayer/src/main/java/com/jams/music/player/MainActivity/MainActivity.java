@@ -47,11 +47,12 @@ import com.jams.music.player.ListViewFragment.ListViewFragment;
 import com.jams.music.player.R;
 import com.jams.music.player.Utils.Common;
 
-public class MainActivity extends FragmentActivity {
+public class MainActivity extends FragmentActivity implements Callbacks{
 
     //Context and Common object(s).
     private Context mContext;
     private Common mApp;
+    private Callbacks mCallbacks;
 
     //UI elements.
     private FrameLayout mDrawerParentLayout;
@@ -85,6 +86,9 @@ public class MainActivity extends FragmentActivity {
         //Context and Common object(s).
         mContext = getApplicationContext();
         mApp = (Common) getApplicationContext();
+
+        // Callback instance
+        computeSomething("FRAGMENTS");
 
         //Set the theme and inflate the layout.
         setTheme();
@@ -529,6 +533,11 @@ public class MainActivity extends FragmentActivity {
             super.onBackPressed();
         }
 
+    }
+
+    @Override
+    public Integer computeSomething(String myString) {
+        return myString.length();
     }
 
     @Override
