@@ -282,7 +282,7 @@ public class MainActivity extends FragmentActivity implements Callbacks{
                 bundle.putString(FRAGMENT_HEADER, mContext.getResources().getString(R.string.playlists));
                 break;
             case Common.SMART_PLAYLISTS_FRAGMENT:
-                mCurrentFragmentLayout = mApp.getSharedPreferences().getInt(SMART_PLAYLISTS_FRAGMENT_LAYOUT, GRID_LAYOUT);
+                mCurrentFragmentLayout = mApp.getSharedPreferences().getInt(SMART_PLAYLISTS_FRAGMENT_LAYOUT, LIST_LAYOUT);
                 bundle.putInt(Common.FRAGMENT_ID, Common.SMART_PLAYLISTS_FRAGMENT);
                 bundle.putString(FRAGMENT_HEADER, mContext.getResources().getString(R.string.smart_playlists));
                 break;

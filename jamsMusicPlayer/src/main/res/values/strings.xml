@@ -187,13 +187,13 @@
         <item>Remove Album Art</item>
         <item>Blacklist Album</item>
     </string-array>
-    <string-array name="smart_playlists_context_menu_items">
-        <item>Add to Queue</item>
-        <item>Add To Playlist</item>
-        <item>Get Album Art</item>
-        <item>Remove Album Art</item>
-        <item>Blacklist Album</item>
-    </string-array>
+    <!--<string-array name="smart_playlists_context_menu_items">-->
+        <!--<item>Add to Queue</item>-->
+        <!--<item>Add To Playlist</item>-->
+        <!--<item>Get Album Art</item>-->
+        <!--<item>Remove Album Art</item>-->
+        <!--<item>Blacklist Album</item>-->
+    <!--</string-array>-->
     <string-array name="album_artists_context_menu_items">
         <item>Add to Queue</item>
         <item>Add to Playlist</item>
@@ -728,6 +728,7 @@
         <item>Albums</item>
         <item>Songs</item>
         <item>Playlists</item>
+        <item>Smart Playlists</item>
         <item>Genres</item>
         <item>Folders</item>
     </string-array>
@@ -870,5 +871,10 @@
     <string name="folders_layout">Folders Layout</string>
     <string name="select_music_folders">Select Music Folders</string>
     <string name="refresh_music_library">Refresh Music Library</string>
+
+    <string name="acquire_weather">Acquire Current Weather</string>
+    <string name="get_weather_info">Get Weather Info</string>
+    <string name="get_gps">Get GPS</string>
+    <string name="enter_city">Enter City</string>
 
 </resources>

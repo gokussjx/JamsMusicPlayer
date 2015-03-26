@@ -1,6 +1,6 @@
 package com.jams.music.player.SmartUFragment;
 
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
@@ -31,7 +31,8 @@ public class SmartUFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.test, container, false);
+//        ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.test, container, false);
+        ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.smartu_weather_dialog, container, false);
         mContext = getActivity().getApplicationContext();
         mSmartUFragment = this;
         mApp = (Common) mContext;

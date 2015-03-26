@@ -63,4 +63,5 @@ dependencies {
     compile 'com.android.support:support-v4:+'
     compile 'com.google.android.gms:play-services:+'
     compile 'com.android.support:multidex:1.0.0'
+    compile 'com.readystatesoftware.sqliteasset:sqliteassethelper:+'
 }

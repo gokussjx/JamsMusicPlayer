@@ -4,47 +4,49 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <EditText
-        android:id="@+id/current_location_edit"
-        android:layout_width="fill_parent"
-        android:hint="Enter city"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="50dp" />
+    <!--<EditText-->
+        <!--android:id="@+id/current_location_edit"-->
+        <!--android:layout_width="fill_parent"-->
+        <!--android:hint="@string/enter_city"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginTop="50dp" />-->
 
-    <LinearLayout
-        android:layout_marginTop="45dp"
-        android:orientation="horizontal"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content">
+    <!--<LinearLayout-->
+        <!--android:layout_marginTop="45dp"-->
+        <!--android:orientation="horizontal"-->
+        <!--android:layout_width="fill_parent"-->
+        <!--android:layout_height="wrap_content">-->
 
-        <Button
-            android:id="@+id/fetch_weather_button"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Get Weather Info" />
+        <!--<Button-->
+            <!--android:id="@+id/fetch_weather_button"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_weight="1"-->
+            <!--android:text="@string/get_weather_info" />-->
 
-        <Button
-            android:id="@+id/get_gps_button"
-            android:text="Get GPS"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
+        <!--<Button-->
+            <!--android:id="@+id/get_gps_button"-->
+            <!--android:text="@string/get_gps"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content" />-->
+    <!--</LinearLayout>-->
 
-    <TextView
-        android:id="@+id/title_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Title"
-        android:layout_marginStart="150dp"
-        android:layout_marginTop="100dp" />
+    <!--<TextView-->
+        <!--android:id="@+id/title_text"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="Title"-->
+        <!--android:layout_marginStart="150dp"-->
+        <!--android:layout_marginTop="100dp" />-->
 
-    <TextView
-        android:id="@+id/weather_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="placeholder"
-        android:layout_marginStart="150dp"
-        android:layout_marginTop="30dp" />
+    <!--<TextView-->
+        <!--android:id="@+id/weather_text"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="placeholder"-->
+        <!--android:layout_marginStart="150dp"-->
+        <!--android:layout_marginTop="30dp" />-->
+
+
 
 </LinearLayout>
