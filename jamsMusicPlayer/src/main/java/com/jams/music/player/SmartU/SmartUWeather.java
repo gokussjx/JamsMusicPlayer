@@ -115,6 +115,8 @@ public class SmartUWeather extends Activity implements YahooWeatherInfoListener,
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        songs.close();
+        db.close();
     }
 
     private void searchByGPS() {
@@ -214,5 +216,4 @@ public class SmartUWeather extends Activity implements YahooWeatherInfoListener,
         // TODO Auto-generated method stub
 
     }
-
 }

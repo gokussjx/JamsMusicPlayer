@@ -211,6 +211,7 @@ public class DBAccessHelper extends SQLiteOpenHelper {
                 librariesTableColTypes);
 
         //Music library table.
+        //Added SmartU Columns: SONG_WEATHER, SONG_BPM, SONG_TOD
         String[] musicLibraryTableCols = {SONG_ID, SONG_TITLE, SONG_ARTIST,
                 SONG_ALBUM, SONG_ALBUM_ARTIST,
                 SONG_WEATHER, SONG_BPM, SONG_TOD,
@@ -238,6 +239,11 @@ public class DBAccessHelper extends SQLiteOpenHelper {
         db.execSQL(createEqualizerPresetsTable);
         db.execSQL(createLibrariesTable);
         db.execSQL(createMusicLibraryTable);
+
+//        //Add Weather, BPM and TOD columns to Jams.db
+//        db.execSQL("ALTER TABLE Jams ADD COLUMN weather TEXT;");
+//        db.execSQL("ALTER TABLE Jams ADD COLUMN bpm TEXT;");
+//        db.execSQL("ALTER TABLE Jams ADD COLUMN tod TEXT;");
 
     }
 
@@ -992,6 +998,162 @@ public class DBAccessHelper extends SQLiteOpenHelper {
      */
     public Cursor getAllSongsByArtist(String artistName) {
         String selection = SONG_ARTIST + "=" + "'" + artistName.replace("'", "''") + "'";
+        return getDatabase().query(MUSIC_LIBRARY_TABLE, null, selection, null, null, null, null);
+
+    }
+
+    /**
+     * Returns a selection cursor of all unique weather.
+     */
+    public Cursor getAllUniqueWeather(String selection) {
+        String selectDistinctQuery = "SELECT DISTINCT(" + SONG_WEATHER + "), "
+                + _ID + ", " + SONG_FILE_PATH + ", " + ARTIST_ART_LOCATION
+                + ", " + BLACKLIST_STATUS + ", " + ALBUMS_COUNT + ", "
+                + SONG_SOURCE + ", " + SONG_ALBUM_ART_PATH + ", "
+                + SONG_DURATION + " FROM " + MUSIC_LIBRARY_TABLE
+                + " WHERE " + BLACKLIST_STATUS + "=" + "'"
+                + "0" + "'" + selection + " GROUP BY "
+                + SONG_WEATHER + " ORDER BY " + SONG_WEATHER
+                + " ASC";
+
+        return getDatabase().rawQuery(selectDistinctQuery, null);
+
+    }
+
+    /**
+     * Returns a selection cursor of all unique weather in the
+     * specified library. The library should be specified in the
+     * selection parameter.
+     */
+    public Cursor getAllUniqueWeatherInLibrary(String selection) {
+        String selectDistinctQuery = "SELECT DISTINCT(" + SONG_WEATHER + "), "
+                + MUSIC_LIBRARY_TABLE + "." + _ID + ", "
+                + SONG_FILE_PATH + ", " + ARTIST_ART_LOCATION + ", "
+                + SONG_SOURCE + ", " + ALBUMS_COUNT + ", " + SONG_DURATION + ", "
+                + SONG_ALBUM_ART_PATH + " FROM " + MUSIC_LIBRARY_TABLE
+                + " INNER JOIN " + DBAccessHelper.LIBRARY_NAME
+                + " ON (" + MUSIC_LIBRARY_TABLE + "." + _ID + "="
+                + DBAccessHelper.LIBRARY_NAME + "."
+                + DBAccessHelper.SONG_ID + ") WHERE "
+                + MUSIC_LIBRARY_TABLE + "." + BLACKLIST_STATUS + "="
+                + "'" + "0" + "'" + selection + " GROUP BY "
+                + MUSIC_LIBRARY_TABLE + "." + SONG_WEATHER + " ORDER BY "
+                + MUSIC_LIBRARY_TABLE + "." + SONG_WEATHER
+                + " ASC";
+
+        return getDatabase().rawQuery(selectDistinctQuery, null);
+
+    }
+
+    /**
+     * Returns a cursor of all songs by the specified weather.
+     */
+    public Cursor getAllSongsByWeather(String weather) {
+        String selection = SONG_WEATHER + "=" + "'" + weather.replace("'", "''") + "'";
+        return getDatabase().query(MUSIC_LIBRARY_TABLE, null, selection, null, null, null, null);
+
+    }
+
+    /**
+     * Returns a selection cursor of all unique bpm.
+     */
+    public Cursor getAllUniqueBpm(String selection) {
+        String selectDistinctQuery = "SELECT DISTINCT(" + SONG_BPM + "), "
+                + _ID + ", " + SONG_FILE_PATH + ", " + ARTIST_ART_LOCATION
+                + ", " + BLACKLIST_STATUS + ", " + ALBUMS_COUNT + ", "
+                + SONG_SOURCE + ", " + SONG_ALBUM_ART_PATH + ", "
+                + SONG_DURATION + " FROM " + MUSIC_LIBRARY_TABLE
+                + " WHERE " + BLACKLIST_STATUS + "=" + "'"
+                + "0" + "'" + selection + " GROUP BY "
+                + SONG_BPM + " ORDER BY " + SONG_BPM
+                + " ASC";
+
+        return getDatabase().rawQuery(selectDistinctQuery, null);
+
+    }
+
+    /**
+     * Returns a selection cursor of all unique bpm in the
+     * specified library. The library should be specified in the
+     * selection parameter.
+     */
+    public Cursor getAllUniqueBpmInLibrary(String selection) {
+        String selectDistinctQuery = "SELECT DISTINCT(" + SONG_BPM + "), "
+                + MUSIC_LIBRARY_TABLE + "." + _ID + ", "
+                + SONG_FILE_PATH + ", " + ARTIST_ART_LOCATION + ", "
+                + SONG_SOURCE + ", " + ALBUMS_COUNT + ", " + SONG_DURATION + ", "
+                + SONG_ALBUM_ART_PATH + " FROM " + MUSIC_LIBRARY_TABLE
+                + " INNER JOIN " + DBAccessHelper.LIBRARY_NAME
+                + " ON (" + MUSIC_LIBRARY_TABLE + "." + _ID + "="
+                + DBAccessHelper.LIBRARY_NAME + "."
+                + DBAccessHelper.SONG_ID + ") WHERE "
+                + MUSIC_LIBRARY_TABLE + "." + BLACKLIST_STATUS + "="
+                + "'" + "0" + "'" + selection + " GROUP BY "
+                + MUSIC_LIBRARY_TABLE + "." + SONG_BPM + " ORDER BY "
+                + MUSIC_LIBRARY_TABLE + "." + SONG_BPM
+                + " ASC";
+
+        return getDatabase().rawQuery(selectDistinctQuery, null);
+
+    }
+
+    /**
+     * Returns a cursor of all songs by the specified bpm.
+     */
+    public Cursor getAllSongsByBpm(String bpm) {
+        String selection = SONG_BPM + "=" + "'" + bpm.replace("'", "''") + "'";
+        return getDatabase().query(MUSIC_LIBRARY_TABLE, null, selection, null, null, null, null);
+
+    }
+
+    /**
+     * Returns a selection cursor of all unique tod.
+     */
+    public Cursor getAllUniqueTod(String selection) {
+        String selectDistinctQuery = "SELECT DISTINCT(" + SONG_TOD + "), "
+                + _ID + ", " + SONG_FILE_PATH + ", " + ARTIST_ART_LOCATION
+                + ", " + BLACKLIST_STATUS + ", " + ALBUMS_COUNT + ", "
+                + SONG_SOURCE + ", " + SONG_ALBUM_ART_PATH + ", "
+                + SONG_DURATION + " FROM " + MUSIC_LIBRARY_TABLE
+                + " WHERE " + BLACKLIST_STATUS + "=" + "'"
+                + "0" + "'" + selection + " GROUP BY "
+                + SONG_TOD + " ORDER BY " + SONG_TOD
+                + " ASC";
+
+        return getDatabase().rawQuery(selectDistinctQuery, null);
+
+    }
+
+    /**
+     * Returns a selection cursor of all unique tod in the
+     * specified library. The library should be specified in the
+     * selection parameter.
+     */
+    public Cursor getAllUniqueTodInLibrary(String selection) {
+        String selectDistinctQuery = "SELECT DISTINCT(" + SONG_TOD + "), "
+                + MUSIC_LIBRARY_TABLE + "." + _ID + ", "
+                + SONG_FILE_PATH + ", " + ARTIST_ART_LOCATION + ", "
+                + SONG_SOURCE + ", " + ALBUMS_COUNT + ", " + SONG_DURATION + ", "
+                + SONG_ALBUM_ART_PATH + " FROM " + MUSIC_LIBRARY_TABLE
+                + " INNER JOIN " + DBAccessHelper.LIBRARY_NAME
+                + " ON (" + MUSIC_LIBRARY_TABLE + "." + _ID + "="
+                + DBAccessHelper.LIBRARY_NAME + "."
+                + DBAccessHelper.SONG_ID + ") WHERE "
+                + MUSIC_LIBRARY_TABLE + "." + BLACKLIST_STATUS + "="
+                + "'" + "0" + "'" + selection + " GROUP BY "
+                + MUSIC_LIBRARY_TABLE + "." + SONG_TOD + " ORDER BY "
+                + MUSIC_LIBRARY_TABLE + "." + SONG_TOD
+                + " ASC";
+
+        return getDatabase().rawQuery(selectDistinctQuery, null);
+
+    }
+
+    /**
+     * Returns a cursor of all songs by the specified tod.
+     */
+    public Cursor getAllSongsByTod(String tod) {
+        String selection = SONG_TOD + "=" + "'" + tod.replace("'", "''") + "'";
         return getDatabase().query(MUSIC_LIBRARY_TABLE, null, selection, null, null, null, null);
 
     }

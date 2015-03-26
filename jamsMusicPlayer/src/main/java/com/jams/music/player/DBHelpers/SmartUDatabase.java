@@ -11,7 +11,7 @@ import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
  * Created by bidyut on 3/26/15.
  */
 public class SmartUDatabase extends SQLiteAssetHelper {
-    private static final String DATABASE_NAME = "TestSmart.db";
+    private static final String DATABASE_NAME = "SmartDBSample.db";
     private static final int DATABASE_VERSION = 1;
 
     public SmartUDatabase(Context context) {
@@ -22,8 +22,8 @@ public class SmartUDatabase extends SQLiteAssetHelper {
         SQLiteDatabase db = getReadableDatabase();
         SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
 
-        String[] sqlSelect = {"TITLE", "WEATHER", "BPM", "TOD"};
-        String sqlTables = "SmartTable";
+        String[] sqlSelect = {"Title", "Weather", "Bpm", "Tod"};
+        String sqlTables = "SmartDBSample";
 
         qb.setTables(sqlTables);
         Cursor c = qb.query(db, sqlSelect, null, null,

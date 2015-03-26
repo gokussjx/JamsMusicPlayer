@@ -318,6 +318,9 @@ public class GridViewCardsAdapter extends SimpleCursorAdapter implements Scrolla
                             null,
                             null,
                             null,
+                            null,
+                            null,
+                            null,
                             null);
                     task.execute();
                     break;
@@ -326,6 +329,9 @@ public class GridViewCardsAdapter extends SimpleCursorAdapter implements Scrolla
                             mGridViewFragment,
                             "ARTIST",
                             mName,
+                            null,
+                            null,
+                            null,
                             null,
                             null,
                             null,

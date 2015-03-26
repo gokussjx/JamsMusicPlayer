@@ -37,6 +37,9 @@ public class AsyncAddToQueueTask extends AsyncTask<Boolean, Integer, Boolean> {
     private String mAlbumName;
     private String mSongTitle;
     private String mGenreName;
+    private String mWeather;
+    private String mBpm;
+    private String mTod;
     private String mPlaylistId;
     private String mPlaylistName;
     private String mAlbumArtistName;
@@ -44,7 +47,7 @@ public class AsyncAddToQueueTask extends AsyncTask<Boolean, Integer, Boolean> {
     private Fragment mFragment;
     private Cursor mCursor;
     private String mEnqueueType;
-    private int originalPlaybackIndecesSize = 0;
+    private int originalPlaybackIndicesSize = 0;
     private boolean mPlayNext = false;
     private String mPlayingNext = "";
 
@@ -57,7 +60,10 @@ public class AsyncAddToQueueTask extends AsyncTask<Boolean, Integer, Boolean> {
                                String genreName,
                                String playlistId,
                                String playlistName,
-                               String albumArtistName) {
+                               String albumArtistName,
+                               String weather,
+                               String bpm,
+                               String tod) {
 
         mContext = context;
         mApp = (Common) mContext;
@@ -69,12 +75,15 @@ public class AsyncAddToQueueTask extends AsyncTask<Boolean, Integer, Boolean> {
         mPlaylistId = playlistId;
         mPlaylistName = playlistName;
         mAlbumArtistName = albumArtistName;
+        mWeather = weather;
+        mBpm = bpm;
+        mTod = tod;
 
         mFragment = fragment;
         mEnqueueType = enqueueType;
 
         if (mApp.getService().getPlaybackIndecesList() != null) {
-            originalPlaybackIndecesSize = mApp.getService().getPlaybackIndecesList().size();
+            originalPlaybackIndicesSize = mApp.getService().getPlaybackIndecesList().size();
         }
 
     }
@@ -233,6 +242,81 @@ public class AsyncAddToQueueTask extends AsyncTask<Boolean, Integer, Boolean> {
                     DBAccessHelper.SONG_TRACK_NUMBER + "*1 ASC");
 
             mPlayingNext = mAlbumName;
+        } else if (mEnqueueType.equals("WEATHER")) {
+
+            String selection = null;
+            if (mApp.isGooglePlayMusicEnabled()) {
+                selection = DBAccessHelper.SONG_ARTIST + "=" + "'" + mArtistName + "'" + " AND "
+                        + DBAccessHelper.SONG_ALBUM + "=" + "'" + mAlbumName + "'" + " AND "
+                        + DBAccessHelper.SONG_WEATHER + "=" + "'" + mWeather + "'" + " AND "
+                        + DBAccessHelper.BLACKLIST_STATUS + "=" + "'FALSE'";
+            } else {
+                selection = DBAccessHelper.SONG_ARTIST + "=" + "'" + mArtistName + "'" + " AND "
+                        + DBAccessHelper.SONG_ALBUM + "=" + "'" + mAlbumName + "'" + " AND "
+                        + DBAccessHelper.SONG_WEATHER + "=" + "'" + mWeather + "'" + " AND "
+                        + DBAccessHelper.BLACKLIST_STATUS + "=" + "'FALSE'" + " AND "
+                        + DBAccessHelper.SONG_SOURCE + "<>" + "'GOOGLE_PLAY_MUSIC'";
+            }
+
+            mCursor = dbHelper.getReadableDatabase().query(DBAccessHelper.MUSIC_LIBRARY_TABLE,
+                    null,
+                    selection,
+                    null,
+                    null,
+                    null,
+                    DBAccessHelper.SONG_TRACK_NUMBER + "*1 ASC");
+
+            mPlayingNext = mWeather;
+        } else if (mEnqueueType.equals("BPM")) {
+
+            String selection = null;
+            if (mApp.isGooglePlayMusicEnabled()) {
+                selection = DBAccessHelper.SONG_ARTIST + "=" + "'" + mArtistName + "'" + " AND "
+                        + DBAccessHelper.SONG_ALBUM + "=" + "'" + mAlbumName + "'" + " AND "
+                        + DBAccessHelper.SONG_BPM + "=" + "'" + mBpm + "'" + " AND "
+                        + DBAccessHelper.BLACKLIST_STATUS + "=" + "'FALSE'";
+            } else {
+                selection = DBAccessHelper.SONG_ARTIST + "=" + "'" + mArtistName + "'" + " AND "
+                        + DBAccessHelper.SONG_ALBUM + "=" + "'" + mAlbumName + "'" + " AND "
+                        + DBAccessHelper.SONG_BPM + "=" + "'" + mBpm + "'" + " AND "
+                        + DBAccessHelper.BLACKLIST_STATUS + "=" + "'FALSE'" + " AND "
+                        + DBAccessHelper.SONG_SOURCE + "<>" + "'GOOGLE_PLAY_MUSIC'";
+            }
+
+            mCursor = dbHelper.getReadableDatabase().query(DBAccessHelper.MUSIC_LIBRARY_TABLE,
+                    null,
+                    selection,
+                    null,
+                    null,
+                    null,
+                    DBAccessHelper.SONG_TRACK_NUMBER + "*1 ASC");
+
+            mPlayingNext = mBpm;
+        } else if (mEnqueueType.equals("WEATHER")) {
+
+            String selection = null;
+            if (mApp.isGooglePlayMusicEnabled()) {
+                selection = DBAccessHelper.SONG_ARTIST + "=" + "'" + mArtistName + "'" + " AND "
+                        + DBAccessHelper.SONG_ALBUM + "=" + "'" + mAlbumName + "'" + " AND "
+                        + DBAccessHelper.SONG_TOD + "=" + "'" + mTod + "'" + " AND "
+                        + DBAccessHelper.BLACKLIST_STATUS + "=" + "'FALSE'";
+            } else {
+                selection = DBAccessHelper.SONG_ARTIST + "=" + "'" + mArtistName + "'" + " AND "
+                        + DBAccessHelper.SONG_ALBUM + "=" + "'" + mAlbumName + "'" + " AND "
+                        + DBAccessHelper.SONG_TOD + "=" + "'" + mTod + "'" + " AND "
+                        + DBAccessHelper.BLACKLIST_STATUS + "=" + "'FALSE'" + " AND "
+                        + DBAccessHelper.SONG_SOURCE + "<>" + "'GOOGLE_PLAY_MUSIC'";
+            }
+
+            mCursor = dbHelper.getReadableDatabase().query(DBAccessHelper.MUSIC_LIBRARY_TABLE,
+                    null,
+                    selection,
+                    null,
+                    null,
+                    null,
+                    DBAccessHelper.SONG_TRACK_NUMBER + "*1 ASC");
+
+            mPlayingNext = mTod;
         } else if (mEnqueueType.equals("ALBUM_BY_ALBUM_ARTIST")) {
             String selection = null;
             if (mApp.isGooglePlayMusicEnabled()) {
@@ -386,6 +470,9 @@ public class AsyncAddToQueueTask extends AsyncTask<Boolean, Integer, Boolean> {
                     } else if (mEnqueueType.equals("GENRE")) {
                         intent.putExtra("PLAY_ALL", "GENRE");
                         intent.putExtra("CALLING_FRAGMENT", "GENRES_FLIPPED_FRAGMENT");
+                    } else if (mEnqueueType.equals("SMART PLAYLISTS")) {
+                        intent.putExtra("PLAY_ALL", "SMART PLAYLISTS");
+                        intent.putExtra("CALLING_FRAGMENT", "SMART_PLAYLISTS_FLIPPED_FRAGMENT");
                     } else if (mEnqueueType.equals("ALBUM_ARTIST")) {
                         intent.putExtra("CALLING_FRAGMENT", "ALBUM_ARTISTS_FLIPPED_FRAGMENT");
                         intent.putExtra("PLAY_ALL", "ALBUM_ARTIST");
@@ -400,6 +487,9 @@ public class AsyncAddToQueueTask extends AsyncTask<Boolean, Integer, Boolean> {
                     intent.putExtra("SELECTED_SONG_DURATION", mCursor.getString(mCursor.getColumnIndex(DBAccessHelper.SONG_DURATION)));
                     intent.putExtra("SELECTED_SONG_TITLE", mCursor.getString(mCursor.getColumnIndex(DBAccessHelper.SONG_TITLE)));
                     intent.putExtra("SELECTED_SONG_ARTIST", mCursor.getString(mCursor.getColumnIndex(DBAccessHelper.SONG_ARTIST)));
+                    intent.putExtra("SELECTED_SONG_WEATHER", mCursor.getString(mCursor.getColumnIndex(DBAccessHelper.SONG_WEATHER)));
+                    intent.putExtra("SELECTED_SONG_BPM", mCursor.getString(mCursor.getColumnIndex(DBAccessHelper.SONG_BPM)));
+                    intent.putExtra("SELECTED_SONG_TOD", mCursor.getString(mCursor.getColumnIndex(DBAccessHelper.SONG_TOD)));
                     intent.putExtra("SELECTED_SONG_ALBUM", mCursor.getString(mCursor.getColumnIndex(DBAccessHelper.SONG_ALBUM)));
                     intent.putExtra("SELECTED_SONG_ALBUM_ARTIST", mCursor.getString(mCursor.getColumnIndex(DBAccessHelper.SONG_ALBUM_ARTIST)));
                     intent.putExtra("SONG_SELECTED_INDEX", 0);
@@ -453,7 +543,7 @@ public class AsyncAddToQueueTask extends AsyncTask<Boolean, Integer, Boolean> {
         intent.putExtra("INIT_QUEUE_DRAWER_ADAPTER", true);
 
         //Start preparing the next song if the current song is the last track.
-        if (mApp.getService().getCurrentSongIndex() == (originalPlaybackIndecesSize - 1)) {
+        if (mApp.getService().getCurrentSongIndex() == (originalPlaybackIndicesSize - 1)) {
 
             //Check if the service is running.
             if (mApp.isServiceRunning()) {

@@ -268,6 +268,9 @@ public class ListViewCardsAdapter extends SimpleCursorAdapter implements Scrolla
                             null,
                             null,
                             null,
+                            null,
+                            null,
+                            null,
                             null);
                     task.execute();
                     break;
@@ -276,6 +279,9 @@ public class ListViewCardsAdapter extends SimpleCursorAdapter implements Scrolla
                             mListViewFragment,
                             "ARTIST",
                             mName,
+                            null,
+                            null,
+                            null,
                             null,
                             null,
                             null,
