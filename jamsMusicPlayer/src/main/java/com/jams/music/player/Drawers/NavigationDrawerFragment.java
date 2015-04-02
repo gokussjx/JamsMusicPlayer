@@ -41,7 +41,6 @@ import com.jams.music.player.MainActivity.Callbacks;
 import com.jams.music.player.MainActivity.MainActivity;
 import com.jams.music.player.R;
 import com.jams.music.player.SettingsActivity.SettingsActivity;
-import com.jams.music.player.SmartU.SmartUWeather;
 import com.jams.music.player.Utils.Common;
 
 import java.util.ArrayList;
@@ -64,6 +63,144 @@ public class NavigationDrawerFragment extends Fragment {
     private NavigationDrawerLibrariesAdapter mLibrariesAdapter;
     private NavigationDrawerAdapter mBrowsersAdapter;
     private Handler mHandler;
+    private AdapterView.OnItemSelectedListener librariesItemSelectedListener = new AdapterView.OnItemSelectedListener() {
+
+        @Override
+        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+            if (mApp.getCurrentLibraryIndex() == position)
+                return;
+
+            mApp.getSharedPreferences().edit().putString(Common.CURRENT_LIBRARY,
+                    (String) view.getTag(R.string.library_name)).commit();
+
+            mApp.getSharedPreferences().edit().putInt(Common.CURRENT_LIBRARY_POSITION, position).commit();
+
+            //Update the fragment.
+            ((MainActivity) getActivity()).loadFragment(null);
+
+            //Reset the ActionBar after 500ms.
+            mHandler.postDelayed(new Runnable() {
+
+                @Override
+                public void run() {
+                    getActivity().invalidateOptionsMenu();
+
+                }
+
+            }, 500);
+
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> parent) {
+
+        }
+
+    };
+    private OnItemClickListener browsersClickListener = new OnItemClickListener() {
+
+        @Override
+        public void onItemClick(AdapterView<?> adapterView, View view, int position, long dbID) {
+            Intent intent;
+            switch (position) {
+                case 0:
+                    if (mContext instanceof Callbacks)
+                        ((MainActivity) getActivity()).setCurrentFragmentId(Common.ARTISTS_FRAGMENT);
+                    break;
+                case 1:
+                    if (mContext instanceof Callbacks)
+                        ((MainActivity) getActivity()).setCurrentFragmentId(Common.ALBUM_ARTISTS_FRAGMENT);
+                    break;
+                case 2:
+                    if (mContext instanceof Callbacks)
+                        ((MainActivity) getActivity()).setCurrentFragmentId(Common.ALBUMS_FRAGMENT);
+                    break;
+                case 3:
+                    if (mContext instanceof MainActivity)
+                        ((MainActivity) getActivity()).setCurrentFragmentId(Common.SONGS_FRAGMENT);
+                    break;
+                case 4:
+                    if (mContext instanceof MainActivity)
+                        ((MainActivity) getActivity()).setCurrentFragmentId(Common.PLAYLISTS_FRAGMENT);
+                    break;
+//                case 5:
+////                    if(mContext instanceof MainActivity) ((MainActivity) getActivity()).setCurrentFragmentId(Common.SMART_PLAYLISTS_FRAGMENT);
+////                    break;
+//                    intent = new Intent(getActivity(), SmartUWeather.class);
+//                    startActivity(intent);
+//                    break;
+                case 5:
+                    if (mContext instanceof Callbacks)
+                        ((MainActivity) getActivity()).setCurrentFragmentId(Common.SMART_WEATHER_FRAGMENT);
+                    break;
+                case 6:
+                    if (mContext instanceof Callbacks)
+                        ((MainActivity) getActivity()).setCurrentFragmentId(Common.SMART_TOD_FRAGMENT);
+                    break;
+                case 7:
+                    if (mContext instanceof Callbacks)
+                        ((MainActivity) getActivity()).setCurrentFragmentId(Common.SMART_BPM_FRAGMENT);
+                    break;
+                case 8:
+                    if (mContext instanceof MainActivity)
+                        ((MainActivity) getActivity()).setCurrentFragmentId(Common.GENRES_FRAGMENT);
+                    break;
+                case 9:
+                    if (mContext instanceof MainActivity)
+                        ((MainActivity) getActivity()).setCurrentFragmentId(Common.FOLDERS_FRAGMENT);
+                    break;
+                case 10:
+                    intent = new Intent(getActivity(), SettingsActivity.class);
+                    startActivity(intent);
+                    break;
+            }
+
+            //Update the adapter to reflect the new fragment.
+            List<String> titles = Arrays.asList(getActivity().getResources().getStringArray(R.array.sliding_menu_array));
+            mBrowsersAdapter = new NavigationDrawerAdapter(getActivity(), new ArrayList<String>(titles));
+            browsersListView.setAdapter(mBrowsersAdapter);
+
+            //Update the fragment.
+            if (mContext instanceof Callbacks) ((MainActivity) getActivity()).loadFragment(null);
+
+            //Reset the ActionBar after 500ms.
+            mHandler.postDelayed(new Runnable() {
+
+                @Override
+                public void run() {
+                    getActivity().invalidateOptionsMenu();
+
+                }
+
+            }, 500);
+
+        }
+
+    };
+
+    /**
+     * Clips ListViews to fit within the drawer's boundaries.
+     */
+    public static void setListViewHeightBasedOnChildren(ListView listView) {
+        ListAdapter listAdapter = listView.getAdapter();
+        if (listAdapter == null) {
+            // pre-condition
+            return;
+        }
+
+        int totalHeight = 0;
+        for (int i = 0; i < listAdapter.getCount(); i++) {
+            View listItem = listAdapter.getView(i, null, listView);
+            listItem.measure(0, 0);
+            totalHeight += listItem.getMeasuredHeight();
+        }
+
+        ViewGroup.LayoutParams params = listView.getLayoutParams();
+        params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
+        listView.setLayoutParams(params);
+        listView.requestLayout();
+    }
 
     @SuppressWarnings("deprecation")
     @SuppressLint("NewApi")
@@ -110,127 +247,6 @@ public class NavigationDrawerFragment extends Fragment {
         }
 
         return rootView;
-    }
-
-    private AdapterView.OnItemSelectedListener librariesItemSelectedListener = new AdapterView.OnItemSelectedListener() {
-
-        @Override
-        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
-            if (mApp.getCurrentLibraryIndex() == position)
-                return;
-
-            mApp.getSharedPreferences().edit().putString(Common.CURRENT_LIBRARY,
-                    (String) view.getTag(R.string.library_name)).commit();
-
-            mApp.getSharedPreferences().edit().putInt(Common.CURRENT_LIBRARY_POSITION, position).commit();
-
-            //Update the fragment.
-            ((MainActivity) getActivity()).loadFragment(null);
-
-            //Reset the ActionBar after 500ms.
-            mHandler.postDelayed(new Runnable() {
-
-                @Override
-                public void run() {
-                    getActivity().invalidateOptionsMenu();
-
-                }
-
-            }, 500);
-
-        }
-
-        @Override
-        public void onNothingSelected(AdapterView<?> parent) {
-
-        }
-
-    };
-
-    private OnItemClickListener browsersClickListener = new OnItemClickListener() {
-
-        @Override
-        public void onItemClick(AdapterView<?> adapterView, View view, int position, long dbID) {
-            Intent intent;
-            switch (position) {
-                case 0:
-                    if(mContext instanceof Callbacks) ((MainActivity) getActivity()).setCurrentFragmentId(Common.ARTISTS_FRAGMENT);
-                    break;
-                case 1:
-                    if(mContext instanceof Callbacks) ((MainActivity) getActivity()).setCurrentFragmentId(Common.ALBUM_ARTISTS_FRAGMENT);
-                    break;
-                case 2:
-                    if(mContext instanceof Callbacks) ((MainActivity) getActivity()).setCurrentFragmentId(Common.ALBUMS_FRAGMENT);
-                    break;
-                case 3:
-                    if(mContext instanceof MainActivity) ((MainActivity) getActivity()).setCurrentFragmentId(Common.SONGS_FRAGMENT);
-                    break;
-                case 4:
-                    if(mContext instanceof MainActivity) ((MainActivity) getActivity()).setCurrentFragmentId(Common.PLAYLISTS_FRAGMENT);
-                    break;
-                case 5:
-//                    if(mContext instanceof MainActivity) ((MainActivity) getActivity()).setCurrentFragmentId(Common.SMART_PLAYLISTS_FRAGMENT);
-//                    break;
-                    intent = new Intent(getActivity(), SmartUWeather.class);
-                    startActivity(intent);
-                    break;
-                case 6:
-                    if(mContext instanceof MainActivity) ((MainActivity) getActivity()).setCurrentFragmentId(Common.GENRES_FRAGMENT);
-                    break;
-                case 7:
-                    if(mContext instanceof MainActivity) ((MainActivity) getActivity()).setCurrentFragmentId(Common.FOLDERS_FRAGMENT);
-                    break;
-                case 8:
-                    intent = new Intent(getActivity(), SettingsActivity.class);
-                    startActivity(intent);
-                    break;
-            }
-
-            //Update the adapter to reflect the new fragment.
-            List<String> titles = Arrays.asList(getActivity().getResources().getStringArray(R.array.sliding_menu_array));
-            mBrowsersAdapter = new NavigationDrawerAdapter(getActivity(), new ArrayList<String>(titles));
-            browsersListView.setAdapter(mBrowsersAdapter);
-
-            //Update the fragment.
-            if(mContext instanceof Callbacks) ((MainActivity) getActivity()).loadFragment(null);
-
-            //Reset the ActionBar after 500ms.
-            mHandler.postDelayed(new Runnable() {
-
-                @Override
-                public void run() {
-                    getActivity().invalidateOptionsMenu();
-
-                }
-
-            }, 500);
-
-        }
-
-    };
-
-    /**
-     * Clips ListViews to fit within the drawer's boundaries.
-     */
-    public static void setListViewHeightBasedOnChildren(ListView listView) {
-        ListAdapter listAdapter = listView.getAdapter();
-        if (listAdapter == null) {
-            // pre-condition
-            return;
-        }
-
-        int totalHeight = 0;
-        for (int i = 0; i < listAdapter.getCount(); i++) {
-            View listItem = listAdapter.getView(i, null, listView);
-            listItem.measure(0, 0);
-            totalHeight += listItem.getMeasuredHeight();
-        }
-
-        ViewGroup.LayoutParams params = listView.getLayoutParams();
-        params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
-        listView.setLayoutParams(params);
-        listView.requestLayout();
     }
 
     @Override

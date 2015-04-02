@@ -3,6 +3,7 @@ package com.jams.music.player.SmartU;
 import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.widget.Button;
@@ -18,6 +19,8 @@ import com.jams.music.player.Utils.Common;
 
 import org.apache.commons.lang3.text.WordUtils;
 
+import java.util.Calendar;
+
 import zh.wang.android.apis.yweathergetter4a.WeatherInfo;
 import zh.wang.android.apis.yweathergetter4a.YahooWeather;
 import zh.wang.android.apis.yweathergetter4a.YahooWeatherExceptionListener;
@@ -28,6 +31,8 @@ import zh.wang.android.apis.yweathergetter4a.YahooWeatherInfoListener;
  */
 public class SmartUWeather extends Activity implements YahooWeatherInfoListener, YahooWeatherExceptionListener {
 
+    boolean activityRunning;
+    private SensorManager sensorManager;
     private TextView mTvWeather;
     private TextView mTvTitle;
     private Button mBtGetWeather;
@@ -35,13 +40,18 @@ public class SmartUWeather extends Activity implements YahooWeatherInfoListener,
     private EditText mEtAreaOfCity;
     private LinearLayout mWeatherInfosLayout;
     private String mWeather;
+    private String mDaySegment;
+    private int stepCounter = 0;
+    private int counterSteps = 0;
+    private int stepDetector = 0;
 
     private YahooWeather mYahooWeather = YahooWeather.getInstance(5000, 5000, true);
 
     private Context mContext;
     private SmartUWeather mSmartUWeather;
     private Common mApp;
-    private Handler handler;
+    private Handler handlerWeather;
+    private Handler handlerBpm;
     private Cursor songs;
     private SmartUDatabase db;
 
@@ -57,23 +67,23 @@ public class SmartUWeather extends Activity implements YahooWeatherInfoListener,
         db = new SmartUDatabase(this);
 
         try {
-            handler = new Handler();
+            handlerWeather = new Handler();
             final Runnable r = new Runnable() {
                 @Override
                 public void run() {
                     songs = db.getWeathers();
-                    handler.postDelayed(this, 1000);
+                    handlerWeather.postDelayed(this, 1000);
                 }
             };
 
-            handler.postDelayed(r, 1000);
+            handlerWeather.postDelayed(r, 1000);
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         //Set the ActionBar background and text color.
         getActionBar().setBackgroundDrawable(UIElementsHelper.getGeneralActionBarBackground(mContext));
-        getActionBar().setTitle(R.string.smart_playlists);
+//**        getActionBar().setTitle(R.string.smart_playlists);
         int titleId = getResources().getIdentifier("action_bar_title", "id", "android");
         TextView actionBarText = (TextView) findViewById(titleId);
         actionBarText.setTextColor(0xFFFFFFFF);
@@ -110,13 +120,13 @@ public class SmartUWeather extends Activity implements YahooWeatherInfoListener,
 //        });
         searchByGPS();
 
-    }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        songs.close();
-        db.close();
+        Calendar now = Calendar.getInstance();
+        int meridian = now.get(Calendar.AM_PM);
+        mDaySegment = getDaySegment(now, meridian);
+
+        Toast.makeText(this, "Try the " + mDaySegment + " Music!", Toast.LENGTH_LONG).show();
+
     }
 
     private void searchByGPS() {
@@ -163,6 +173,26 @@ public class SmartUWeather extends Activity implements YahooWeatherInfoListener,
         }
     }
 
+    public String getDaySegment(Calendar now, int meridian) {
+        int hour = now.get(Calendar.HOUR);
+
+        if (meridian == Calendar.PM &&
+                hour >= 1 &&
+                hour < 12) {
+            hour += 12;
+        }
+
+        if (hour >= 5 && hour < 12) {
+            return "Morning";
+        } else if (hour >= 12 && hour < 17) {
+            return "Afternoon";
+        } else if (hour >= 17 && hour < 20) {
+            return "Evening";
+        } else {
+            return "Night";
+        }
+    }
+
     public String getSmartWeather(String weather) {
         weather = weather.toLowerCase();
 
@@ -199,6 +229,7 @@ public class SmartUWeather extends Activity implements YahooWeatherInfoListener,
         }
     }
 
+
     @Override
     public void onFailConnection(final Exception e) {
         // TODO Auto-generated method stub
@@ -215,5 +246,12 @@ public class SmartUWeather extends Activity implements YahooWeatherInfoListener,
     public void onFailFindLocation(final Exception e) {
         // TODO Auto-generated method stub
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        songs.close();
+        db.close();
     }
 }

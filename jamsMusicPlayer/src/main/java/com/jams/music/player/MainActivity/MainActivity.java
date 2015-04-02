@@ -45,16 +45,31 @@ import com.jams.music.player.GridViewFragment.GridViewFragment;
 import com.jams.music.player.Helpers.UIElementsHelper;
 import com.jams.music.player.ListViewFragment.ListViewFragment;
 import com.jams.music.player.R;
-import com.jams.music.player.SmartUFragment.SmartUFragment;
 import com.jams.music.player.Utils.Common;
 
 public class MainActivity extends FragmentActivity implements Callbacks{
 
+    //Layout flags.
+    public static final String CURRENT_FRAGMENT = "CurrentFragment";
+    public static final String ARTISTS_FRAGMENT_LAYOUT = "ArtistsFragmentLayout";
+    public static final String ALBUM_ARTISTS_FRAGMENT_LAYOUT = "AlbumArtistsFragmentLayout";
+    public static final String ALBUMS_FRAGMENT_LAYOUT = "AlbumsFragmentLayout";
+    public static final String PLAYLISTS_FRAGMENT_LAYOUT = "PlaylistsFragmentLayout";
+    //    public static final String SMART_PLAYLISTS_FRAGMENT_LAYOUT = "SmartPlaylistsFragmentLayout";
+    public static final String SMART_WEATHER_FRAGMENT_LAYOUT = "SmartWeatherFragmentLayout";
+    public static final String SMART_TOD_FRAGMENT_LAYOUT = "SmartTodFragmentLayout";
+    public static final String SMART_BPM_FRAGMENT_LAYOUT = "SmartBpmFragmentLayout";
+    public static final String GENRES_FRAGMENT_LAYOUT = "GenresFragmentLayout";
+    public static final String FOLDERS_FRAGMENT_LAYOUT = "FoldersFragmentLayout";
+    public static final String FRAGMENT_HEADER = "FragmentHeader";
+    public static final int LIST_LAYOUT = 0;
+    public static final int GRID_LAYOUT = 1;
+    public static int mCurrentFragmentId;
+    public static int mCurrentFragmentLayout;
     //Context and Common object(s).
     private Context mContext;
     private Common mApp;
     private Callbacks mCallbacks;
-
     //UI elements.
     private FrameLayout mDrawerParentLayout;
     private DrawerLayout mDrawerLayout;
@@ -63,24 +78,8 @@ public class MainActivity extends FragmentActivity implements Callbacks{
     private ActionBarDrawerToggle mDrawerToggle;
     private QueueDrawerFragment mQueueDrawerFragment;
     private Menu mMenu;
-
     //Current fragment params.
     private Fragment mCurrentFragment;
-    public static int mCurrentFragmentId;
-    public static int mCurrentFragmentLayout;
-
-    //Layout flags.
-    public static final String CURRENT_FRAGMENT = "CurrentFragment";
-    public static final String ARTISTS_FRAGMENT_LAYOUT = "ArtistsFragmentLayout";
-    public static final String ALBUM_ARTISTS_FRAGMENT_LAYOUT = "AlbumArtistsFragmentLayout";
-    public static final String ALBUMS_FRAGMENT_LAYOUT = "AlbumsFragmentLayout";
-    public static final String PLAYLISTS_FRAGMENT_LAYOUT = "PlaylistsFragmentLayout";
-    public static final String SMART_PLAYLISTS_FRAGMENT_LAYOUT = "SmartPlaylistsFragmentLayout";
-    public static final String GENRES_FRAGMENT_LAYOUT = "GenresFragmentLayout";
-    public static final String FOLDERS_FRAGMENT_LAYOUT = "FoldersFragmentLayout";
-    public static final String FRAGMENT_HEADER = "FragmentHeader";
-    public static final int LIST_LAYOUT = 0;
-    public static final int GRID_LAYOUT = 1;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -228,9 +227,18 @@ public class MainActivity extends FragmentActivity implements Callbacks{
                 case Common.PLAYLISTS_FRAGMENT:
                     mCurrentFragment = getLayoutFragment(Common.PLAYLISTS_FRAGMENT);
                     break;
-                case Common.SMART_PLAYLISTS_FRAGMENT:
-//                    mCurrentFragment = getLayoutFragment(Common.SMART_PLAYLISTS_FRAGMENT);
-                    mCurrentFragment = new SmartUFragment();
+//                case Common.SMART_PLAYLISTS_FRAGMENT:
+////                    mCurrentFragment = getLayoutFragment(Common.SMART_PLAYLISTS_FRAGMENT);
+//                    mCurrentFragment = new SmartUFragment();
+//                    break;
+                case Common.SMART_WEATHER_FRAGMENT:
+                    mCurrentFragment = getLayoutFragment(Common.SMART_WEATHER_FRAGMENT);
+                    break;
+                case Common.SMART_TOD_FRAGMENT:
+                    mCurrentFragment = getLayoutFragment(Common.SMART_TOD_FRAGMENT);
+                    break;
+                case Common.SMART_BPM_FRAGMENT:
+                    mCurrentFragment = getLayoutFragment(Common.SMART_BPM_FRAGMENT);
                     break;
                 case Common.GENRES_FRAGMENT:
                     mCurrentFragment = getLayoutFragment(Common.GENRES_FRAGMENT);
@@ -281,10 +289,25 @@ public class MainActivity extends FragmentActivity implements Callbacks{
                 bundle.putInt(Common.FRAGMENT_ID, Common.PLAYLISTS_FRAGMENT);
                 bundle.putString(FRAGMENT_HEADER, mContext.getResources().getString(R.string.playlists));
                 break;
-            case Common.SMART_PLAYLISTS_FRAGMENT:
-                mCurrentFragmentLayout = mApp.getSharedPreferences().getInt(SMART_PLAYLISTS_FRAGMENT_LAYOUT, LIST_LAYOUT);
-                bundle.putInt(Common.FRAGMENT_ID, Common.SMART_PLAYLISTS_FRAGMENT);
-                bundle.putString(FRAGMENT_HEADER, mContext.getResources().getString(R.string.smart_playlists));
+//            case Common.SMART_PLAYLISTS_FRAGMENT:
+//                mCurrentFragmentLayout = mApp.getSharedPreferences().getInt(SMART_PLAYLISTS_FRAGMENT_LAYOUT, LIST_LAYOUT);
+//                bundle.putInt(Common.FRAGMENT_ID, Common.SMART_PLAYLISTS_FRAGMENT);
+//                bundle.putString(FRAGMENT_HEADER, mContext.getResources().getString(R.string.smart_playlists));
+//                break;
+            case Common.SMART_WEATHER_FRAGMENT:
+                mCurrentFragmentLayout = mApp.getSharedPreferences().getInt(SMART_WEATHER_FRAGMENT_LAYOUT, GRID_LAYOUT);
+                bundle.putInt(Common.FRAGMENT_ID, Common.SMART_WEATHER_FRAGMENT);
+                bundle.putString(FRAGMENT_HEADER, mContext.getResources().getString(R.string.smart_weather));
+                break;
+            case Common.SMART_TOD_FRAGMENT:
+                mCurrentFragmentLayout = mApp.getSharedPreferences().getInt(SMART_TOD_FRAGMENT_LAYOUT, GRID_LAYOUT);
+                bundle.putInt(Common.FRAGMENT_ID, Common.SMART_TOD_FRAGMENT);
+                bundle.putString(FRAGMENT_HEADER, mContext.getResources().getString(R.string.smart_tod));
+                break;
+            case Common.SMART_BPM_FRAGMENT:
+                mCurrentFragmentLayout = mApp.getSharedPreferences().getInt(SMART_BPM_FRAGMENT_LAYOUT, GRID_LAYOUT);
+                bundle.putInt(Common.FRAGMENT_ID, Common.SMART_BPM_FRAGMENT);
+                bundle.putString(FRAGMENT_HEADER, mContext.getResources().getString(R.string.smart_bpm));
                 break;
             case Common.GENRES_FRAGMENT:
                 mCurrentFragmentLayout = mApp.getSharedPreferences().getInt(GENRES_FRAGMENT_LAYOUT, GRID_LAYOUT);

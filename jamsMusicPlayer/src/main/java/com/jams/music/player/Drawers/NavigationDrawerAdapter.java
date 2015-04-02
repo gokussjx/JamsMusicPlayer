@@ -78,8 +78,17 @@ public class NavigationDrawerAdapter extends ArrayAdapter<String> {
         } else if (MainActivity.mCurrentFragmentId == Common.PLAYLISTS_FRAGMENT &&
                 mTitlesList.get(position).equals(mContext.getResources().getString(R.string.playlists))) {
             holder.title.setTextColor(colors[0]);
-        } else if (MainActivity.mCurrentFragmentId == Common.SMART_PLAYLISTS_FRAGMENT &&
-                mTitlesList.get(position).equals(mContext.getResources().getString(R.string.smart_playlists))) {
+//        } else if (MainActivity.mCurrentFragmentId == Common.SMART_PLAYLISTS_FRAGMENT &&
+//                mTitlesList.get(position).equals(mContext.getResources().getString(R.string.smart_playlists))) {
+//            holder.title.setTextColor(colors[0]);
+        } else if (MainActivity.mCurrentFragmentId == Common.SMART_WEATHER_FRAGMENT &&
+                mTitlesList.get(position).equals(mContext.getResources().getString(R.string.smart_weather))) {
+            holder.title.setTextColor(colors[0]);
+        } else if (MainActivity.mCurrentFragmentId == Common.SMART_TOD_FRAGMENT &&
+                mTitlesList.get(position).equals(mContext.getResources().getString(R.string.smart_tod))) {
+            holder.title.setTextColor(colors[0]);
+        } else if (MainActivity.mCurrentFragmentId == Common.SMART_BPM_FRAGMENT &&
+                mTitlesList.get(position).equals(mContext.getResources().getString(R.string.smart_bpm))) {
             holder.title.setTextColor(colors[0]);
         } else if (MainActivity.mCurrentFragmentId == Common.GENRES_FRAGMENT &&
                 mTitlesList.get(position).equals(mContext.getResources().getString(R.string.genres))) {

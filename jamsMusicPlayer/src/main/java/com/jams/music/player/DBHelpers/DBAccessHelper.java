@@ -37,21 +37,6 @@ import java.util.HashSet;
  */
 public class DBAccessHelper extends SQLiteOpenHelper {
 
-    //Database instance. Will last for the lifetime of the application.
-    private static DBAccessHelper sInstance;
-
-    //Writable database instance.
-    private SQLiteDatabase mDatabase;
-
-    //Commmon utils object.
-    private Common mApp;
-
-    //Database Version.
-    private static final int DATABASE_VERSION = 1;
-
-    //Database Name.
-    private static final String DATABASE_NAME = "Jams.db";
-
     //Common fields.
     public static final String _ID = "_id";
     public static final String SONG_ID = "song_id";
@@ -65,24 +50,19 @@ public class DBAccessHelper extends SQLiteOpenHelper {
     public static final String VIRTUALIZER = "eq_virtualizer";
     public static final String BASS_BOOST = "eq_bass_boost";
     public static final String REVERB = "eq_reverb";
-
     //Music folders table.
     public static final String MUSIC_FOLDERS_TABLE = "MusicFoldersTable";
     public static final String FOLDER_PATH = "folder_path";
     public static final String INCLUDE = "include";
-
     //Equalizer settings table for individual songs.
     public static final String EQUALIZER_TABLE = "EqualizerTable";
-
     //Equalizer presets table.
     public static final String EQUALIZER_PRESETS_TABLE = "EqualizerPresetsTable";
     public static final String PRESET_NAME = "preset_name";
-
     //Custom libraries table.
     public static final String LIBRARIES_TABLE = "LibrariesTable";
     public static final String LIBRARY_NAME = "library_name";
     public static final String LIBRARY_TAG = "library_tag";
-
     //Music library table.
     public static final String MUSIC_LIBRARY_TABLE = "MusicLibraryTable";
     public static final String SONG_TITLE = "title";
@@ -119,7 +99,6 @@ public class DBAccessHelper extends SQLiteOpenHelper {
     public static final String ALBUMS_COUNT = "albums_count";
     public static final String SONGS_COUNT = "songs_count";
     public static final String GENRES_SONG_COUNT = "genres_song_count";
-
     //Playlist fields.
     public static final String PLAYLIST_ID = "playlist_id";
     public static final String PLAYLIST_NAME = "playlist_name";
@@ -128,10 +107,19 @@ public class DBAccessHelper extends SQLiteOpenHelper {
     public static final String PLAYLIST_FOLDER_PATH = "playlist_folder_path";
     public static final String PLAYLIST_SONG_ENTRY_ID = "song_entry_id";
     public static final String PLAYLIST_ORDER = "order";
-
     //Song source values.
     public static final String GMUSIC = "gmusic";
     public static final String LOCAL = "local";
+    //Database Version.
+    private static final int DATABASE_VERSION = 1;
+    //Database Name.
+    private static final String DATABASE_NAME = "Jams.db";
+    //Database instance. Will last for the lifetime of the application.
+    private static DBAccessHelper sInstance;
+    //Writable database instance.
+    private SQLiteDatabase mDatabase;
+    //Commmon utils object.
+    private Common mApp;
 
     public DBAccessHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -778,8 +766,17 @@ public class DBAccessHelper extends SQLiteOpenHelper {
             case Common.SONGS_FRAGMENT:
                 querySelection += " ORDER BY " + SONG_TITLE + " ASC";
                 return getAllSongsSearchable(querySelection);
-            case Common.SMART_PLAYLISTS_FRAGMENT:
-                //TODO case stub.
+//            case Common.SMART_PLAYLISTS_FRAGMENT:
+//                //TODO case stub.
+            case Common.SMART_WEATHER_FRAGMENT:
+                querySelection += " ORDER BY " + SONG_WEATHER + " ASC";
+                return getAllSongsSearchable(querySelection);
+            case Common.SMART_TOD_FRAGMENT:
+                querySelection += " ORDER BY " + SONG_TOD + " ASC";
+                return getAllSongsSearchable(querySelection);
+            case Common.SMART_BPM_FRAGMENT:
+                querySelection += " ORDER BY " + SONG_BPM + " ASC";
+                return getAllSongsSearchable(querySelection);
             case Common.PLAYLISTS_FRAGMENT:
                 //TODO case stub.
             case Common.GENRES_FRAGMENT:
@@ -822,8 +819,14 @@ public class DBAccessHelper extends SQLiteOpenHelper {
             case Common.SONGS_FRAGMENT:
                 querySelection += " ORDER BY " + SONG_TITLE + " ASC";
                 return getAllSongsInLibrarySearchable(querySelection);
-            case Common.SMART_PLAYLISTS_FRAGMENT:
-                //TODO case stub.
+//            case Common.SMART_PLAYLISTS_FRAGMENT:
+//                //TODO case stub.
+            case Common.SMART_WEATHER_FRAGMENT:
+                return getAllUniqueWeatherInLibrary(querySelection);
+            case Common.SMART_TOD_FRAGMENT:
+                return getAllUniqueTodInLibrary(querySelection);
+            case Common.SMART_BPM_FRAGMENT:
+                return getAllUniqueBpmInLibrary(querySelection);
             case Common.PLAYLISTS_FRAGMENT:
                 //TODO case stub.
             case Common.GENRES_FRAGMENT:
