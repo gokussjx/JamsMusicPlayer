@@ -793,6 +793,18 @@ public class DBAccessHelper extends SQLiteOpenHelper {
                 return getAllSongsInAlbumByAlbumArtist(querySelection);
             case Common.ALBUMS_FLIPPED_FRAGMENT:
                 return getAllSongsInAlbumByArtist(querySelection);
+            case Common.SMART_WEATHER_FLIPPED_FRAGMENT:
+                return getAllUniqueAlbumsByWeather(querySelection);
+            case Common.SMART_WEATHER_FLIPPED_SONGS_FRAGMENT:
+                return getAllSongsInAlbumByWeather(querySelection);
+            case Common.SMART_TOD_FLIPPED_FRAGMENT:
+                return getAllUniqueAlbumsByTod(querySelection);
+            case Common.SMART_TOD_FLIPPED_SONGS_FRAGMENT:
+                return getAllSongsInAlbumByTod(querySelection);
+            case Common.SMART_BPM_FLIPPED_FRAGMENT:
+                return getAllUniqueAlbumsByBpm(querySelection);
+            case Common.SMART_BPM_FLIPPED_SONGS_FRAGMENT:
+                return getAllSongsInAlbumByBpm(querySelection);
             case Common.GENRES_FLIPPED_FRAGMENT:
                 return getAllUniqueAlbumsInGenre(querySelection);
             case Common.GENRES_FLIPPED_SONGS_FRAGMENT:
@@ -843,6 +855,18 @@ public class DBAccessHelper extends SQLiteOpenHelper {
                 return getAllSongsInAlbumByAlbumArtistInLibrary(querySelection);
             case Common.ALBUMS_FLIPPED_FRAGMENT:
                 return getAllSongsInAlbumByArtistInLibrary(querySelection);
+            case Common.SMART_WEATHER_FLIPPED_FRAGMENT:
+                return getAllUniqueAlbumsByWeatherInLibrary(querySelection);
+            case Common.SMART_WEATHER_FLIPPED_SONGS_FRAGMENT:
+                return getAllSongsInAlbumByWeatherInLibrary(querySelection);
+            case Common.SMART_TOD_FLIPPED_FRAGMENT:
+                return getAllUniqueAlbumsByTodInLibrary(querySelection);
+            case Common.SMART_TOD_FLIPPED_SONGS_FRAGMENT:
+                return getAllSongsInAlbumByTodInLibrary(querySelection);
+            case Common.SMART_BPM_FLIPPED_FRAGMENT:
+                return getAllUniqueAlbumsByBpmInLibrary(querySelection);
+            case Common.SMART_BPM_FLIPPED_SONGS_FRAGMENT:
+                return getAllSongsInAlbumByBpmInLibrary(querySelection);
             case Common.GENRES_FLIPPED_FRAGMENT:
                 return getAllUniqueAlbumsInGenreInLibrary(querySelection);
             case Common.GENRES_FLIPPED_SONGS_FRAGMENT:
@@ -911,6 +935,9 @@ public class DBAccessHelper extends SQLiteOpenHelper {
             case Common.PLAY_ALL_BY_ALBUM_ARTIST:
             case Common.PLAY_ALL_BY_ALBUM:
             case Common.PLAY_ALL_IN_GENRE:
+            case Common.PLAY_ALL_IN_WEATHER:
+            case Common.PLAY_ALL_IN_TOD:
+            case Common.PLAY_ALL_IN_BPM:
             case Common.PLAY_ALL_IN_FOLDER:
                 querySelection += " ORDER BY " + SONG_TRACK_NUMBER + "*1 ASC";
                 break;
@@ -1394,6 +1421,81 @@ public class DBAccessHelper extends SQLiteOpenHelper {
      * Returns a cursor of all the songs in an album by a specific artist, within the specified library.
      */
     public Cursor getAllSongsInAlbumByArtistInLibrary(String selection) {
+        String selectQuery = "SELECT  * FROM " + MUSIC_LIBRARY_TABLE + " INNER JOIN " + LIBRARIES_TABLE + " ON ("
+                + MUSIC_LIBRARY_TABLE + "." + _ID + "=" + LIBRARIES_TABLE + "."
+                + SONG_ID + ") WHERE " +
+                BLACKLIST_STATUS + "=" + "'0'" + selection +
+                " ORDER BY " + SONG_TRACK_NUMBER + "*1 ASC";
+
+        return getDatabase().rawQuery(selectQuery, null);
+
+    }
+
+    /**
+     * Returns a cursor of all the songs in an album by a specific weather.
+     */
+    public Cursor getAllSongsInAlbumByWeather(String selection) {
+        String selectQuery = "SELECT  * FROM " + MUSIC_LIBRARY_TABLE + " WHERE " +
+                BLACKLIST_STATUS + "=" + "'0'" + selection +
+                " ORDER BY " + SONG_TRACK_NUMBER + "*1 ASC";
+
+        return getDatabase().rawQuery(selectQuery, null);
+    }
+
+    /**
+     * Returns a cursor of all the songs in an album by a specific weather, within the specified library.
+     */
+    public Cursor getAllSongsInAlbumByWeatherInLibrary(String selection) {
+        String selectQuery = "SELECT  * FROM " + MUSIC_LIBRARY_TABLE + " INNER JOIN " + LIBRARIES_TABLE + " ON ("
+                + MUSIC_LIBRARY_TABLE + "." + _ID + "=" + LIBRARIES_TABLE + "."
+                + SONG_ID + ") WHERE " +
+                BLACKLIST_STATUS + "=" + "'0'" + selection +
+                " ORDER BY " + SONG_TRACK_NUMBER + "*1 ASC";
+
+        return getDatabase().rawQuery(selectQuery, null);
+
+    }
+
+    /**
+     * Returns a cursor of all the songs in an album by a specific tod.
+     */
+    public Cursor getAllSongsInAlbumByTod(String selection) {
+        String selectQuery = "SELECT  * FROM " + MUSIC_LIBRARY_TABLE + " WHERE " +
+                BLACKLIST_STATUS + "=" + "'0'" + selection +
+                " ORDER BY " + SONG_TRACK_NUMBER + "*1 ASC";
+
+        return getDatabase().rawQuery(selectQuery, null);
+    }
+
+    /**
+     * Returns a cursor of all the songs in an album by a specific tod, within the specified library.
+     */
+    public Cursor getAllSongsInAlbumByTodInLibrary(String selection) {
+        String selectQuery = "SELECT  * FROM " + MUSIC_LIBRARY_TABLE + " INNER JOIN " + LIBRARIES_TABLE + " ON ("
+                + MUSIC_LIBRARY_TABLE + "." + _ID + "=" + LIBRARIES_TABLE + "."
+                + SONG_ID + ") WHERE " +
+                BLACKLIST_STATUS + "=" + "'0'" + selection +
+                " ORDER BY " + SONG_TRACK_NUMBER + "*1 ASC";
+
+        return getDatabase().rawQuery(selectQuery, null);
+
+    }
+
+    /**
+     * Returns a cursor of all the songs in an album by a specific bpm.
+     */
+    public Cursor getAllSongsInAlbumByBpm(String selection) {
+        String selectQuery = "SELECT  * FROM " + MUSIC_LIBRARY_TABLE + " WHERE " +
+                BLACKLIST_STATUS + "=" + "'0'" + selection +
+                " ORDER BY " + SONG_TRACK_NUMBER + "*1 ASC";
+
+        return getDatabase().rawQuery(selectQuery, null);
+    }
+
+    /**
+     * Returns a cursor of all the songs in an album by a specific bpm, within the specified library.
+     */
+    public Cursor getAllSongsInAlbumByBpmInLibrary(String selection) {
         String selectQuery = "SELECT  * FROM " + MUSIC_LIBRARY_TABLE + " INNER JOIN " + LIBRARIES_TABLE + " ON ("
                 + MUSIC_LIBRARY_TABLE + "." + _ID + "=" + LIBRARIES_TABLE + "."
                 + SONG_ID + ") WHERE " +
@@ -2065,6 +2167,108 @@ public class DBAccessHelper extends SQLiteOpenHelper {
     public Cursor getAllUniqueAlbumsByArtistInLibrary(String selection) {
         String selectDistinctQuery = "SELECT DISTINCT(" + SONG_ALBUM + "), " + MUSIC_LIBRARY_TABLE + "." +
                 _ID + ", " + SONG_ARTIST + ", " + SONG_FILE_PATH + ", " + LOCAL_COPY_PATH +
+                ", " + SONG_YEAR + ", " + SONG_SOURCE + ", " + SONG_DURATION + ", " + SONGS_COUNT + ", " +
+                SONG_ALBUM_ART_PATH + ", " + SONG_TITLE + ", " + SONG_ALBUM + ", " + SONG_GENRE + " FROM " +
+                MUSIC_LIBRARY_TABLE + " INNER JOIN " + LIBRARIES_TABLE + " ON ("
+                + MUSIC_LIBRARY_TABLE + "." + _ID + "=" + LIBRARIES_TABLE + "."
+                + SONG_ID + ") WHERE " + BLACKLIST_STATUS + "=" + "'" +
+                "0" + "'" + selection + " GROUP BY " + SONG_ALBUM + " ORDER BY " + SONG_YEAR
+                + "*1 ASC";
+
+        return getDatabase().rawQuery(selectDistinctQuery, null);
+    }
+
+    /**
+     * Returns a cursor with unique albums by weather.
+     */
+    public Cursor getAllUniqueAlbumsByWeather(String selection) {
+        String selectDistinctQuery = "SELECT DISTINCT(" + SONG_ALBUM + "), " +
+                _ID + ", " + SONG_WEATHER + ", " + SONG_FILE_PATH + ", " + SONGS_COUNT +
+                ", " + SONG_YEAR + ", " + SONG_SOURCE + ", " + SONG_DURATION + ", " +
+                LOCAL_COPY_PATH + ", " + SONG_ALBUM_ART_PATH + ", " + SONG_TITLE +
+                ", " + SONG_ALBUM + ", " + SONG_GENRE + " FROM " +
+                MUSIC_LIBRARY_TABLE + " WHERE " + BLACKLIST_STATUS + "=" + "'" +
+                "0" + "'" + selection + " GROUP BY " +
+                SONG_ALBUM + " ORDER BY " + SONG_YEAR
+                + "*1 ASC";
+
+        return getDatabase().rawQuery(selectDistinctQuery, null);
+    }
+
+    /**
+     * Returns a cursor with unique albums by TOD.
+     */
+    public Cursor getAllUniqueAlbumsByTod(String selection) {
+        String selectDistinctQuery = "SELECT DISTINCT(" + SONG_ALBUM + "), " +
+                _ID + ", " + SONG_TOD + ", " + SONG_FILE_PATH + ", " + SONGS_COUNT +
+                ", " + SONG_YEAR + ", " + SONG_SOURCE + ", " + SONG_DURATION + ", " +
+                LOCAL_COPY_PATH + ", " + SONG_ALBUM_ART_PATH + ", " + SONG_TITLE +
+                ", " + SONG_ALBUM + ", " + SONG_GENRE + " FROM " +
+                MUSIC_LIBRARY_TABLE + " WHERE " + BLACKLIST_STATUS + "=" + "'" +
+                "0" + "'" + selection + " GROUP BY " +
+                SONG_ALBUM + " ORDER BY " + SONG_YEAR
+                + "*1 ASC";
+
+        return getDatabase().rawQuery(selectDistinctQuery, null);
+    }
+
+    /**
+     * Returns a cursor with unique albums by BPM.
+     */
+    public Cursor getAllUniqueAlbumsByBpm(String selection) {
+        String selectDistinctQuery = "SELECT DISTINCT(" + SONG_ALBUM + "), " +
+                _ID + ", " + SONG_BPM + ", " + SONG_FILE_PATH + ", " + SONGS_COUNT +
+                ", " + SONG_YEAR + ", " + SONG_SOURCE + ", " + SONG_DURATION + ", " +
+                LOCAL_COPY_PATH + ", " + SONG_ALBUM_ART_PATH + ", " + SONG_TITLE +
+                ", " + SONG_ALBUM + ", " + SONG_GENRE + " FROM " +
+                MUSIC_LIBRARY_TABLE + " WHERE " + BLACKLIST_STATUS + "=" + "'" +
+                "0" + "'" + selection + " GROUP BY " +
+                SONG_ALBUM + " ORDER BY " + SONG_YEAR
+                + "*1 ASC";
+
+        return getDatabase().rawQuery(selectDistinctQuery, null);
+    }
+
+    /**
+     * Returns a cursor with unique albums by weather within the specified library.
+     */
+    public Cursor getAllUniqueAlbumsByWeatherInLibrary(String selection) {
+        String selectDistinctQuery = "SELECT DISTINCT(" + SONG_ALBUM + "), " + MUSIC_LIBRARY_TABLE + "." +
+                _ID + ", " + SONG_WEATHER + ", " + SONG_FILE_PATH + ", " + LOCAL_COPY_PATH +
+                ", " + SONG_YEAR + ", " + SONG_SOURCE + ", " + SONG_DURATION + ", " + SONGS_COUNT + ", " +
+                SONG_ALBUM_ART_PATH + ", " + SONG_TITLE + ", " + SONG_ALBUM + ", " + SONG_GENRE + " FROM " +
+                MUSIC_LIBRARY_TABLE + " INNER JOIN " + LIBRARIES_TABLE + " ON ("
+                + MUSIC_LIBRARY_TABLE + "." + _ID + "=" + LIBRARIES_TABLE + "."
+                + SONG_ID + ") WHERE " + BLACKLIST_STATUS + "=" + "'" +
+                "0" + "'" + selection + " GROUP BY " + SONG_ALBUM + " ORDER BY " + SONG_YEAR
+                + "*1 ASC";
+
+        return getDatabase().rawQuery(selectDistinctQuery, null);
+    }
+
+    /**
+     * Returns a cursor with unique albums by tod within the specified library.
+     */
+    public Cursor getAllUniqueAlbumsByTodInLibrary(String selection) {
+        String selectDistinctQuery = "SELECT DISTINCT(" + SONG_ALBUM + "), " + MUSIC_LIBRARY_TABLE + "." +
+                _ID + ", " + SONG_TOD + ", " + SONG_FILE_PATH + ", " + LOCAL_COPY_PATH +
+                ", " + SONG_YEAR + ", " + SONG_SOURCE + ", " + SONG_DURATION + ", " + SONGS_COUNT + ", " +
+                SONG_ALBUM_ART_PATH + ", " + SONG_TITLE + ", " + SONG_ALBUM + ", " + SONG_GENRE + " FROM " +
+                MUSIC_LIBRARY_TABLE + " INNER JOIN " + LIBRARIES_TABLE + " ON ("
+                + MUSIC_LIBRARY_TABLE + "." + _ID + "=" + LIBRARIES_TABLE + "."
+                + SONG_ID + ") WHERE " + BLACKLIST_STATUS + "=" + "'" +
+                "0" + "'" + selection + " GROUP BY " + SONG_ALBUM + " ORDER BY " + SONG_YEAR
+                + "*1 ASC";
+
+        return getDatabase().rawQuery(selectDistinctQuery, null);
+    }
+
+    /**
+     * Returns a cursor with unique albums by bpm within the specified library.
+     */
+    public Cursor getAllUniqueAlbumsByBpmInLibrary(String selection) {
+        String selectDistinctQuery = "SELECT DISTINCT(" + SONG_ALBUM + "), " + MUSIC_LIBRARY_TABLE + "." +
+                _ID + ", " + SONG_BPM + ", " + SONG_FILE_PATH + ", " + LOCAL_COPY_PATH +
                 ", " + SONG_YEAR + ", " + SONG_SOURCE + ", " + SONG_DURATION + ", " + SONGS_COUNT + ", " +
                 SONG_ALBUM_ART_PATH + ", " + SONG_TITLE + ", " + SONG_ALBUM + ", " + SONG_GENRE + " FROM " +
                 MUSIC_LIBRARY_TABLE + " INNER JOIN " + LIBRARIES_TABLE + " ON ("

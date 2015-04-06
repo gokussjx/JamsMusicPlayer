@@ -106,6 +106,9 @@ public class Common extends Application {
     public static final int SMART_WEATHER_FLIPPED_FRAGMENT = 17;
     public static final int SMART_TOD_FLIPPED_FRAGMENT = 18;
     public static final int SMART_BPM_FLIPPED_FRAGMENT = 19;
+    public static final int SMART_WEATHER_FLIPPED_SONGS_FRAGMENT = 20;
+    public static final int SMART_TOD_FLIPPED_SONGS_FRAGMENT = 21;
+    public static final int SMART_BPM_FLIPPED_SONGS_FRAGMENT = 22;
     //Constants for identifying playback routes.
     public static final int PLAY_ALL_SONGS = 0;
     public static final int PLAY_ALL_BY_ARTIST = 1;
@@ -114,6 +117,9 @@ public class Common extends Application {
     public static final int PLAY_ALL_IN_PLAYLIST = 4;
     public static final int PLAY_ALL_IN_GENRE = 5;
     public static final int PLAY_ALL_IN_FOLDER = 6;
+    public static final int PLAY_ALL_IN_WEATHER = 7;
+    public static final int PLAY_ALL_IN_TOD = 8;
+    public static final int PLAY_ALL_IN_BPM = 9;
     //Device orientation constants.
     public static final int ORIENTATION_PORTRAIT = 0;
     public static final int ORIENTATION_LANDSCAPE = 1;

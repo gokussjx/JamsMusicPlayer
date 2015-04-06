@@ -3,7 +3,7 @@
     android:layout_height="wrap_content">
 
     <LinearLayout
-        android:id="@+id/album_card_layout"
+        android:id="@+id/tod_card_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginBottom="3dp"
@@ -19,7 +19,7 @@
             android:layout_weight="1">
 
             <com.jams.music.player.Views.RoundedImageView
-                android:id="@+id/albumsGridViewImage"
+                android:id="@+id/todGridViewImage"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_centerHorizontal="true"
@@ -35,7 +35,7 @@
             android:layout_weight="4">
 
             <TextView
-                android:id="@+id/albumsName"
+                android:id="@+id/todName"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
@@ -44,7 +44,7 @@
                 android:ellipsize="marquee"
                 android:gravity="center"
                 android:singleLine="true"
-                android:text="Album Name"
+                android:text="Tod Name"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:textColor="#FFFFFF" />
 

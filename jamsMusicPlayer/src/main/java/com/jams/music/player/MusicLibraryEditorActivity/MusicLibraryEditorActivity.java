@@ -48,14 +48,14 @@ import java.util.HashSet;
 
 public class MusicLibraryEditorActivity extends FragmentActivity {
 
-    private Context mContext;
-    private Common mApp;
-    private String libraryName;
-    private String libraryIconName;
     public static DBAccessHelper dbHelper;
     public static String currentTab = "Artists";
     public static DisplayImageOptions displayImageOptions;
     public static HashSet<String> songDBIdsList = new HashSet<String>();
+    private Context mContext;
+    private Common mApp;
+    private String libraryName;
+    private String libraryIconName;
 
     @SuppressWarnings("unchecked")
     @Override
@@ -131,6 +131,39 @@ public class MusicLibraryEditorActivity extends FragmentActivity {
         tab.setTabListener(albumsTabListener);
         actionBar.addTab(tab);
 
+        //Add the weather tab.
+        String weatherLabel = getResources().getString(R.string.smart_weather);
+        tab = actionBar.newTab();
+        tab.setText(weatherLabel);
+        TabListener<WeatherPickerFragment> weatherTabListener = new TabListener<WeatherPickerFragment>(this,
+                weatherLabel,
+                WeatherPickerFragment.class);
+
+        tab.setTabListener(weatherTabListener);
+        actionBar.addTab(tab);
+
+        //Add the TOD tab.
+        String todLabel = getResources().getString(R.string.smart_tod);
+        tab = actionBar.newTab();
+        tab.setText(todLabel);
+        TabListener<TodPickerFragment> todTabListener = new TabListener<TodPickerFragment>(this,
+                todLabel,
+                TodPickerFragment.class);
+
+        tab.setTabListener(todTabListener);
+        actionBar.addTab(tab);
+
+        //Add the BPM tab.
+        String bpmLabel = getResources().getString(R.string.smart_bpm);
+        tab = actionBar.newTab();
+        tab.setText(bpmLabel);
+        TabListener<BpmPickerFragment> bpmTabListener = new TabListener<BpmPickerFragment>(this,
+                bpmLabel,
+                BpmPickerFragment.class);
+
+        tab.setTabListener(bpmTabListener);
+        actionBar.addTab(tab);
+
         //Add the songs tab.
         String songsLabel = getResources().getString(R.string.songs);
         tab = actionBar.newTab();
@@ -156,50 +189,6 @@ public class MusicLibraryEditorActivity extends FragmentActivity {
 
             if (activityView != null) {
                 activityView.setPadding(0, topPadding + actionBarHeight, 0, 0);
-            }
-
-        }
-
-    }
-
-    private class TabListener<T extends android.app.Fragment> implements ActionBar.TabListener {
-        private android.app.Fragment mFragment;
-        private final Activity mActivity;
-        private final String mTag;
-        private final Class<T> mClass;
-
-        public TabListener(Activity activity, String tag, Class<T> clz) {
-            mActivity = activity;
-            mTag = tag;
-            mClass = clz;
-        }
-
-        @Override
-        public void onTabReselected(Tab arg0, android.app.FragmentTransaction arg1) {
-            // TODO Auto-generated method stub
-
-        }
-
-        @Override
-        public void onTabSelected(Tab tab, android.app.FragmentTransaction ft) {
-
-            currentTab = (String) tab.getText();
-            //Check if the fragment is already initialized
-            if (mFragment == null) {
-                //If not, instantiate and add it to the activity
-                mFragment = android.app.Fragment.instantiate(mActivity, mClass.getName());
-                ft.add(android.R.id.content, mFragment, mTag);
-            } else {
-                //If it exists, simply attach it in order to show it
-                ft.attach(mFragment);
-            }
-
-        }
-
-        @Override
-        public void onTabUnselected(Tab arg0, android.app.FragmentTransaction ft) {
-            if (mFragment != null) {
-                ft.detach(mFragment);
             }
 
         }
@@ -237,7 +226,7 @@ public class MusicLibraryEditorActivity extends FragmentActivity {
         switch (item.getItemId()) {
             case R.id.select_all_music_library_editor:
             /* DB IDs are sequential, so to save CPU cycles,
-	         * we'll just get the size of the DB (the number of 
+             * we'll just get the size of the DB (the number of
 	         * rows) and add that many entries to the HashSet.
 	         */
                 Cursor cursor = null;
@@ -270,6 +259,27 @@ public class MusicLibraryEditorActivity extends FragmentActivity {
                     AlbumsPickerFragment.listView.setAdapter(new MusicLibraryEditorAlbumsMultiselectAdapter(this,
                             AlbumsPickerFragment.cursor));
                     AlbumsPickerFragment.listView.invalidate();
+                }
+
+                if (WeatherPickerFragment.listView != null) {
+                    WeatherPickerFragment.listView.setAdapter(null);
+                    WeatherPickerFragment.listView.setAdapter(new MusicLibraryEditorWeatherMultiselectAdapter(this,
+                            WeatherPickerFragment.cursor));
+                    WeatherPickerFragment.listView.invalidate();
+                }
+
+                if (TodPickerFragment.listView != null) {
+                    TodPickerFragment.listView.setAdapter(null);
+                    TodPickerFragment.listView.setAdapter(new MusicLibraryEditorTodMultiselectAdapter(this,
+                            TodPickerFragment.cursor));
+                    TodPickerFragment.listView.invalidate();
+                }
+
+                if (BpmPickerFragment.listView != null) {
+                    BpmPickerFragment.listView.setAdapter(null);
+                    BpmPickerFragment.listView.setAdapter(new MusicLibraryEditorBpmMultiselectAdapter(this,
+                            BpmPickerFragment.cursor));
+                    BpmPickerFragment.listView.invalidate();
                 }
 
                 if (SongsPickerFragment.listView != null) {
@@ -305,6 +315,21 @@ public class MusicLibraryEditorActivity extends FragmentActivity {
                 SongsPickerFragment.cursor = null;
             }
 
+            if (BpmPickerFragment.cursor != null) {
+                BpmPickerFragment.cursor.close();
+                BpmPickerFragment.cursor = null;
+            }
+
+            if (TodPickerFragment.cursor != null) {
+                TodPickerFragment.cursor.close();
+                TodPickerFragment.cursor = null;
+            }
+
+            if (WeatherPickerFragment.cursor != null) {
+                WeatherPickerFragment.cursor.close();
+                WeatherPickerFragment.cursor = null;
+            }
+
             if (AlbumsPickerFragment.cursor != null) {
                 AlbumsPickerFragment.cursor.close();
                 AlbumsPickerFragment.cursor = null;
@@ -313,6 +338,50 @@ public class MusicLibraryEditorActivity extends FragmentActivity {
             if (ArtistsPickerFragment.cursor != null) {
                 ArtistsPickerFragment.cursor.close();
                 ArtistsPickerFragment.cursor = null;
+            }
+
+        }
+
+    }
+
+    private class TabListener<T extends android.app.Fragment> implements ActionBar.TabListener {
+        private final Activity mActivity;
+        private final String mTag;
+        private final Class<T> mClass;
+        private android.app.Fragment mFragment;
+
+        public TabListener(Activity activity, String tag, Class<T> clz) {
+            mActivity = activity;
+            mTag = tag;
+            mClass = clz;
+        }
+
+        @Override
+        public void onTabReselected(Tab arg0, android.app.FragmentTransaction arg1) {
+            // TODO Auto-generated method stub
+
+        }
+
+        @Override
+        public void onTabSelected(Tab tab, android.app.FragmentTransaction ft) {
+
+            currentTab = (String) tab.getText();
+            //Check if the fragment is already initialized
+            if (mFragment == null) {
+                //If not, instantiate and add it to the activity
+                mFragment = android.app.Fragment.instantiate(mActivity, mClass.getName());
+                ft.add(android.R.id.content, mFragment, mTag);
+            } else {
+                //If it exists, simply attach it in order to show it
+                ft.attach(mFragment);
+            }
+
+        }
+
+        @Override
+        public void onTabUnselected(Tab arg0, android.app.FragmentTransaction ft) {
+            if (mFragment != null) {
+                ft.detach(mFragment);
             }
 
         }

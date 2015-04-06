@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/artists_flipped_layout"
+    android:id="@+id/weather_flipped_songs_layout"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical">
 
     <LinearLayout
-        android:id="@+id/fragment_artists_flipped_layout"
+        android:id="@+id/fragment_weather_flipped_songs_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal">
@@ -17,6 +17,16 @@
             android:layout_height="match_parent"
             android:layout_weight="1">
 
+            <ProgressBar
+                android:id="@+id/progressbar"
+                style="?android:attr/progressBarStyleLarge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:indeterminateOnly="true"
+                android:visibility="invisible" />
+
             <TextView
                 android:id="@+id/empty_view_text"
                 android:layout_width="wrap_content"
@@ -26,7 +36,7 @@
                 android:layout_marginLeft="25dp"
                 android:layout_marginRight="25dp"
                 android:gravity="center"
-                android:hint="@string/no_albums_found_try_another_library"
+                android:hint="@string/no_songs_found_info"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:visibility="invisible" />
 
@@ -36,11 +46,11 @@
                 android:layout_height="wrap_content"
                 android:layout_above="@+id/empty_view_text"
                 android:layout_centerHorizontal="true"
-                android:src="@drawable/albums_light"
+                android:src="@drawable/songs_light"
                 android:visibility="invisible" />
 
             <ListView
-                android:id="@+id/artistCardFlippedListView"
+                android:id="@+id/weatherCardFlippedSongsListView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
@@ -50,19 +60,20 @@
         </RelativeLayout>
 
         <RelativeLayout
-            android:id="@+id/artistFlippedHeader"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:id="@+id/weatherFlippedSongsHeader"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
             android:layout_weight="1.5">
 
             <ImageView
-                android:id="@+id/artists_flipped_header_image"
+                android:id="@+id/weatherFlippedSongsHeaderBackground"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:layout_centerHorizontal="true"
                 android:layout_centerVertical="true"
                 android:adjustViewBounds="true"
-                android:scaleType="centerCrop" />
+                android:scaleType="centerCrop"
+                android:src="@drawable/transparent_drawable" />
 
         </RelativeLayout>
 

@@ -8,10 +8,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        tools:context=".AlbumsFlippedActivity">
+        tools:context=".WeatherFlippedActivity">
 
         <RelativeLayout
-            android:id="@+id/fragment_albums_flipped_placeholder"
+            android:id="@+id/fragment_weather_flipped_placeholder"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="8">

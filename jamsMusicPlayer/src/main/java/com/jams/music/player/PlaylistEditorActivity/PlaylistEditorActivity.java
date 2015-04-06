@@ -41,14 +41,14 @@ import java.util.HashSet;
 
 public class PlaylistEditorActivity extends FragmentActivity {
 
+    public static String currentTab = "Artists";
+    public static DisplayImageOptions displayImageOptions;
+    public static HashSet<String> songDBIdsList = new HashSet<String>();
     private Context mContext;
     private Common mApp;
     private SharedPreferences sharedPreferences;
     private String libraryName;
     private String libraryIconName;
-    public static String currentTab = "Artists";
-    public static DisplayImageOptions displayImageOptions;
-    public static HashSet<String> songDBIdsList = new HashSet<String>();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -123,13 +123,169 @@ public class PlaylistEditorActivity extends FragmentActivity {
         tab.setTabListener(songsTabListener);
         actionBar.addTab(tab);
 
+        //Add the weather tab.
+        String weatherLabel = getResources().getString(R.string.weather);
+        tab = actionBar.newTab();
+        tab.setText(weatherLabel);
+        TabListener<WeatherPickerFragment> weatherTabListener = new TabListener<WeatherPickerFragment>(this,
+                weatherLabel,
+                WeatherPickerFragment.class);
+
+        tab.setTabListener(weatherTabListener);
+        actionBar.addTab(tab);
+
+        //Add the tod tab.
+        String todLabel = getResources().getString(R.string.tod);
+        tab = actionBar.newTab();
+        tab.setText(todLabel);
+        TabListener<TodPickerFragment> todTabListener = new TabListener<TodPickerFragment>(this,
+                todLabel,
+                TodPickerFragment.class);
+
+        tab.setTabListener(todTabListener);
+        actionBar.addTab(tab);
+
+        //Add the bpm tab.
+        String bpmLabel = getResources().getString(R.string.bpm);
+        tab = actionBar.newTab();
+        tab.setText(bpmLabel);
+        TabListener<BpmPickerFragment> bpmTabListener = new TabListener<BpmPickerFragment>(this,
+                bpmLabel,
+                BpmPickerFragment.class);
+
+        tab.setTabListener(bpmTabListener);
+        actionBar.addTab(tab);
+
+    }
+
+    public void createPlaylist() {
+
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.add_to_music_library, menu);
+
+        ActionBar actionBar = getActionBar();
+        SpannableString s = new SpannableString(getResources().getString(R.string.create_playlist));
+        s.setSpan(new TypefaceSpan(this, "RobotoCondensed-Light"), 0, s.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        actionBar.setTitle(s);
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.select_all_music_library_editor:
+            /* DB IDs are sequential, so to save CPU cycles,
+             * we'll just get the size of the DB (the number of
+	         * rows) and add that many entries to the HashSet.
+	         */
+                int songCount = mApp.getDBAccessHelper().getAllSongs().getCount();
+                for (int i = 0; i < songCount + 1; i++) {
+                    songDBIdsList.add("" + i);
+                }
+
+                //Refresh the current fragment's listview.
+                if (ArtistsPickerFragment.listView != null) {
+                    ArtistsPickerFragment.listView.setAdapter(null);
+                    ArtistsPickerFragment.listView.setAdapter(new PlaylistEditorArtistsMultiselectAdapter(this,
+                            ArtistsPickerFragment.cursor));
+                    ArtistsPickerFragment.listView.invalidate();
+                }
+
+                if (AlbumsPickerFragment.listView != null) {
+                    AlbumsPickerFragment.listView.setAdapter(null);
+                    AlbumsPickerFragment.listView.setAdapter(new PlaylistEditorAlbumsMultiselectAdapter(this,
+                            AlbumsPickerFragment.cursor));
+                    AlbumsPickerFragment.listView.invalidate();
+                }
+
+                if (SongsPickerFragment.listView != null) {
+                    SongsPickerFragment.listView.setAdapter(null);
+                    SongsPickerFragment.listView.setAdapter(new PlaylistEditorSongsMultiselectAdapter(this,
+                            SongsPickerFragment.cursor));
+                    SongsPickerFragment.listView.invalidate();
+                }
+
+                if (WeatherPickerFragment.listView != null) {
+                    WeatherPickerFragment.listView.setAdapter(null);
+                    WeatherPickerFragment.listView.setAdapter(new PlaylistEditorWeatherMultiselectAdapter(this,
+                            WeatherPickerFragment.cursor));
+                    WeatherPickerFragment.listView.invalidate();
+                }
+
+                if (TodPickerFragment.listView != null) {
+                    TodPickerFragment.listView.setAdapter(null);
+                    TodPickerFragment.listView.setAdapter(new PlaylistEditorTodMultiselectAdapter(this,
+                            TodPickerFragment.cursor));
+                    TodPickerFragment.listView.invalidate();
+                }
+
+                if (BpmPickerFragment.listView != null) {
+                    BpmPickerFragment.listView.setAdapter(null);
+                    BpmPickerFragment.listView.setAdapter(new PlaylistEditorBpmMultiselectAdapter(this,
+                            BpmPickerFragment.cursor));
+                    BpmPickerFragment.listView.invalidate();
+                }
+
+                return true;
+            case R.id.done_music_library_editor:
+                createPlaylist();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        songDBIdsList.clear();
+
+        if (isFinishing()) {
+            if (BpmPickerFragment.cursor != null) {
+                BpmPickerFragment.cursor.close();
+                BpmPickerFragment.cursor = null;
+            }
+
+            if (TodPickerFragment.cursor != null) {
+                TodPickerFragment.cursor.close();
+                TodPickerFragment.cursor = null;
+            }
+
+            if (WeatherPickerFragment.cursor != null) {
+                WeatherPickerFragment.cursor.close();
+                WeatherPickerFragment.cursor = null;
+            }
+
+            if (SongsPickerFragment.cursor != null) {
+                SongsPickerFragment.cursor.close();
+                SongsPickerFragment.cursor = null;
+            }
+
+            if (AlbumsPickerFragment.cursor != null) {
+                AlbumsPickerFragment.cursor.close();
+                AlbumsPickerFragment.cursor = null;
+            }
+
+            if (ArtistsPickerFragment.cursor != null) {
+                ArtistsPickerFragment.cursor.close();
+                ArtistsPickerFragment.cursor = null;
+            }
+
+        }
+
     }
 
     private class TabListener<T extends android.app.Fragment> implements ActionBar.TabListener {
-        private android.app.Fragment mFragment;
         private final Activity mActivity;
         private final String mTag;
         private final Class<T> mClass;
+        private android.app.Fragment mFragment;
 
         public TabListener(Activity activity, String tag, Class<T> clz) {
             mActivity = activity;
@@ -163,93 +319,6 @@ public class PlaylistEditorActivity extends FragmentActivity {
         public void onTabUnselected(Tab arg0, android.app.FragmentTransaction ft) {
             if (mFragment != null) {
                 ft.detach(mFragment);
-            }
-
-        }
-
-    }
-
-    public void createPlaylist() {
-
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.add_to_music_library, menu);
-
-        ActionBar actionBar = getActionBar();
-        SpannableString s = new SpannableString(getResources().getString(R.string.create_playlist));
-        s.setSpan(new TypefaceSpan(this, "RobotoCondensed-Light"), 0, s.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        actionBar.setTitle(s);
-
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.select_all_music_library_editor:
-            /* DB IDs are sequential, so to save CPU cycles,
-	         * we'll just get the size of the DB (the number of 
-	         * rows) and add that many entries to the HashSet.
-	         */
-                int songCount = mApp.getDBAccessHelper().getAllSongs().getCount();
-                for (int i = 0; i < songCount + 1; i++) {
-                    songDBIdsList.add("" + i);
-                }
-
-                //Refresh the current fragment's listview.
-                if (ArtistsPickerFragment.listView != null) {
-                    ArtistsPickerFragment.listView.setAdapter(null);
-                    ArtistsPickerFragment.listView.setAdapter(new PlaylistEditorArtistsMultiselectAdapter(this,
-                            ArtistsPickerFragment.cursor));
-                    ArtistsPickerFragment.listView.invalidate();
-                }
-
-                if (AlbumsPickerFragment.listView != null) {
-                    AlbumsPickerFragment.listView.setAdapter(null);
-                    AlbumsPickerFragment.listView.setAdapter(new PlaylistEditorAlbumsMultiselectAdapter(this,
-                            AlbumsPickerFragment.cursor));
-                    AlbumsPickerFragment.listView.invalidate();
-                }
-
-                if (SongsPickerFragment.listView != null) {
-                    SongsPickerFragment.listView.setAdapter(null);
-                    SongsPickerFragment.listView.setAdapter(new PlaylistEditorSongsMultiselectAdapter(this,
-                            SongsPickerFragment.cursor));
-                    SongsPickerFragment.listView.invalidate();
-                }
-
-                return true;
-            case R.id.done_music_library_editor:
-                createPlaylist();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        songDBIdsList.clear();
-
-        if (isFinishing()) {
-            if (SongsPickerFragment.cursor != null) {
-                SongsPickerFragment.cursor.close();
-                SongsPickerFragment.cursor = null;
-            }
-
-            if (AlbumsPickerFragment.cursor != null) {
-                AlbumsPickerFragment.cursor.close();
-                AlbumsPickerFragment.cursor = null;
-            }
-
-            if (ArtistsPickerFragment.cursor != null) {
-                ArtistsPickerFragment.cursor.close();
-                ArtistsPickerFragment.cursor = null;
             }
 
         }
