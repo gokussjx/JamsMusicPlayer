@@ -250,8 +250,6 @@
 
         <!-- Yahoo Weather Activity -->
 
-        <activity android:name=".SmartU.SmartUWeather"></activity>
-
         <!-- Dummy activity that launches Fragment dialogs from the Main Settings Activity -->
 
         <activity

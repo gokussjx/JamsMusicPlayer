@@ -118,8 +118,6 @@ public class GridViewFragment extends Fragment {
             Intent intent;
             if (newFragmentId == Common.ALBUMS_FLIPPED_FRAGMENT) {
                 intent = new Intent(mContext, BrowserSubListActivity.class);
-//            } else if (newFragmentId == Common.SMART_WEATHER_FRAGMENT) {
-//                intent = new Intent(mContext, com.jams.music.player.SmartU.SmartUWeather.class);
             } else {
                 intent = new Intent(mContext, BrowserSubGridActivity.class);
             }

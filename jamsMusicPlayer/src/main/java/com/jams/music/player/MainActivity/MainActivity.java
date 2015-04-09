@@ -45,9 +45,17 @@ import com.jams.music.player.GridViewFragment.GridViewFragment;
 import com.jams.music.player.Helpers.UIElementsHelper;
 import com.jams.music.player.ListViewFragment.ListViewFragment;
 import com.jams.music.player.R;
+import com.jams.music.player.SmartU.SmartUTod;
 import com.jams.music.player.Utils.Common;
 
-public class MainActivity extends FragmentActivity implements Callbacks{
+import org.apache.commons.lang3.text.WordUtils;
+
+import zh.wang.android.apis.yweathergetter4a.WeatherInfo;
+import zh.wang.android.apis.yweathergetter4a.YahooWeather;
+import zh.wang.android.apis.yweathergetter4a.YahooWeatherExceptionListener;
+import zh.wang.android.apis.yweathergetter4a.YahooWeatherInfoListener;
+
+public class MainActivity extends FragmentActivity implements Callbacks, YahooWeatherInfoListener, YahooWeatherExceptionListener {
 
     //Layout flags.
     public static final String CURRENT_FRAGMENT = "CurrentFragment";
@@ -78,6 +86,13 @@ public class MainActivity extends FragmentActivity implements Callbacks{
     private ActionBarDrawerToggle mDrawerToggle;
     private QueueDrawerFragment mQueueDrawerFragment;
     private Menu mMenu;
+    private SmartUTod smartUTod;
+    private String smartWeather;
+    private String smartTod;
+    private String mWeather;
+
+    private YahooWeather mYahooWeather = YahooWeather.getInstance(5000, 5000, true);
+
     //Current fragment params.
     private Fragment mCurrentFragment;
 
@@ -86,7 +101,7 @@ public class MainActivity extends FragmentActivity implements Callbacks{
 
         //Context and Common object(s).
         mContext = getApplicationContext();
-        mApp = (Common) getApplicationContext();
+        mApp = (Common) mContext;
 
         // Callback instance
         computeSomething("FRAGMENTS");
@@ -146,7 +161,6 @@ public class MainActivity extends FragmentActivity implements Callbacks{
             showAlbumArtScanningDialog();
             mApp.getSharedPreferences().edit().putBoolean(Common.FIRST_RUN, false).commit();
         }
-
     }
 
     /**
@@ -196,6 +210,85 @@ public class MainActivity extends FragmentActivity implements Callbacks{
 
     }
 
+    private void searchByGPS() {
+        mYahooWeather.setSearchMode(YahooWeather.SEARCH_MODE.GPS);
+        mYahooWeather.setUnit(YahooWeather.UNIT.CELSIUS);
+        mYahooWeather.queryYahooWeatherByGPS(getApplicationContext(), this);
+    }
+
+    @Override
+    public void gotWeatherInfo(WeatherInfo weatherInfo) {
+        // TODO Auto-generated method stub
+        if (weatherInfo != null) {
+            mWeather = getSmartWeather(weatherInfo.getCurrentText());
+            Toast.makeText(this, "Current Weather is " + WordUtils.capitalize(mWeather), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "So we suggest trying the " + WordUtils.capitalize(mWeather) + " collection!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public String getSmartWeather(String weather) {
+        weather = weather.toLowerCase();
+
+        if (weather.contains("tornado") ||
+                weather.contains("storm") ||
+                weather.contains("hurricane") ||
+                weather.contains("thunder")) {
+            return "storm";
+        } else if (weather.contains("snow")) {
+            return "snow";
+        } else if (weather.contains("drizzle") ||
+                weather.contains("rain") ||
+                weather.contains("shower") ||
+                weather.contains("hail")) {
+            return "rain";
+        } else if (weather.contains("dust") ||
+                weather.contains("fog") ||
+                weather.contains("haze") ||
+                weather.contains("smoky") ||
+                weather.contains("bluster") ||
+                weather.contains("wind")) {
+            return "windy";
+        } else if (weather.contains("cold")) {
+            return "cold";
+        } else if (weather.contains("cloud")) {
+            return "cloudy";
+        } else if (weather.contains("clear")) {
+            return "clear";
+        } else if (weather.contains("sun") ||
+                weather.contains("hot")) {
+            return "sunny";
+        } else {
+            return "unavailable";
+        }
+    }
+
+    /**
+     * YahooWeather Interface methods
+     * @param e
+     */
+    @Override
+    public void onFailConnection(final Exception e) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void onFailParsing(final Exception e) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void onFailFindLocation(final Exception e) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
+
     /**
      * Loads the correct fragment based on the selected browser.
      */
@@ -227,15 +320,21 @@ public class MainActivity extends FragmentActivity implements Callbacks{
                 case Common.PLAYLISTS_FRAGMENT:
                     mCurrentFragment = getLayoutFragment(Common.PLAYLISTS_FRAGMENT);
                     break;
-//                case Common.SMART_PLAYLISTS_FRAGMENT:
-////                    mCurrentFragment = getLayoutFragment(Common.SMART_PLAYLISTS_FRAGMENT);
-//                    mCurrentFragment = new SmartUFragment();
-//                    break;
                 case Common.SMART_WEATHER_FRAGMENT:
+                    // Initiate Smart Weather
+                    mYahooWeather.setExceptionListener(this);
+                    searchByGPS();
                     mCurrentFragment = getLayoutFragment(Common.SMART_WEATHER_FRAGMENT);
+//                    Toast.makeText(mContext, "Current Weather is " + smartWeather, Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(mContext, "So we suggest trying the " + smartWeather + " collection!", Toast.LENGTH_SHORT).show();
                     break;
                 case Common.SMART_TOD_FRAGMENT:
+                    // Initiate Smart TOD
+                    smartUTod = new SmartUTod(mContext);
+                    smartTod = smartUTod.getTod();
                     mCurrentFragment = getLayoutFragment(Common.SMART_TOD_FRAGMENT);
+                    Toast.makeText(mContext, "It's " + smartTod + " right now", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext, "So we suggest trying the " + smartTod + " collection!", Toast.LENGTH_SHORT).show();
                     break;
                 case Common.SMART_BPM_FRAGMENT:
                     mCurrentFragment = getLayoutFragment(Common.SMART_BPM_FRAGMENT);

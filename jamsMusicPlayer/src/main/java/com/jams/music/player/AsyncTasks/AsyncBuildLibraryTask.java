@@ -57,6 +57,7 @@ public class AsyncBuildLibraryTask extends AsyncTask<String, String, Void> {
     private int mOverallProgress = 0;
     private Date date = new Date();
     private String UNKNOWN = "Unknown";
+    private SmartUDatabase db;
 
     private String mMediaStoreSelection = null;
     private HashMap<String, String> mGenresHashMap = new HashMap<String, String>();
@@ -132,6 +133,9 @@ public class AsyncBuildLibraryTask extends AsyncTask<String, String, Void> {
 
         //Save album art paths for each song to the database.
         getAlbumArt();
+
+        //Copy SmartUDatabase
+        db = new SmartUDatabase(mContext);
 
         /*
 		 * Get a cursor of songs from SmartUDatabase.

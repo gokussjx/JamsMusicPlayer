@@ -124,12 +124,6 @@ public class NavigationDrawerFragment extends Fragment {
                     if (mContext instanceof MainActivity)
                         ((MainActivity) getActivity()).setCurrentFragmentId(Common.PLAYLISTS_FRAGMENT);
                     break;
-//                case 5:
-////                    if(mContext instanceof MainActivity) ((MainActivity) getActivity()).setCurrentFragmentId(Common.SMART_PLAYLISTS_FRAGMENT);
-////                    break;
-//                    intent = new Intent(getActivity(), SmartUWeather.class);
-//                    startActivity(intent);
-//                    break;
                 case 5:
                     if (mContext instanceof Callbacks)
                         ((MainActivity) getActivity()).setCurrentFragmentId(Common.SMART_WEATHER_FRAGMENT);
