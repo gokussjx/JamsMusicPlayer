@@ -294,7 +294,11 @@ public class BrowserSubListActivity extends FragmentActivity {
                         playbackRouteId = Common.PLAY_ALL_BY_ALBUM;
                         break;
                     case Common.SMART_WEATHER_FLIPPED_SONGS_FRAGMENT:
+                        playbackRouteId = Common.PLAY_ALL_BY_ALBUM;
+                        break;
                     case Common.SMART_TOD_FLIPPED_SONGS_FRAGMENT:
+                        playbackRouteId = Common.PLAY_ALL_BY_ALBUM;
+                        break;
                     case Common.SMART_BPM_FLIPPED_SONGS_FRAGMENT:
                         playbackRouteId = Common.PLAY_ALL_BY_ALBUM;
                         break;
@@ -520,6 +524,9 @@ public class BrowserSubListActivity extends FragmentActivity {
                     mDBColumnsMap.put(ListViewCardsAdapter.FIELD_1, DBAccessHelper.SONG_DURATION);
                     mDBColumnsMap.put(ListViewCardsAdapter.FIELD_2, DBAccessHelper.SONG_ARTIST);
                     mDBColumnsMap.put(ListViewCardsAdapter.FIELD_3, DBAccessHelper.SONG_TRACK_NUMBER);
+                    mDBColumnsMap.put(ListViewCardsAdapter.WEATHER, DBAccessHelper.SONG_WEATHER);
+                    mDBColumnsMap.put(ListViewCardsAdapter.TOD, DBAccessHelper.SONG_TOD);
+                    mDBColumnsMap.put(ListViewCardsAdapter.BPM, DBAccessHelper.SONG_BPM);
                     break;
             }
 
@@ -549,29 +556,32 @@ public class BrowserSubListActivity extends FragmentActivity {
                             + DBAccessHelper.SONG_ARTIST + "=" + "'"
                             + mHeaderSubText.replace("'", "''") + "'";
                     break;
-                case Common.SMART_WEATHER_FLIPPED_FRAGMENT:
+                case Common.SMART_WEATHER_FLIPPED_SONGS_FRAGMENT:
                     mQuerySelection = " AND " + DBAccessHelper.SONG_ALBUM + "=" + "'"
                             + mHeaderText.replace("'", "''") + "'" + " AND "
                             + DBAccessHelper.SONG_WEATHER + "=" + "'"
-                            + mHeaderSubText.replace("'", "''") + "'" + " AND "
-                            + DBAccessHelper.SONG_ARTIST + "=" + "'"
-                            + mField2.replace("'", "''") + "'";
+//                            + mHeaderSubText.replace("'", "''") + "'" + " AND "
+//                            + DBAccessHelper.SONG_ARTIST + "=" + "'"
+//                            + mField2.replace("'", "''") + "'";
+                            + mHeaderSubText.replace("'", "''") + "'";
                     break;
-                case Common.SMART_TOD_FLIPPED_FRAGMENT:
+                case Common.SMART_TOD_FLIPPED_SONGS_FRAGMENT:
                     mQuerySelection = " AND " + DBAccessHelper.SONG_ALBUM + "=" + "'"
                             + mHeaderText.replace("'", "''") + "'" + " AND "
                             + DBAccessHelper.SONG_TOD + "=" + "'"
-                            + mHeaderSubText.replace("'", "''") + "'" + " AND "
-                            + DBAccessHelper.SONG_ARTIST + "=" + "'"
-                            + mField2.replace("'", "''") + "'";
+//                            + mHeaderSubText.replace("'", "''") + "'" + " AND "
+//                            + DBAccessHelper.SONG_ARTIST + "=" + "'"
+//                            + mField2.replace("'", "''") + "'";
+                            + mHeaderSubText.replace("'", "''") + "'";
                     break;
-                case Common.SMART_BPM_FLIPPED_FRAGMENT:
+                case Common.SMART_BPM_FLIPPED_SONGS_FRAGMENT:
                     mQuerySelection = " AND " + DBAccessHelper.SONG_ALBUM + "=" + "'"
                             + mHeaderText.replace("'", "''") + "'" + " AND "
                             + DBAccessHelper.SONG_BPM + "=" + "'"
-                            + mHeaderSubText.replace("'", "''") + "'" + " AND "
-                            + DBAccessHelper.SONG_ARTIST + "=" + "'"
-                            + mField2.replace("'", "''") + "'";
+//                            + mHeaderSubText.replace("'", "''") + "'" + " AND "
+//                            + DBAccessHelper.SONG_ARTIST + "=" + "'"
+//                            + mField2.replace("'", "''") + "'";
+                            + mHeaderSubText.replace("'", "''") + "'";
                     break;
                 case Common.GENRES_FLIPPED_SONGS_FRAGMENT:
                     mQuerySelection = " AND " + DBAccessHelper.SONG_ALBUM + "=" + "'"

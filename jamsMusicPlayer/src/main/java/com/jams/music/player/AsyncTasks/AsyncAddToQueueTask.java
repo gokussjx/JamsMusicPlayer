@@ -114,6 +114,18 @@ public class AsyncAddToQueueTask extends AsyncTask<Boolean, Integer, Boolean> {
             mSongTitle = mSongTitle.replace("'", "''");
         }
 
+        if (mWeather != null && mWeather.contains("'")) {
+            mWeather = mWeather.replace("'", "''");
+        }
+
+        if (mTod != null && mTod.contains("'")) {
+            mTod = mTod.replace("'", "''");
+        }
+
+        if (mBpm != null && mBpm.contains("'")) {
+            mBpm = mBpm.replace("'", "''");
+        }
+
         if (mGenreName != null && mGenreName.contains("''")) {
             mGenreName = mGenreName.replace("'", "''");
         }
@@ -181,11 +193,17 @@ public class AsyncAddToQueueTask extends AsyncTask<Boolean, Integer, Boolean> {
                 selection = DBAccessHelper.SONG_ARTIST + "=" + "'" + mArtistName + "'" + " AND "
                         + DBAccessHelper.SONG_ALBUM + "=" + "'" + mAlbumName + "'" + " AND "
                         + DBAccessHelper.SONG_TITLE + "=" + "'" + mSongTitle + "'" + " AND "
+                        + DBAccessHelper.SONG_WEATHER + "=" + "'" + mWeather + "'" + " AND "
+                        + DBAccessHelper.SONG_TOD + "=" + "'" + mTod + "'" + " AND "
+                        + DBAccessHelper.SONG_BPM + "=" + "'" + mBpm + "'" + " AND "
                         + DBAccessHelper.BLACKLIST_STATUS + "=" + "'FALSE'";
             } else {
                 selection = DBAccessHelper.SONG_ARTIST + "=" + "'" + mArtistName + "'" + " AND "
                         + DBAccessHelper.SONG_ALBUM + "=" + "'" + mAlbumName + "'" + " AND "
                         + DBAccessHelper.SONG_TITLE + "=" + "'" + mSongTitle + "'" + " AND "
+                        + DBAccessHelper.SONG_WEATHER + "=" + "'" + mWeather + "'" + " AND "
+                        + DBAccessHelper.SONG_TOD + "=" + "'" + mTod + "'" + " AND "
+                        + DBAccessHelper.SONG_BPM + "=" + "'" + mBpm + "'" + " AND "
                         + DBAccessHelper.BLACKLIST_STATUS + "=" + "'FALSE'" + " AND "
                         + DBAccessHelper.SONG_SOURCE + "<>" + "'GOOGLE_PLAY_MUSIC'";
             }
@@ -246,16 +264,21 @@ public class AsyncAddToQueueTask extends AsyncTask<Boolean, Integer, Boolean> {
 
             String selection = null;
             if (mApp.isGooglePlayMusicEnabled()) {
-                selection = DBAccessHelper.SONG_ARTIST + "=" + "'" + mArtistName + "'" + " AND "
-                        + DBAccessHelper.SONG_ALBUM + "=" + "'" + mAlbumName + "'" + " AND "
-                        + DBAccessHelper.SONG_WEATHER + "=" + "'" + mWeather + "'" + " AND "
+                selection = DBAccessHelper.SONG_WEATHER + "=" + "'" + mWeather + "'" + " AND "
                         + DBAccessHelper.BLACKLIST_STATUS + "=" + "'FALSE'";
+//                selection = DBAccessHelper.SONG_ARTIST + "=" + "'" + mArtistName + "'" + " AND "
+//                        + DBAccessHelper.SONG_ALBUM + "=" + "'" + mAlbumName + "'" + " AND "
+//                        + DBAccessHelper.SONG_WEATHER + "=" + "'" + mWeather + "'" + " AND "
+//                        + DBAccessHelper.BLACKLIST_STATUS + "=" + "'FALSE'";
             } else {
-                selection = DBAccessHelper.SONG_ARTIST + "=" + "'" + mArtistName + "'" + " AND "
-                        + DBAccessHelper.SONG_ALBUM + "=" + "'" + mAlbumName + "'" + " AND "
-                        + DBAccessHelper.SONG_WEATHER + "=" + "'" + mWeather + "'" + " AND "
+                selection = DBAccessHelper.SONG_WEATHER + "=" + "'" + mWeather + "'" + " AND "
                         + DBAccessHelper.BLACKLIST_STATUS + "=" + "'FALSE'" + " AND "
                         + DBAccessHelper.SONG_SOURCE + "<>" + "'GOOGLE_PLAY_MUSIC'";
+//                selection = DBAccessHelper.SONG_ARTIST + "=" + "'" + mArtistName + "'" + " AND "
+//                        + DBAccessHelper.SONG_ALBUM + "=" + "'" + mAlbumName + "'" + " AND "
+//                        + DBAccessHelper.SONG_WEATHER + "=" + "'" + mWeather + "'" + " AND "
+//                        + DBAccessHelper.BLACKLIST_STATUS + "=" + "'FALSE'" + " AND "
+//                        + DBAccessHelper.SONG_SOURCE + "<>" + "'GOOGLE_PLAY_MUSIC'";
             }
 
             mCursor = dbHelper.getReadableDatabase().query(DBAccessHelper.MUSIC_LIBRARY_TABLE,
@@ -271,16 +294,21 @@ public class AsyncAddToQueueTask extends AsyncTask<Boolean, Integer, Boolean> {
 
             String selection = null;
             if (mApp.isGooglePlayMusicEnabled()) {
-                selection = DBAccessHelper.SONG_ARTIST + "=" + "'" + mArtistName + "'" + " AND "
-                        + DBAccessHelper.SONG_ALBUM + "=" + "'" + mAlbumName + "'" + " AND "
-                        + DBAccessHelper.SONG_BPM + "=" + "'" + mBpm + "'" + " AND "
+                selection = DBAccessHelper.SONG_BPM + "=" + "'" + mBpm + "'" + " AND "
                         + DBAccessHelper.BLACKLIST_STATUS + "=" + "'FALSE'";
+//                selection = DBAccessHelper.SONG_ARTIST + "=" + "'" + mArtistName + "'" + " AND "
+//                        + DBAccessHelper.SONG_ALBUM + "=" + "'" + mAlbumName + "'" + " AND "
+//                        + DBAccessHelper.SONG_BPM + "=" + "'" + mBpm + "'" + " AND "
+//                        + DBAccessHelper.BLACKLIST_STATUS + "=" + "'FALSE'";
             } else {
-                selection = DBAccessHelper.SONG_ARTIST + "=" + "'" + mArtistName + "'" + " AND "
-                        + DBAccessHelper.SONG_ALBUM + "=" + "'" + mAlbumName + "'" + " AND "
-                        + DBAccessHelper.SONG_BPM + "=" + "'" + mBpm + "'" + " AND "
+                selection = DBAccessHelper.SONG_BPM + "=" + "'" + mBpm + "'" + " AND "
                         + DBAccessHelper.BLACKLIST_STATUS + "=" + "'FALSE'" + " AND "
                         + DBAccessHelper.SONG_SOURCE + "<>" + "'GOOGLE_PLAY_MUSIC'";
+//                selection = DBAccessHelper.SONG_ARTIST + "=" + "'" + mArtistName + "'" + " AND "
+//                        + DBAccessHelper.SONG_ALBUM + "=" + "'" + mAlbumName + "'" + " AND "
+//                        + DBAccessHelper.SONG_BPM + "=" + "'" + mBpm + "'" + " AND "
+//                        + DBAccessHelper.BLACKLIST_STATUS + "=" + "'FALSE'" + " AND "
+//                        + DBAccessHelper.SONG_SOURCE + "<>" + "'GOOGLE_PLAY_MUSIC'";
             }
 
             mCursor = dbHelper.getReadableDatabase().query(DBAccessHelper.MUSIC_LIBRARY_TABLE,
@@ -296,16 +324,21 @@ public class AsyncAddToQueueTask extends AsyncTask<Boolean, Integer, Boolean> {
 
             String selection = null;
             if (mApp.isGooglePlayMusicEnabled()) {
-                selection = DBAccessHelper.SONG_ARTIST + "=" + "'" + mArtistName + "'" + " AND "
-                        + DBAccessHelper.SONG_ALBUM + "=" + "'" + mAlbumName + "'" + " AND "
-                        + DBAccessHelper.SONG_TOD + "=" + "'" + mTod + "'" + " AND "
+                selection = DBAccessHelper.SONG_TOD + "=" + "'" + mTod + "'" + " AND "
                         + DBAccessHelper.BLACKLIST_STATUS + "=" + "'FALSE'";
+//                selection = DBAccessHelper.SONG_ARTIST + "=" + "'" + mArtistName + "'" + " AND "
+//                        + DBAccessHelper.SONG_ALBUM + "=" + "'" + mAlbumName + "'" + " AND "
+//                        + DBAccessHelper.SONG_TOD + "=" + "'" + mTod + "'" + " AND "
+//                        + DBAccessHelper.BLACKLIST_STATUS + "=" + "'FALSE'";
             } else {
-                selection = DBAccessHelper.SONG_ARTIST + "=" + "'" + mArtistName + "'" + " AND "
-                        + DBAccessHelper.SONG_ALBUM + "=" + "'" + mAlbumName + "'" + " AND "
-                        + DBAccessHelper.SONG_TOD + "=" + "'" + mTod + "'" + " AND "
+                selection = DBAccessHelper.SONG_TOD + "=" + "'" + mTod + "'" + " AND "
                         + DBAccessHelper.BLACKLIST_STATUS + "=" + "'FALSE'" + " AND "
                         + DBAccessHelper.SONG_SOURCE + "<>" + "'GOOGLE_PLAY_MUSIC'";
+//                selection = DBAccessHelper.SONG_ARTIST + "=" + "'" + mArtistName + "'" + " AND "
+//                        + DBAccessHelper.SONG_ALBUM + "=" + "'" + mAlbumName + "'" + " AND "
+//                        + DBAccessHelper.SONG_TOD + "=" + "'" + mTod + "'" + " AND "
+//                        + DBAccessHelper.BLACKLIST_STATUS + "=" + "'FALSE'" + " AND "
+//                        + DBAccessHelper.SONG_SOURCE + "<>" + "'GOOGLE_PLAY_MUSIC'";
             }
 
             mCursor = dbHelper.getReadableDatabase().query(DBAccessHelper.MUSIC_LIBRARY_TABLE,

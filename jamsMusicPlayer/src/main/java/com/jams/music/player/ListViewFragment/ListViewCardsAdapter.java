@@ -53,23 +53,130 @@ import java.util.HashMap;
  */
 public class ListViewCardsAdapter extends SimpleCursorAdapter implements Scrollable {
 
-    private Context mContext;
-    private Common mApp;
-    private ListViewFragment mListViewFragment;
-    public static ListViewHolder mHolder = null;
-    private String mName = "";
-
-    //HashMap for DB column names.
-    private HashMap<Integer, String> mDBColumnsMap;
     public static final int TITLE_TEXT = 0;
     public static final int SOURCE = 1;
     public static final int FILE_PATH = 2;
     public static final int ARTWORK_PATH = 3;
-    public static final int FIELD_1 = 4; //Empty fields for other 
+    public static final int FIELD_1 = 4; //Empty fields for other
     public static final int FIELD_2 = 5;
     public static final int FIELD_3 = 6;
     public static final int FIELD_4 = 7;
     public static final int FIELD_5 = 8;
+    public static final int WEATHER = 9;
+    public static final int TOD = 10;
+    public static final int BPM = 11;
+    public static ListViewHolder mHolder = null;
+    private Context mContext;
+    private Common mApp;
+    private ListViewFragment mListViewFragment;
+    private String mName = "";
+    //HashMap for DB column names.
+    private HashMap<Integer, String> mDBColumnsMap;
+    /**
+     * Menu item click listener for the pop up menu.
+     */
+    private OnMenuItemClickListener popupMenuItemClickListener = new OnMenuItemClickListener() {
+
+        @Override
+        public boolean onMenuItemClick(MenuItem item) {
+
+            switch (item.getItemId()) {
+                case R.id.edit_artist_tags:
+                    //Edit Artist Tags.
+                    if (mApp.getSharedPreferences().getBoolean("SHOW_ARTIST_EDIT_CAUTION", true)) {
+                        FragmentTransaction transaction = mListViewFragment.getFragmentManager().beginTransaction();
+                        Bundle bundle = new Bundle();
+                        bundle.putString("EDIT_TYPE", "ARTIST");
+                        bundle.putString("ARTIST", mName);
+                        CautionEditArtistsDialog dialog = new CautionEditArtistsDialog();
+                        dialog.setArguments(bundle);
+                        dialog.show(transaction, "cautionArtistsDialog");
+                    } else {
+                        FragmentTransaction ft = mListViewFragment.getFragmentManager().beginTransaction();
+                        Bundle bundle = new Bundle();
+                        bundle.putString("EDIT_TYPE", "ARTIST");
+                        bundle.putString("ARTIST", mName);
+                        ID3sArtistEditorDialog dialog = new ID3sArtistEditorDialog();
+                        dialog.setArguments(bundle);
+                        dialog.show(ft, "id3ArtistEditorDialog");
+                    }
+                    break;
+                case R.id.add_to_queue:
+                    //Add to Queue.
+                    AsyncAddToQueueTask task = new AsyncAddToQueueTask(mContext,
+                            mListViewFragment,
+                            "ARTIST",
+                            mName,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null);
+                    task.execute();
+                    break;
+                case R.id.play_next:
+                    AsyncAddToQueueTask playNextTask = new AsyncAddToQueueTask(mContext,
+                            mListViewFragment,
+                            "ARTIST",
+                            mName,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null);
+                    playNextTask.execute(new Boolean[]{true});
+                    break;
+                case R.id.add_to_playlist:
+                    //Add to Playlist
+                    FragmentTransaction ft = mListViewFragment.getFragmentManager().beginTransaction();
+                    AddToPlaylistDialog dialog = new AddToPlaylistDialog();
+                    Bundle bundle = new Bundle();
+                    bundle.putString("ADD_TYPE", "ARTIST");
+                    bundle.putString("ARTIST", mName);
+                    dialog.setArguments(bundle);
+                    dialog.show(ft, "AddToPlaylistDialog");
+                    break;
+                case R.id.blacklist_artist:
+                    //Blacklist Artist
+                    mApp.getDBAccessHelper().setBlacklistForArtist(mName, true);
+                    Toast.makeText(mContext, R.string.artist_blacklisted, Toast.LENGTH_SHORT).show();
+
+                    //Update the ListView.
+                    mListViewFragment.mHandler.post(mListViewFragment.queryRunnable);
+                    mListViewFragment.getListViewAdapter().notifyDataSetChanged();
+
+                    break;
+
+            }
+
+            return false;
+        }
+
+    };
+    /**
+     * Click listener for overflow button.
+     */
+    private OnClickListener overflowClickListener = new OnClickListener() {
+
+        @Override
+        public void onClick(View v) {
+            PopupMenu menu = new PopupMenu(mContext, v);
+            menu.inflate(R.menu.artist_overflow_menu);
+            menu.setOnMenuItemClickListener(popupMenuItemClickListener);
+            mName = (String) v.getTag(R.string.artist);
+            menu.show();
+
+        }
+
+    };
 
     public ListViewCardsAdapter(Context context, ListViewFragment listViewFragment,
                                 HashMap<Integer, String> dbColumnsMap) {
@@ -160,6 +267,9 @@ public class ListViewCardsAdapter extends SimpleCursorAdapter implements Scrolla
         String field3 = "";
         String field4 = "";
         String field5 = "";
+        String weather = "";
+        String tod = "";
+        String bpm = "";
         try {
             titleText = c.getString(c.getColumnIndex(mDBColumnsMap.get(TITLE_TEXT)));
             source = c.getString(c.getColumnIndex(mDBColumnsMap.get(SOURCE)));
@@ -170,6 +280,9 @@ public class ListViewCardsAdapter extends SimpleCursorAdapter implements Scrolla
             field3 = c.getString(c.getColumnIndex(mDBColumnsMap.get(FIELD_3)));
             field4 = c.getString(c.getColumnIndex(mDBColumnsMap.get(FIELD_4)));
             field5 = c.getString(c.getColumnIndex(mDBColumnsMap.get(FIELD_5)));
+            weather = c.getString(c.getColumnIndex(mDBColumnsMap.get(WEATHER)));
+            tod = c.getString(c.getColumnIndex(mDBColumnsMap.get(TOD)));
+            bpm = c.getString(c.getColumnIndex(mDBColumnsMap.get(BPM)));
 
         } catch (NullPointerException e) {
             //e.printStackTrace();
@@ -185,6 +298,9 @@ public class ListViewCardsAdapter extends SimpleCursorAdapter implements Scrolla
         convertView.setTag(R.string.field_3, field3);
         convertView.setTag(R.string.field_4, field4);
         convertView.setTag(R.string.field_5, field5);
+        convertView.setTag(R.string.weather_text, weather);
+        convertView.setTag(R.string.tod_text, tod);
+        convertView.setTag(R.string.bpm_text, bpm);
 
         //Set the tags for this list item's overflow button.
         mHolder.overflowIcon.setTag(R.string.title_text, titleText);
@@ -195,6 +311,9 @@ public class ListViewCardsAdapter extends SimpleCursorAdapter implements Scrolla
         mHolder.overflowIcon.setTag(R.string.field_3, field3);
         mHolder.overflowIcon.setTag(R.string.field_4, field4);
         mHolder.overflowIcon.setTag(R.string.field_5, field5);
+        mHolder.overflowIcon.setTag(R.string.weather_text, weather);
+        mHolder.overflowIcon.setTag(R.string.tod_text, tod);
+        mHolder.overflowIcon.setTag(R.string.bpm_text, bpm);
 
         //Set the title text in the ListView.
         mHolder.titleText.setText(titleText);
@@ -210,113 +329,6 @@ public class ListViewCardsAdapter extends SimpleCursorAdapter implements Scrolla
 
         return convertView;
     }
-
-    /**
-     * Click listener for overflow button.
-     */
-    private OnClickListener overflowClickListener = new OnClickListener() {
-
-        @Override
-        public void onClick(View v) {
-            PopupMenu menu = new PopupMenu(mContext, v);
-            menu.inflate(R.menu.artist_overflow_menu);
-            menu.setOnMenuItemClickListener(popupMenuItemClickListener);
-            mName = (String) v.getTag(R.string.artist);
-            menu.show();
-
-        }
-
-    };
-
-    /**
-     * Menu item click listener for the pop up menu.
-     */
-    private OnMenuItemClickListener popupMenuItemClickListener = new OnMenuItemClickListener() {
-
-        @Override
-        public boolean onMenuItemClick(MenuItem item) {
-
-            switch (item.getItemId()) {
-                case R.id.edit_artist_tags:
-                    //Edit Artist Tags.
-                    if (mApp.getSharedPreferences().getBoolean("SHOW_ARTIST_EDIT_CAUTION", true)) {
-                        FragmentTransaction transaction = mListViewFragment.getFragmentManager().beginTransaction();
-                        Bundle bundle = new Bundle();
-                        bundle.putString("EDIT_TYPE", "ARTIST");
-                        bundle.putString("ARTIST", mName);
-                        CautionEditArtistsDialog dialog = new CautionEditArtistsDialog();
-                        dialog.setArguments(bundle);
-                        dialog.show(transaction, "cautionArtistsDialog");
-                    } else {
-                        FragmentTransaction ft = mListViewFragment.getFragmentManager().beginTransaction();
-                        Bundle bundle = new Bundle();
-                        bundle.putString("EDIT_TYPE", "ARTIST");
-                        bundle.putString("ARTIST", mName);
-                        ID3sArtistEditorDialog dialog = new ID3sArtistEditorDialog();
-                        dialog.setArguments(bundle);
-                        dialog.show(ft, "id3ArtistEditorDialog");
-                    }
-                    break;
-                case R.id.add_to_queue:
-                    //Add to Queue.
-                    AsyncAddToQueueTask task = new AsyncAddToQueueTask(mContext,
-                            mListViewFragment,
-                            "ARTIST",
-                            mName,
-                            null,
-                            null,
-                            null,
-                            null,
-                            null,
-                            null,
-                            null,
-                            null,
-                            null);
-                    task.execute();
-                    break;
-                case R.id.play_next:
-                    AsyncAddToQueueTask playNextTask = new AsyncAddToQueueTask(mContext,
-                            mListViewFragment,
-                            "ARTIST",
-                            mName,
-                            null,
-                            null,
-                            null,
-                            null,
-                            null,
-                            null,
-                            null,
-                            null,
-                            null);
-                    playNextTask.execute(new Boolean[]{true});
-                    break;
-                case R.id.add_to_playlist:
-                    //Add to Playlist
-                    FragmentTransaction ft = mListViewFragment.getFragmentManager().beginTransaction();
-                    AddToPlaylistDialog dialog = new AddToPlaylistDialog();
-                    Bundle bundle = new Bundle();
-                    bundle.putString("ADD_TYPE", "ARTIST");
-                    bundle.putString("ARTIST", mName);
-                    dialog.setArguments(bundle);
-                    dialog.show(ft, "AddToPlaylistDialog");
-                    break;
-                case R.id.blacklist_artist:
-                    //Blacklist Artist
-                    mApp.getDBAccessHelper().setBlacklistForArtist(mName, true);
-                    Toast.makeText(mContext, R.string.artist_blacklisted, Toast.LENGTH_SHORT).show();
-
-                    //Update the ListView.
-                    mListViewFragment.mHandler.post(mListViewFragment.queryRunnable);
-                    mListViewFragment.getListViewAdapter().notifyDataSetChanged();
-
-                    break;
-
-            }
-
-            return false;
-        }
-
-    };
 
     /**
      * Holder subclass for ListViewCardsAdapter.

@@ -56,6 +56,7 @@ public class AsyncBuildLibraryTask extends AsyncTask<String, String, Void> {
     private String mCurrentTask = "";
     private int mOverallProgress = 0;
     private Date date = new Date();
+    private String UNKNOWN = "Unknown";
 
     private String mMediaStoreSelection = null;
     private HashMap<String, String> mGenresHashMap = new HashMap<String, String>();
@@ -357,6 +358,9 @@ public class AsyncBuildLibraryTask extends AsyncTask<String, String, Void> {
                 values.put(DBAccessHelper.SONG_ARTIST, songArtist);
                 values.put(DBAccessHelper.SONG_ALBUM, songAlbum);
                 values.put(DBAccessHelper.SONG_ALBUM_ARTIST, songAlbumArtist);
+                values.put(DBAccessHelper.SONG_WEATHER, UNKNOWN);
+                values.put(DBAccessHelper.SONG_BPM, UNKNOWN);
+                values.put(DBAccessHelper.SONG_TOD, UNKNOWN);
                 values.put(DBAccessHelper.SONG_DURATION, convertMillisToMinsSecs(durationLong));
                 values.put(DBAccessHelper.SONG_FILE_PATH, songFilePath);
                 values.put(DBAccessHelper.SONG_TRACK_NUMBER, songTrackNumber);
@@ -432,15 +436,18 @@ public class AsyncBuildLibraryTask extends AsyncTask<String, String, Void> {
                 String songTod = smartDBCursor.getString(todColIndex);
 
                 if (songWeather == null || songWeather.isEmpty()) {
-                    songWeather = mContext.getResources().getString(R.string.unknown_weather);
+                    //songWeather = mContext.getResources().getString(R.string.unknown_weather);
+                    songWeather = UNKNOWN;
                 }
 
                 if (songBpm == null || songBpm.isEmpty()) {
-                    songBpm = mContext.getResources().getString(R.string.unknown_bpm);
+                    //songBpm = mContext.getResources().getString(R.string.unknown_bpm);
+                    songWeather = UNKNOWN;
                 }
 
                 if (songTod == null || songTod.isEmpty()) {
-                    songTod = mContext.getResources().getString(R.string.unknown_tod);
+                    //songTod = mContext.getResources().getString(R.string.unknown_tod);
+                    songWeather = UNKNOWN;
                 }
 
                 ContentValues values = new ContentValues();

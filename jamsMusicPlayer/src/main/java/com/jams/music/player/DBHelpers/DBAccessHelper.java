@@ -782,14 +782,17 @@ public class DBAccessHelper extends SQLiteOpenHelper {
 //            case Common.SMART_PLAYLISTS_FRAGMENT:
 //                //TODO case stub.
             case Common.SMART_WEATHER_FRAGMENT:
-                querySelection += " ORDER BY " + SONG_WEATHER + " ASC";
-                return getAllSongsSearchable(querySelection);
+                return getAllUniqueWeather(querySelection);
+//                querySelection += " ORDER BY " + SONG_WEATHER + " ASC";
+//                return getAllSongsSearchable(querySelection);
             case Common.SMART_TOD_FRAGMENT:
-                querySelection += " ORDER BY " + SONG_TOD + " ASC";
-                return getAllSongsSearchable(querySelection);
+                return getAllUniqueTod(querySelection);
+//                querySelection += " ORDER BY " + SONG_TOD + " ASC";
+//                return getAllSongsSearchable(querySelection);
             case Common.SMART_BPM_FRAGMENT:
-                querySelection += " ORDER BY " + SONG_BPM + " ASC";
-                return getAllSongsSearchable(querySelection);
+                return getAllUniqueBpm(querySelection);
+//                querySelection += " ORDER BY " + SONG_BPM + " ASC";
+//                return getAllSongsSearchable(querySelection);
             case Common.PLAYLISTS_FRAGMENT:
                 //TODO case stub.
             case Common.GENRES_FRAGMENT:
