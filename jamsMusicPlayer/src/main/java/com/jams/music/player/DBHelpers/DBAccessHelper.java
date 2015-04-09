@@ -678,6 +678,8 @@ public class DBAccessHelper extends SQLiteOpenHelper {
         String rawQuery = "SELECT * FROM " + MUSIC_LIBRARY_TABLE;
 
         Cursor cursor = getDatabase().rawQuery(rawQuery, null);
+        cursor.moveToFirst();
+
         return cursor;
     }
 
