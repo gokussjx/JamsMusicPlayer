@@ -673,9 +673,9 @@ public class DBAccessHelper extends SQLiteOpenHelper {
     /**
      * Returns a cursor with all rows in MusicLibraryTable
      */
-    public Cursor getAllRowsMusicLibraryTable(Context context) {
+    public Cursor getAllRowsMusicLibraryTable() {
 
-        String rawQuery = "SELECT * FROM" + MUSIC_LIBRARY_TABLE;
+        String rawQuery = "SELECT * FROM " + MUSIC_LIBRARY_TABLE;
 
         Cursor cursor = getDatabase().rawQuery(rawQuery, null);
         return cursor;

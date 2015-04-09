@@ -20,7 +20,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
-import android.database.sqlite.SQLiteDatabase;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -170,7 +169,7 @@ public class AsyncBuildLibraryTask extends AsyncTask<String, String, Void> {
         mCurrentTask = mContext.getResources().getString(R.string.building_smartu_music_library);
         Log.i("BIDYUT: ", "Acquiring SmartDB Cursor");
         Cursor smartDBCursor = SmartUDatabase.getInstance(mContext).getSmartCols();
-        Cursor musicLibraryCursor = DBAccessHelper.getInstance(mContext).getAllRowsMusicLibraryTable(mContext);
+        Cursor musicLibraryCursor = DBAccessHelper.getInstance(mContext).getAllRowsMusicLibraryTable();
         Log.i("BIDYUT: ", "SmartDB Cursor Acquired");
 
         /*
@@ -545,28 +544,29 @@ public class AsyncBuildLibraryTask extends AsyncTask<String, String, Void> {
 //                    e.printStackTrace();
 //                }
 
-//                ContentValues values = new ContentValues();
+                ContentValues values = new ContentValues();
 //                if(DBAccessHelper.SONG_TITLE.equals(smartDBCursor.getString(0))) {
-                SQLiteDatabase db = DBAccessHelper.getInstance(mContext).getReadableDatabase();
-                String projection[] = {
-                        DBAccessHelper.SONG_TITLE
-                };
-                Cursor c = db.query()
+////                SQLiteDatabase db = DBAccessHelper.getInstance(mContext).getReadableDatabase();
+//                String projection[] = {
+//                        DBAccessHelper.SONG_TITLE
+//                };
+////                Cursor c = DBAccessHelper.getInstance(mContext).getAllRowsMusicLibraryTable();
+////                c.moveToFirst();
 
                 Log.i("BIDYUT: ", "Checking TITLE Condition");
                 for (int j = 0; j < musicLibraryCursor.getCount(); j++) {
                     String TITLE_CONDITION = musicLibraryCursor.getString(2);
                     if (TITLE_CONDITION.equals(songTitle)) {
 
-//                        values.put(DBAccessHelper.SONG_WEATHER, songWeather);
-//                        values.put(DBAccessHelper.SONG_BPM, songBpm);
-//                        values.put(DBAccessHelper.SONG_TOD, songTod);
-                    }
+                        values.put(DBAccessHelper.SONG_WEATHER, songWeather);
+                        values.put(DBAccessHelper.SONG_BPM, songBpm);
+                        values.put(DBAccessHelper.SONG_TOD, songTod);
 
-                    //Add all the entries to the database to build the songs library.
-                    mApp.getDBAccessHelper().getWritableDatabase().insert(DBAccessHelper.MUSIC_LIBRARY_TABLE,
-                            null,
-                            values);
+                        //Add all the entries to the database to build the songs library.
+                        mApp.getDBAccessHelper().getWritableDatabase().insert(DBAccessHelper.MUSIC_LIBRARY_TABLE,
+                                null,
+                                values);
+                    }
                 }
 
             }
