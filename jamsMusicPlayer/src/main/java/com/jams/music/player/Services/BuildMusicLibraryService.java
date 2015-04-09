@@ -65,6 +65,12 @@ public class BuildMusicLibraryService extends Service implements AsyncBuildLibra
         task.setOnBuildLibraryProgressUpdate(this);
         task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
+//        //Go crazy with full-on SMARTU scan.
+//        AsyncBuildLibraryTask task2 = new AsyncBuildLibraryTask(mContext, this);
+//        task.setOnBuildLibraryProgressUpdate(WelcomeActivity.mBuildingLibraryProgressFragment);
+//        task.setOnBuildLibraryProgressUpdate(this);
+//        task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
         return START_STICKY;
     }
 

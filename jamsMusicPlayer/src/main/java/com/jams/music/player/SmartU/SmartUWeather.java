@@ -50,9 +50,8 @@ public class SmartUWeather extends Activity implements YahooWeatherInfoListener,
     private Context mContext;
     private SmartUWeather mSmartUWeather;
     private Common mApp;
-    private Handler handlerWeather;
-    private Handler handlerBpm;
-    private Cursor songs;
+    private Handler handler;
+    private Cursor smartSongs;
     private SmartUDatabase db;
 
     @Override
@@ -67,16 +66,16 @@ public class SmartUWeather extends Activity implements YahooWeatherInfoListener,
         db = new SmartUDatabase(this);
 
         try {
-            handlerWeather = new Handler();
+            handler = new Handler();
             final Runnable r = new Runnable() {
                 @Override
                 public void run() {
-                    songs = db.getWeathers();
-                    handlerWeather.postDelayed(this, 1000);
+                    smartSongs = db.getSmartCols();
+                    handler.postDelayed(this, 1000);
                 }
             };
 
-            handlerWeather.postDelayed(r, 1000);
+            handler.postDelayed(r, 1000);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -251,7 +250,7 @@ public class SmartUWeather extends Activity implements YahooWeatherInfoListener,
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        songs.close();
+        smartSongs.close();
         db.close();
     }
 }

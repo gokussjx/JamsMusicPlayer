@@ -292,7 +292,7 @@ public class AsyncAddToQueueTask extends AsyncTask<Boolean, Integer, Boolean> {
                     DBAccessHelper.SONG_TRACK_NUMBER + "*1 ASC");
 
             mPlayingNext = mBpm;
-        } else if (mEnqueueType.equals("WEATHER")) {
+        } else if (mEnqueueType.equals("TOD")) {
 
             String selection = null;
             if (mApp.isGooglePlayMusicEnabled()) {
@@ -470,9 +470,15 @@ public class AsyncAddToQueueTask extends AsyncTask<Boolean, Integer, Boolean> {
                     } else if (mEnqueueType.equals("GENRE")) {
                         intent.putExtra("PLAY_ALL", "GENRE");
                         intent.putExtra("CALLING_FRAGMENT", "GENRES_FLIPPED_FRAGMENT");
-                    } else if (mEnqueueType.equals("SMART PLAYLISTS")) {
-                        intent.putExtra("PLAY_ALL", "SMART PLAYLISTS");
-                        intent.putExtra("CALLING_FRAGMENT", "SMART_PLAYLISTS_FLIPPED_FRAGMENT");
+                    } else if (mEnqueueType.equals("WEATHER")) {
+                        intent.putExtra("PLAY_ALL", "WEATHER");
+                        intent.putExtra("CALLING_FRAGMENT", "WEATHER_FLIPPED_FRAGMENT");
+                    } else if (mEnqueueType.equals("TOD")) {
+                        intent.putExtra("PLAY_ALL", "TOD");
+                        intent.putExtra("CALLING_FRAGMENT", "TOD_FLIPPED_FRAGMENT");
+                    } else if (mEnqueueType.equals("BPM")) {
+                        intent.putExtra("PLAY_ALL", "BPM");
+                        intent.putExtra("CALLING_FRAGMENT", "BPM_FLIPPED_FRAGMENT");
                     } else if (mEnqueueType.equals("ALBUM_ARTIST")) {
                         intent.putExtra("CALLING_FRAGMENT", "ALBUM_ARTISTS_FLIPPED_FRAGMENT");
                         intent.putExtra("PLAY_ALL", "ALBUM_ARTIST");

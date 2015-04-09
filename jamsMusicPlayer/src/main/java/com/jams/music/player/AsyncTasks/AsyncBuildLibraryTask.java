@@ -20,15 +20,18 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
+import android.database.sqlite.SQLiteDatabase;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.PowerManager;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.jams.music.player.DBHelpers.DBAccessHelper;
 import com.jams.music.player.DBHelpers.MediaStoreAccessHelper;
+import com.jams.music.player.DBHelpers.SmartUDatabase;
 import com.jams.music.player.FoldersFragment.FileExtensionFilter;
 import com.jams.music.player.R;
 import com.jams.music.player.Services.BuildMusicLibraryService;
@@ -60,6 +63,9 @@ public class AsyncBuildLibraryTask extends AsyncTask<String, String, Void> {
     private HashMap<String, String> mGenresHashMap = new HashMap<String, String>();
     private HashMap<String, Integer> mGenresSongCountHashMap = new HashMap<String, Integer>();
     private HashMap<String, Integer> mAlbumsCountMap = new HashMap<String, Integer>();
+    private HashMap<String, Integer> mWeatherCountMap = new HashMap<String, Integer>();
+    private HashMap<String, Integer> mBpmCountMap = new HashMap<String, Integer>();
+    private HashMap<String, Integer> mTodCountMap = new HashMap<String, Integer>();
     private HashMap<String, Integer> mSongsCountMap = new HashMap<String, Integer>();
     private HashMap<String, Uri> mMediaStoreAlbumArtMap = new HashMap<String, Uri>();
     private HashMap<String, String> mFolderArtHashMap = new HashMap<String, String>();
@@ -133,7 +139,9 @@ public class AsyncBuildLibraryTask extends AsyncTask<String, String, Void> {
 		 * by the user.
 		 */
         mCurrentTask = mContext.getResources().getString(R.string.building_music_library);
+        Log.i("BIDYUT: ", "Acquiring MediaStore Cursor");
         Cursor mediaStoreCursor = getSongsFromMediaStore();
+        Log.i("BIDYUT: ", "MediaStore Cursor Acquired");
 		
 		/* 
 		 * Transfer the content in mediaStoreCursor over to 
@@ -143,6 +151,8 @@ public class AsyncBuildLibraryTask extends AsyncTask<String, String, Void> {
             saveMediaStoreDataToDB(mediaStoreCursor);
             mediaStoreCursor.close();
         }
+        Log.i("BIDYUT: ", "MediaStore Data Transferred");
+
 
         //Save EQ presets to the database.
         saveEQPresets();
@@ -152,6 +162,27 @@ public class AsyncBuildLibraryTask extends AsyncTask<String, String, Void> {
 
         //Save album art paths for each song to the database.
         getAlbumArt();
+
+        /*
+		 * Get a cursor of songs from SmartUDatabase.
+		 * And cursor of all rows in MusicLibraryTable.
+		 */
+        mCurrentTask = mContext.getResources().getString(R.string.building_smartu_music_library);
+        Log.i("BIDYUT: ", "Acquiring SmartDB Cursor");
+        Cursor smartDBCursor = SmartUDatabase.getInstance(mContext).getSmartCols();
+        Cursor musicLibraryCursor = DBAccessHelper.getInstance(mContext).getAllRowsMusicLibraryTable(mContext);
+        Log.i("BIDYUT: ", "SmartDB Cursor Acquired");
+
+        /*
+		 * Transfer the content in SmartUDatabase over to
+		 * Jams' private database.
+		 */
+        if (smartDBCursor != null) {
+            saveSmartDataToDB(smartDBCursor, musicLibraryCursor);
+            musicLibraryCursor.close();
+            smartDBCursor.close();
+        }
+        Log.i("BIDYUT: ", "SmartDB Data Transferred");
 
         return null;
     }
@@ -396,6 +427,162 @@ public class AsyncBuildLibraryTask extends AsyncTask<String, String, Void> {
     }
 
     /**
+     * Iterates through mediaStoreCursor and transfers its data
+     * over to Jams' private database.
+     */
+    private void saveSmartDataToDB(Cursor smartDBCursor, Cursor musicLibraryCursor) {
+        try {
+            //Initialize the database transaction manually (improves performance).
+            mApp.getDBAccessHelper().getWritableDatabase().beginTransaction();
+
+            //Clear out the table.
+//            mApp.getDBAccessHelper()
+//                    .getWritableDatabase()
+//                    .delete(DBAccessHelper.MUSIC_LIBRARY_TABLE,
+//                            null,
+//                            null);
+
+            //Tracks the progress of this method.
+            int subProgress = 0;
+            if (smartDBCursor.getCount() != 0) {
+                subProgress = 250000 / (smartDBCursor.getCount());
+            } else {
+                subProgress = 250000;
+            }
+
+//            //Populate a hash of all songs in MediaStore and their genres.
+//            buildGenresLibrary();
+//
+//            //Populate a hash of all artists and their number of albums.
+//            buildArtistsLibrary();
+//
+//            //Populate a hash of all albums and their number of songs.
+//            buildAlbumsLibrary();
+//
+//            //Populate a has of all albums and their album art path.
+//            buildMediaStoreAlbumArtHash();
+
+            //Prefetch each column's index.
+            final int titleColIndex = smartDBCursor.getColumnIndex(SmartUDatabase.SONG_TITLE);
+            final int weatherColIndex = smartDBCursor.getColumnIndex(SmartUDatabase.SONG_WEATHER);
+            final int bpmColIndex = smartDBCursor.getColumnIndex(SmartUDatabase.SONG_BPM);
+            final int todColIndex = smartDBCursor.getColumnIndex(SmartUDatabase.SONG_TOD);
+//            final int idColIndex = mediaStoreCursor.getColumnIndex(MediaStore.Audio.Media._ID);
+//            int albumArtistColIndex = mediaStoreCursor.getColumnIndex(MediaStoreAccessHelper.ALBUM_ARTIST);
+
+//    		/* The album artist field is hidden by default and we've explictly exposed it.
+//    		 * The field may cease to exist at any time and if it does, use the artists
+//    		 * field instead.
+//    		 */
+//            if (albumArtistColIndex == -1) {
+//                albumArtistColIndex = artistColIndex;
+//            }
+
+            //Iterate through MediaStore's cursor and save the fields to Jams' DB.
+            for (int i = 0; i < smartDBCursor.getCount(); i++) {
+
+                smartDBCursor.moveToPosition(i);
+                mOverallProgress += subProgress;
+                publishProgress();
+
+                String songTitle = smartDBCursor.getString(titleColIndex);
+                String songWeather = smartDBCursor.getString(weatherColIndex);
+                String songBpm = smartDBCursor.getString(bpmColIndex);
+                String songTod = smartDBCursor.getString(todColIndex);
+
+//                if (numberOfAlbums.equals("1"))
+//                    numberOfAlbums += " " + mContext.getResources().getString(R.string.album_small);
+//                else
+//                    numberOfAlbums += " " + mContext.getResources().getString(R.string.albums_small);
+//
+//                if (numberOfTracks.equals("1"))
+//                    numberOfTracks += " " + mContext.getResources().getString(R.string.song_small);
+//                else
+//                    numberOfTracks += " " + mContext.getResources().getString(R.string.songs_small);
+//
+//                if (numberOfSongsInGenre.equals("1"))
+//                    numberOfSongsInGenre += " " + mContext.getResources().getString(R.string.song_small);
+//                else
+//                    numberOfSongsInGenre += " " + mContext.getResources().getString(R.string.songs_small);
+
+                //Check if any of the other tags were empty/null and set them to "Unknown xxx" values.
+                if (songWeather == null || songWeather.isEmpty()) {
+                    songWeather = mContext.getResources().getString(R.string.unknown_weather);
+                }
+
+                if (songBpm == null || songBpm.isEmpty()) {
+                    songBpm = mContext.getResources().getString(R.string.unknown_bpm);
+                }
+
+                if (songTod == null || songTod.isEmpty()) {
+                    songTod = mContext.getResources().getString(R.string.unknown_tod);
+                }
+
+//
+//                //Filter out track numbers and remove any bogus values.
+//                if (songTrackNumber != null) {
+//                    if (songTrackNumber.contains("/")) {
+//                        int index = songTrackNumber.lastIndexOf("/");
+//                        songTrackNumber = songTrackNumber.substring(0, index);
+//                    }
+//
+//                    try {
+//                        if (Integer.parseInt(songTrackNumber) <= 0) {
+//                            songTrackNumber = "";
+//                        }
+//
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                        songTrackNumber = "";
+//                    }
+//
+//                }
+
+//                long durationLong = 0;
+//                try {
+//                    durationLong = Long.parseLong(songDuration);
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+
+//                ContentValues values = new ContentValues();
+//                if(DBAccessHelper.SONG_TITLE.equals(smartDBCursor.getString(0))) {
+                SQLiteDatabase db = DBAccessHelper.getInstance(mContext).getReadableDatabase();
+                String projection[] = {
+                        DBAccessHelper.SONG_TITLE
+                };
+                Cursor c = db.query()
+
+                Log.i("BIDYUT: ", "Checking TITLE Condition");
+                for (int j = 0; j < musicLibraryCursor.getCount(); j++) {
+                    String TITLE_CONDITION = musicLibraryCursor.getString(2);
+                    if (TITLE_CONDITION.equals(songTitle)) {
+
+//                        values.put(DBAccessHelper.SONG_WEATHER, songWeather);
+//                        values.put(DBAccessHelper.SONG_BPM, songBpm);
+//                        values.put(DBAccessHelper.SONG_TOD, songTod);
+                    }
+
+                    //Add all the entries to the database to build the songs library.
+                    mApp.getDBAccessHelper().getWritableDatabase().insert(DBAccessHelper.MUSIC_LIBRARY_TABLE,
+                            null,
+                            values);
+                }
+
+            }
+
+        } catch (SQLException e) {
+            // TODO Auto-generated method stub.
+            e.printStackTrace();
+        } finally {
+            //Close the transaction.
+            mApp.getDBAccessHelper().getWritableDatabase().setTransactionSuccessful();
+            mApp.getDBAccessHelper().getWritableDatabase().endTransaction();
+        }
+
+    }
+
+    /**
      * Constructs the selection string for limiting the MediaStore
      * query to specific music folders.
      */
@@ -523,6 +710,29 @@ public class AsyncBuildLibraryTask extends AsyncTask<String, String, Void> {
 
         albumsCursor.close();
     }
+
+//    /**
+//     * Builds a HashMap of all weathers and their individual songs count.
+//     */
+//    private void buildWeatherLibrary() {
+//        Cursor weatherCursor = mContext.getContentResolver().query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
+//                new String[]{SmartUDatabase.SONG_WEATHER, SmartUDatabase.SONG_TITLE},
+//                null,
+//                null,
+//                null);
+//
+//        if (weatherCursor == null)
+//            return;
+//
+//        for (int i = 0; i < weatherCursor.getCount(); i++) {
+//            weatherCursor.moveToPosition(i);
+//            // BIDYUT : TAG LINE : NOT SURE ABOUT THIS
+//            //mSongsCountMap.put(weatherCursor.getString(0) + weatherCursor.getString(1), weatherCursor.getInt(2));
+//
+//        }
+//
+//        weatherCursor.close();
+//    }
 
     /**
      * Builds a HashMap of all albums and their album art path.

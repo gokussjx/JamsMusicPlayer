@@ -35,6 +35,7 @@ import android.widget.Toast;
 import com.google.android.gms.common.images.ImageManager;
 import com.jams.music.player.AsyncTasks.AsyncGoogleMusicAuthenticationTask;
 import com.jams.music.player.DBHelpers.DBAccessHelper;
+import com.jams.music.player.DBHelpers.SmartUDatabase;
 import com.jams.music.player.GMusicHelpers.GMusicClientCalls;
 import com.jams.music.player.Helpers.UIElementsHelper;
 import com.jams.music.player.NowPlayingActivity.NowPlayingActivity;
@@ -803,6 +804,10 @@ public class Common extends Application {
 
     public DBAccessHelper getDBAccessHelper() {
         return DBAccessHelper.getInstance(mContext);
+    }
+
+    public SmartUDatabase getSmartUDatabase() {
+        return SmartUDatabase.getInstance(mContext);
     }
 
     public SharedPreferences getSharedPreferences() {

@@ -671,6 +671,17 @@ public class DBAccessHelper extends SQLiteOpenHelper {
     }
 
     /**
+     * Returns a cursor with all rows in MusicLibraryTable
+     */
+    public Cursor getAllRowsMusicLibraryTable(Context context) {
+
+        String rawQuery = "SELECT * FROM" + MUSIC_LIBRARY_TABLE;
+
+        Cursor cursor = getDatabase().rawQuery(rawQuery, null);
+        return cursor;
+    }
+
+    /**
      * Retrieves a HashSet of all the song ids within a particular music library.
      */
     public HashSet<String> getAllSongIdsInLibrary(String libraryName, String tag) {
