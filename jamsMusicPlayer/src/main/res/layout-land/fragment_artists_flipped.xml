@@ -19,33 +19,33 @@
 
             <TextView
                 android:id="@+id/empty_view_text"
-                android:visibility="invisible"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
                 android:layout_centerVertical="true"
-                android:hint="@string/no_albums_found_try_another_library"
-                android:gravity="center"
                 android:layout_marginLeft="25dp"
                 android:layout_marginRight="25dp"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                android:gravity="center"
+                android:hint="@string/no_albums_found_try_another_library"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:visibility="invisible" />
 
             <ImageView
                 android:id="@+id/empty_view_image"
-                android:visibility="invisible"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_above="@+id/empty_view_text"
                 android:layout_centerHorizontal="true"
-                android:src="@drawable/albums_light" />
+                android:src="@drawable/albums_light"
+                android:visibility="invisible" />
 
             <ListView
                 android:id="@+id/artistCardFlippedListView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:drawSelectorOnTop="true"
                 android:layout_alignParentTop="true"
-                android:layout_centerHorizontal="true"></ListView>
+                android:layout_centerHorizontal="true"
+                android:drawSelectorOnTop="true"></ListView>
 
         </RelativeLayout>
 
@@ -61,8 +61,8 @@
                 android:layout_height="fill_parent"
                 android:layout_centerHorizontal="true"
                 android:layout_centerVertical="true"
-                android:scaleType="centerCrop"
-                android:adjustViewBounds="true" />
+                android:adjustViewBounds="true"
+                android:scaleType="centerCrop" />
 
         </RelativeLayout>
 

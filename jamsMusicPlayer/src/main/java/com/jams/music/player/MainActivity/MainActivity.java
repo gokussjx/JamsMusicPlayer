@@ -45,15 +45,39 @@ import com.jams.music.player.GridViewFragment.GridViewFragment;
 import com.jams.music.player.Helpers.UIElementsHelper;
 import com.jams.music.player.ListViewFragment.ListViewFragment;
 import com.jams.music.player.R;
+import com.jams.music.player.SmartU.SmartUTod;
 import com.jams.music.player.Utils.Common;
 
-public class MainActivity extends FragmentActivity implements Callbacks{
+import org.apache.commons.lang3.text.WordUtils;
 
+import zh.wang.android.apis.yweathergetter4a.WeatherInfo;
+import zh.wang.android.apis.yweathergetter4a.YahooWeather;
+import zh.wang.android.apis.yweathergetter4a.YahooWeatherExceptionListener;
+import zh.wang.android.apis.yweathergetter4a.YahooWeatherInfoListener;
+
+public class MainActivity extends FragmentActivity implements Callbacks, YahooWeatherInfoListener, YahooWeatherExceptionListener {
+
+    //Layout flags.
+    public static final String CURRENT_FRAGMENT = "CurrentFragment";
+    public static final String ARTISTS_FRAGMENT_LAYOUT = "ArtistsFragmentLayout";
+    public static final String ALBUM_ARTISTS_FRAGMENT_LAYOUT = "AlbumArtistsFragmentLayout";
+    public static final String ALBUMS_FRAGMENT_LAYOUT = "AlbumsFragmentLayout";
+    public static final String PLAYLISTS_FRAGMENT_LAYOUT = "PlaylistsFragmentLayout";
+    //    public static final String SMART_PLAYLISTS_FRAGMENT_LAYOUT = "SmartPlaylistsFragmentLayout";
+    public static final String SMART_WEATHER_FRAGMENT_LAYOUT = "SmartWeatherFragmentLayout";
+    public static final String SMART_TOD_FRAGMENT_LAYOUT = "SmartTodFragmentLayout";
+    public static final String SMART_BPM_FRAGMENT_LAYOUT = "SmartBpmFragmentLayout";
+    public static final String GENRES_FRAGMENT_LAYOUT = "GenresFragmentLayout";
+    public static final String FOLDERS_FRAGMENT_LAYOUT = "FoldersFragmentLayout";
+    public static final String FRAGMENT_HEADER = "FragmentHeader";
+    public static final int LIST_LAYOUT = 0;
+    public static final int GRID_LAYOUT = 1;
+    public static int mCurrentFragmentId;
+    public static int mCurrentFragmentLayout;
     //Context and Common object(s).
     private Context mContext;
     private Common mApp;
     private Callbacks mCallbacks;
-
     //UI elements.
     private FrameLayout mDrawerParentLayout;
     private DrawerLayout mDrawerLayout;
@@ -62,31 +86,22 @@ public class MainActivity extends FragmentActivity implements Callbacks{
     private ActionBarDrawerToggle mDrawerToggle;
     private QueueDrawerFragment mQueueDrawerFragment;
     private Menu mMenu;
+    private SmartUTod smartUTod;
+    private String smartWeather;
+    private String smartTod;
+    private String mWeather;
+
+    private YahooWeather mYahooWeather = YahooWeather.getInstance(5000, 5000, true);
 
     //Current fragment params.
     private Fragment mCurrentFragment;
-    public static int mCurrentFragmentId;
-    public static int mCurrentFragmentLayout;
-
-    //Layout flags.
-    public static final String CURRENT_FRAGMENT = "CurrentFragment";
-    public static final String ARTISTS_FRAGMENT_LAYOUT = "ArtistsFragmentLayout";
-    public static final String ALBUM_ARTISTS_FRAGMENT_LAYOUT = "AlbumArtistsFragmentLayout";
-    public static final String ALBUMS_FRAGMENT_LAYOUT = "AlbumsFragmentLayout";
-    public static final String PLAYLISTS_FRAGMENT_LAYOUT = "PlaylistsFragmentLayout";
-    public static final String SMART_PLAYLISTS_FRAGMENT_LAYOUT = "SmartPlaylistsFragmentLayout";
-    public static final String GENRES_FRAGMENT_LAYOUT = "GenresFragmentLayout";
-    public static final String FOLDERS_FRAGMENT_LAYOUT = "FoldersFragmentLayout";
-    public static final String FRAGMENT_HEADER = "FragmentHeader";
-    public static final int LIST_LAYOUT = 0;
-    public static final int GRID_LAYOUT = 1;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
         //Context and Common object(s).
         mContext = getApplicationContext();
-        mApp = (Common) getApplicationContext();
+        mApp = (Common) mContext;
 
         // Callback instance
         computeSomething("FRAGMENTS");
@@ -146,7 +161,6 @@ public class MainActivity extends FragmentActivity implements Callbacks{
             showAlbumArtScanningDialog();
             mApp.getSharedPreferences().edit().putBoolean(Common.FIRST_RUN, false).commit();
         }
-
     }
 
     /**
@@ -196,6 +210,85 @@ public class MainActivity extends FragmentActivity implements Callbacks{
 
     }
 
+    private void searchByGPS() {
+        mYahooWeather.setSearchMode(YahooWeather.SEARCH_MODE.GPS);
+        mYahooWeather.setUnit(YahooWeather.UNIT.CELSIUS);
+        mYahooWeather.queryYahooWeatherByGPS(getApplicationContext(), this);
+    }
+
+    @Override
+    public void gotWeatherInfo(WeatherInfo weatherInfo) {
+        // TODO Auto-generated method stub
+        if (weatherInfo != null) {
+            mWeather = getSmartWeather(weatherInfo.getCurrentText());
+            Toast.makeText(this, "Current Weather is " + WordUtils.capitalize(mWeather), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "So we suggest trying the " + WordUtils.capitalize(mWeather) + " collection!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public String getSmartWeather(String weather) {
+        weather = weather.toLowerCase();
+
+        if (weather.contains("tornado") ||
+                weather.contains("storm") ||
+                weather.contains("hurricane") ||
+                weather.contains("thunder")) {
+            return "storm";
+        } else if (weather.contains("snow")) {
+            return "snow";
+        } else if (weather.contains("drizzle") ||
+                weather.contains("rain") ||
+                weather.contains("shower") ||
+                weather.contains("hail")) {
+            return "rain";
+        } else if (weather.contains("dust") ||
+                weather.contains("fog") ||
+                weather.contains("haze") ||
+                weather.contains("smoky") ||
+                weather.contains("bluster") ||
+                weather.contains("wind")) {
+            return "windy";
+        } else if (weather.contains("cold")) {
+            return "cold";
+        } else if (weather.contains("cloud")) {
+            return "cloudy";
+        } else if (weather.contains("clear")) {
+            return "clear";
+        } else if (weather.contains("sun") ||
+                weather.contains("hot")) {
+            return "sunny";
+        } else {
+            return "unavailable";
+        }
+    }
+
+    /**
+     * YahooWeather Interface methods
+     * @param e
+     */
+    @Override
+    public void onFailConnection(final Exception e) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void onFailParsing(final Exception e) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void onFailFindLocation(final Exception e) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
+
     /**
      * Loads the correct fragment based on the selected browser.
      */
@@ -227,8 +320,24 @@ public class MainActivity extends FragmentActivity implements Callbacks{
                 case Common.PLAYLISTS_FRAGMENT:
                     mCurrentFragment = getLayoutFragment(Common.PLAYLISTS_FRAGMENT);
                     break;
-                case Common.SMART_PLAYLISTS_FRAGMENT:
-                    mCurrentFragment = getLayoutFragment(Common.SMART_PLAYLISTS_FRAGMENT);
+                case Common.SMART_WEATHER_FRAGMENT:
+                    // Initiate Smart Weather
+                    mYahooWeather.setExceptionListener(this);
+                    searchByGPS();
+                    mCurrentFragment = getLayoutFragment(Common.SMART_WEATHER_FRAGMENT);
+//                    Toast.makeText(mContext, "Current Weather is " + smartWeather, Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(mContext, "So we suggest trying the " + smartWeather + " collection!", Toast.LENGTH_SHORT).show();
+                    break;
+                case Common.SMART_TOD_FRAGMENT:
+                    // Initiate Smart TOD
+                    smartUTod = new SmartUTod(mContext);
+                    smartTod = smartUTod.getTod();
+                    mCurrentFragment = getLayoutFragment(Common.SMART_TOD_FRAGMENT);
+                    Toast.makeText(mContext, "It's " + smartTod + " right now", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext, "So we suggest trying the " + smartTod + " collection!", Toast.LENGTH_SHORT).show();
+                    break;
+                case Common.SMART_BPM_FRAGMENT:
+                    mCurrentFragment = getLayoutFragment(Common.SMART_BPM_FRAGMENT);
                     break;
                 case Common.GENRES_FRAGMENT:
                     mCurrentFragment = getLayoutFragment(Common.GENRES_FRAGMENT);
@@ -279,10 +388,25 @@ public class MainActivity extends FragmentActivity implements Callbacks{
                 bundle.putInt(Common.FRAGMENT_ID, Common.PLAYLISTS_FRAGMENT);
                 bundle.putString(FRAGMENT_HEADER, mContext.getResources().getString(R.string.playlists));
                 break;
-            case Common.SMART_PLAYLISTS_FRAGMENT:
-                mCurrentFragmentLayout = mApp.getSharedPreferences().getInt(SMART_PLAYLISTS_FRAGMENT_LAYOUT, LIST_LAYOUT);
-                bundle.putInt(Common.FRAGMENT_ID, Common.SMART_PLAYLISTS_FRAGMENT);
-                bundle.putString(FRAGMENT_HEADER, mContext.getResources().getString(R.string.smart_playlists));
+//            case Common.SMART_PLAYLISTS_FRAGMENT:
+//                mCurrentFragmentLayout = mApp.getSharedPreferences().getInt(SMART_PLAYLISTS_FRAGMENT_LAYOUT, LIST_LAYOUT);
+//                bundle.putInt(Common.FRAGMENT_ID, Common.SMART_PLAYLISTS_FRAGMENT);
+//                bundle.putString(FRAGMENT_HEADER, mContext.getResources().getString(R.string.smart_playlists));
+//                break;
+            case Common.SMART_WEATHER_FRAGMENT:
+                mCurrentFragmentLayout = mApp.getSharedPreferences().getInt(SMART_WEATHER_FRAGMENT_LAYOUT, GRID_LAYOUT);
+                bundle.putInt(Common.FRAGMENT_ID, Common.SMART_WEATHER_FRAGMENT);
+                bundle.putString(FRAGMENT_HEADER, mContext.getResources().getString(R.string.smart_weather));
+                break;
+            case Common.SMART_TOD_FRAGMENT:
+                mCurrentFragmentLayout = mApp.getSharedPreferences().getInt(SMART_TOD_FRAGMENT_LAYOUT, GRID_LAYOUT);
+                bundle.putInt(Common.FRAGMENT_ID, Common.SMART_TOD_FRAGMENT);
+                bundle.putString(FRAGMENT_HEADER, mContext.getResources().getString(R.string.smart_tod));
+                break;
+            case Common.SMART_BPM_FRAGMENT:
+                mCurrentFragmentLayout = mApp.getSharedPreferences().getInt(SMART_BPM_FRAGMENT_LAYOUT, GRID_LAYOUT);
+                bundle.putInt(Common.FRAGMENT_ID, Common.SMART_BPM_FRAGMENT);
+                bundle.putString(FRAGMENT_HEADER, mContext.getResources().getString(R.string.smart_bpm));
                 break;
             case Common.GENRES_FRAGMENT:
                 mCurrentFragmentLayout = mApp.getSharedPreferences().getInt(GENRES_FRAGMENT_LAYOUT, GRID_LAYOUT);

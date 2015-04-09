@@ -24,13 +24,21 @@
     <string name="search_albums">Search Albums</string>
     <string name="search_songs">Search Songs</string>
     <string name="playlists">Playlists</string>
-    <string name="smart_playlists">Smart Playlists</string>
+    <!--<string name="smart_playlists">Smart Playlists</string>-->
+    <string name="smart_weather">Smart Weather</string>
+    <string name="smart_tod">Smart TOD</string>
+    <string name="smart_bpm">Smart BPM</string>
+    <string name="search_smart_weather">Search Smart Weather</string>
+    <string name="search_smart_tod">Search Smart TOD</string>
+    <string name="search_smart_bpm">Search Smart BPM</string>
     <string name="search_playlists">Search Playlists</string>
     <string name="artists_caps">ARTISTS</string>
     <string name="albums_caps">ALBUMS</string>
     <string name="songs_caps">SONGS</string>
     <string name="playlists_caps">PLAYLISTS</string>
-    <string name="smart_playlists_caps">SMART PLAYLISTS</string>
+    <string name="smart_weather_caps">SMART WEATHER</string>
+    <string name="smart_tod_caps">SMART TOD</string>
+    <string name="smart_bpm_caps">SMART BPM</string>
     <string name="settings_caps">SETTINGS</string>
     <string name="play_all">Play All</string>
     <string name="pin">Pin</string>
@@ -101,6 +109,7 @@
     <string name="title_activity_settings">Settings</string>
     <string name="genres_caps">GENRES</string>
     <string name="building_music_library">Building Music Library</string>
+    <string name="building_smartu_music_library">Building SmartU Music Library</string>
     <string name="welcome_text_1">Thanks for downloading Jams Music Player. To help you get started with the app, you\'ll be guided through a few initial steps. Swipe left to continue.</string>
     <string name="next">Next</string>
     <string name="done">Done</string>
@@ -130,10 +139,10 @@
     <string name="artist">Artist:</string>
     <string name="album">Album:</string>
     <string name="genre">Genre:</string>
-    <string name="year">Year:</string>
     <string name="weather">Weather:</string>
     <string name="bpm">BPM:</string>
     <string name="tod">TOD:</string>
+    <string name="year">Year:</string>
     <string name="album_artist">Album Artist:</string>
     <string name="composer">Composer:</string>
     <string name="producer">Producer:</string>
@@ -188,13 +197,34 @@
         <item>Remove Album Art</item>
         <item>Blacklist Album</item>
     </string-array>
-    <string-array name="smart_playlists_context_menu_items">
+    <string-array name="smart_weather_context_menu_items">
         <item>Add to Queue</item>
         <item>Add To Playlist</item>
         <item>Get Album Art</item>
         <item>Remove Album Art</item>
         <item>Blacklist Album</item>
     </string-array>
+    <string-array name="smart_tod_context_menu_items">
+        <item>Add to Queue</item>
+        <item>Add To Playlist</item>
+        <item>Get Album Art</item>
+        <item>Remove Album Art</item>
+        <item>Blacklist Album</item>
+    </string-array>
+    <string-array name="smart_bpm_context_menu_items">
+        <item>Add to Queue</item>
+        <item>Add To Playlist</item>
+        <item>Get Album Art</item>
+        <item>Remove Album Art</item>
+        <item>Blacklist Album</item>
+    </string-array>
+    <!--<string-array name="smart_playlists_context_menu_items">-->
+        <!--<item>Add to Queue</item>-->
+        <!--<item>Add To Playlist</item>-->
+        <!--<item>Get Album Art</item>-->
+        <!--<item>Remove Album Art</item>-->
+        <!--<item>Blacklist Album</item>-->
+    <!--</string-array>-->
     <string-array name="album_artists_context_menu_items">
         <item>Add to Queue</item>
         <item>Add to Playlist</item>
@@ -330,6 +360,9 @@
     <string name="manage_blacklisted_songs">Manage Blacklisted Songs</string>
     <string name="manage_blacklisted_playlists">Manage Blacklisted Playlists</string>
     <string name="manage_blacklisted_genres">Manage Blacklisted Genres</string>
+    <string name="manage_blacklisted_smart_weather">Manage Blacklisted Smart Weather</string>
+    <string name="manage_blacklisted_smart_tod">Manage Blacklisted Smart TOD</string>
+    <string name="manage_blacklisted_smart_bpm">Manage Blacklisted Smart BPM</string>
     <string name="equalizer_could_not_be_initialized">The equalizer could not be initalized. Try restarting your device.</string>
     <string name="song_index">song_index</string>
 
@@ -432,6 +465,9 @@
     <string name="blacklisted_artists">Blacklisted Artists</string>
     <string name="blacklisted_albums">Blacklisted Albums</string>
     <string name="blacklisted_songs">Blacklisted Songs</string>
+    <string name="blacklisted_smart_weather">Blacklisted Smart Weather</string>
+    <string name="blacklisted_smart_tod">Blacklisted Smart TOD</string>
+    <string name="blacklisted_smart_bpm">Blacklisted Smart BPM</string>
     <string name="blacklisted_playlists">Blacklisted Playlists</string>
     <string name="blacklist_manager_info">To remove an item from the blacklist, fling it away in either direction.</string>
     <string name="no_blacklisted_items_found">No blacklisted items found.</string>
@@ -576,6 +612,9 @@
     <string name="artists_music_library_editor_instructions">Tap an artist to add their songs to this custom library.</string>
     <string name="songs_music_library_editor_instructions">Tap a song to add it to this custom library.</string>
     <string name="albums_music_library_editor_instructions">Tap an album to add its songs to this custom library.</string>
+    <string name="smart_weather_music_library_editor_instructions">Tap a smart weather selection to add its songs to this custom library.</string>
+    <string name="smart_tod_music_library_editor_instructions">Tap a smart TOD selection to add its songs to this custom library.</string>
+    <string name="smart_bpm_music_library_editor_instructions">Tap a smart BPM selection to add its songs to this custom library.</string>
     <string name="done_creating_library">Custom library created.</string>
     <string name="deleted">Deleted</string>
     <string name="no_music_libraries_found">No custom libraries found.</string>
@@ -584,6 +623,9 @@
     <string name="blacklist_manager_artists_instructions">Tap on an artist to blacklist them (highlighted) or remove them from the blacklist (unhighlighted).</string>
     <string name="blacklist_manager_albums_instructions">Tap on an album to blacklist it (highlighted) or remove it from the blacklist (unhighlighted).</string>
     <string name="blacklist_manager_songs_instructions">Tap on a song to blacklist it (highlighted) or remove it from the blacklist (unhighlighted).</string>
+    <string name="blacklist_manager_smart_weather_instructions">Tap on a smart weather selection to blacklist them (highlighted) or remove them from the blacklist (unhighlighted).</string>
+    <string name="blacklist_manager_smart_tod_instructions">Tap on a smart TOD selection to blacklist them (highlighted) or remove them from the blacklist (unhighlighted).</string>
+    <string name="blacklist_manager_smart_bpm_instructions">Tap on a smart BPM selection to blacklist them (highlighted) or remove them from the blacklist (unhighlighted).</string>
     <string name="done_updating_blacklists">Done updating blacklists.</string>
     <string name="updating_blacklists">Updating blacklists.</string>
     <string name="fetching_blacklists">Fetching blacklists.</string>
@@ -609,6 +651,9 @@
     <string name="no_albums_found_info">No albums found. You can configure your music folders in Settings.</string>
     <string name="no_album_artists_found_info">No album artists found. You can configure your music folders in Settings.</string>
     <string name="no_genres_found_info">No genres found. You can configure your music folders in Settings.</string>
+    <string name="no_smart_weather_found_info">No smart weather selection found. You can configure your music folders in Settings.</string>
+    <string name="no_smart_tod_found_info">No smart TOD selection found. You can configure your music folders in Settings.</string>
+    <string name="no_smart_bpm_found_info">No smart BPM selection found. You can configure your music folders in Settings.</string>
     <string name="this_folder_is_empty">This folder is empty.</string>
     <string name="song_tags_saved">Song tags saved.</string>
     <string name="edit_google_play_music_tags_unsupported">Jams doesn\'t support tag editing for songs on Google Play Music, yet. This feature will be added in a future update.</string>
@@ -722,6 +767,9 @@
     <string name="artists_layout">Artists Layout</string>
     <string name="album_artists_layout">Album Artists Layout</string>
     <string name="albums_layout">Albums Layout</string>
+    <string name="smart_weather_layout">Smart Weather Layout</string>
+    <string name="smart_tod_layout">Smart TOD Layout</string>
+    <string name="smart_bpm_layout">Smart BPM Layout</string>
 
     <string-array name="startup_screen_items">
         <item>Artists</item>
@@ -729,7 +777,9 @@
         <item>Albums</item>
         <item>Songs</item>
         <item>Playlists</item>
-        <item>Smart Playlists</item>
+        <item>Smart Weather</item>
+        <item>Smart TOD</item>
+        <item>Smart BPM</item>
         <item>Genres</item>
         <item>Folders</item>
     </string-array>
@@ -805,6 +855,9 @@
     <string name="unknown_artist">Unknown Artist</string>
     <string name="unknown_album">Unknown Album</string>
     <string name="unknown_title">Unknown Title</string>
+    <string name="unknown_weather">Unknown Weather</string>
+    <string name="unknown_tod">Unknown TOD</string>
+    <string name="unknown_bpm">Unknown BPM</string>
     <string name="unknown_genre">Unknown Genre</string>
     <string name="unknown_album_artist">Unknown Album Artist</string>
     <string name="get_all_songs_device">Get all music on device</string>
@@ -818,6 +871,9 @@
     <string name="go_to">Go to</string>
     <string name="hide_lyrics">Hide lyrics</string>
     <string name="title_text">titleText</string>
+    <string name="weather_text">weather</string>
+    <string name="tod_text">tod</string>
+    <string name="bpm_text">bpm</string>
     <string name="source">source</string>
     <string name="file_path">filePath</string>
     <string name="field_1">field1</string>
@@ -857,7 +913,7 @@
     <string name="custom_libraries">Custom Libraries</string>
     <string name="labels_description">Add, remove, and edit your custom labels.</string>
     <string name="album_art_description">Modify album art sources and download album art from the Internet.</string>
-    <string name="blacklists_description">Modify blacklisted artists, albums, and songs.</string>
+    <string name="blacklists_description">Modify blacklisted artists, albums, smart weather, smart tod, smart bpm, and songs.</string>
     <string name="audio_settings_description">Configure crossfade, headphone plug actions and toggle equalizer.</string>
     <string name="scrobbling_description">Toggle scrobbling and choose your scrobbling app.</string>
     <string name="about_description">About the app, open source licenses, and contact information</string>
@@ -872,5 +928,10 @@
     <string name="folders_layout">Folders Layout</string>
     <string name="select_music_folders">Select Music Folders</string>
     <string name="refresh_music_library">Refresh Music Library</string>
+
+    <string name="acquire_weather">Acquire Current Weather</string>
+    <string name="get_weather_info">Get Weather Info</string>
+    <string name="get_gps">Get GPS</string>
+    <string name="enter_city">Enter City</string>
 
 </resources>

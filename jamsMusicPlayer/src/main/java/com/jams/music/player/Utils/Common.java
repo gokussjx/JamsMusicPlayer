@@ -35,6 +35,7 @@ import android.widget.Toast;
 import com.google.android.gms.common.images.ImageManager;
 import com.jams.music.player.AsyncTasks.AsyncGoogleMusicAuthenticationTask;
 import com.jams.music.player.DBHelpers.DBAccessHelper;
+import com.jams.music.player.DBHelpers.SmartUDatabase;
 import com.jams.music.player.GMusicHelpers.GMusicClientCalls;
 import com.jams.music.player.Helpers.UIElementsHelper;
 import com.jams.music.player.NowPlayingActivity.NowPlayingActivity;
@@ -65,66 +66,13 @@ import java.net.URL;
  */
 public class Common extends Application {
 
-    //Context.
-    private Context mContext;
-
-    //Service reference and flags.
-    private AudioPlaybackService mService;
-    private boolean mIsServiceRunning = false;
-
-    //Playback kickstarter object.
-    private PlaybackKickstarter mPlaybackKickstarter;
-
-    //NowPlayingActivity reference.
-    private NowPlayingActivity mNowPlayingActivity;
-
-    //SharedPreferences.
-    private static SharedPreferences mSharedPreferences;
-
-    //Database access helper object.
-    private static DBAccessHelper mDBAccessHelper;
-
-    //Picasso instance.
-    private Picasso mPicasso;
-
-    //Indicates if the library is currently being built.
-    private boolean mIsBuildingLibrary = false;
-    private boolean mIsScanFinished = false;
-
-    //Google Play Music access object.
-    private GMusicClientCalls mGMusicClientCalls;
-    private boolean mIsGMusicLoggedIn = false;
-
-    //ImageManager for asynchronous image downloading.
-    private ImageManager mImageManager;
-
-    //ImageLoader/ImageLoaderConfiguration objects for ListViews and GridViews.
-    private ImageLoader mImageLoader;
-    private ImageLoaderConfiguration mImageLoaderConfiguration;
-
-    //Image display options.
-    private DisplayImageOptions mDisplayImageOptions;
-
-    //Cursor that stores the songs that are currently queued for download.
-    private Cursor mPinnedSongsCursor;
-
-    //Specifies whether the app is currently downloading pinned songs from the GMusic app.
-    private boolean mIsFetchingPinnedSongs = false;
-
     public static final String uid4 = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvFlvWGADp9cW2LPuOIjDPB";
     public static final String uid2 = "ormNR2mpS8HR8utvhNHKs2AJzV8GLPh35m3rE6GPND4GsOdrbySPETG4+0fvagBr5E";
     public static final String uid6 = "QgMR7z76DJlRqy+VyVzmx7cly2JiXo+ZnISYKKn71oP+Xw+dO/eRKFy3EFCO7khMxc";
     public static final String uid1 = "6QouPH11nHJPzXspzdkJbTcifIIGFtEkquXjA0y19Gouab7Gir8yLOA4V3m0URRivP";
     public static final String uid3 = "QeOx8JsY766F6FgU8uJABWRDZbqHEYRwT7iGmn7ukt7h5z+DOsYWSRmZxwJh3cpkGo";
     public static final String uid5 = "Vyqp4UZWnzGiiq/fWFKs5rrc+m3obsEpUxteGavKAhhXJZKgwAGFgkUQIDAQAB";
-
-    //GAnalytics flag.
-    private boolean mIsGAnalyticsEnabled = true;
-
-    //Broadcast elements.
-    private LocalBroadcastManager mLocalBroadcastManager;
     public static final String UPDATE_UI_BROADCAST = "com.jams.music.player.NEW_SONG_UPDATE_UI";
-
     //Update UI broadcast flags.
     public static final String SHOW_AUDIOBOOK_TOAST = "AudiobookToast";
     public static final String UPDATE_SEEKBAR_DURATION = "UpdateSeekbarDuration";
@@ -137,7 +85,6 @@ public class Common extends Application {
     public static final String INIT_PAGER = "InitPager";
     public static final String NEW_QUEUE_ORDER = "NewQueueOrder";
     public static final String UPDATE_EQ_FRAGMENT = "UpdateEQFragment";
-
     //Contants for identifying each fragment/activity.
     public static final String FRAGMENT_ID = "FragmentId";
     public static final int ARTISTS_FRAGMENT = 0;
@@ -145,17 +92,24 @@ public class Common extends Application {
     public static final int ALBUMS_FRAGMENT = 2;
     public static final int SONGS_FRAGMENT = 3;
     public static final int PLAYLISTS_FRAGMENT = 4;
-    public static final int SMART_PLAYLISTS_FRAGMENT = 5;
-    public static final int GENRES_FRAGMENT = 6;
-    public static final int FOLDERS_FRAGMENT = 7;
-    public static final int ARTISTS_FLIPPED_FRAGMENT = 8;
-    public static final int ARTISTS_FLIPPED_SONGS_FRAGMENT = 9;
-    public static final int ALBUM_ARTISTS_FLIPPED_FRAGMENT = 10;
-    public static final int ALBUM_ARTISTS_FLIPPED_SONGS_FRAGMENT = 11;
-    public static final int ALBUMS_FLIPPED_FRAGMENT = 12;
-    public static final int GENRES_FLIPPED_FRAGMENT = 13;
-    public static final int GENRES_FLIPPED_SONGS_FRAGMENT = 14;
-
+    public static final int GENRES_FRAGMENT = 5;
+    public static final int FOLDERS_FRAGMENT = 6;
+    public static final int ARTISTS_FLIPPED_FRAGMENT = 7;
+    public static final int ARTISTS_FLIPPED_SONGS_FRAGMENT = 8;
+    public static final int ALBUM_ARTISTS_FLIPPED_FRAGMENT = 9;
+    public static final int ALBUM_ARTISTS_FLIPPED_SONGS_FRAGMENT = 10;
+    public static final int ALBUMS_FLIPPED_FRAGMENT = 11;
+    public static final int GENRES_FLIPPED_FRAGMENT = 12;
+    public static final int GENRES_FLIPPED_SONGS_FRAGMENT = 13;
+    public static final int SMART_WEATHER_FRAGMENT = 14;
+    public static final int SMART_TOD_FRAGMENT = 15;
+    public static final int SMART_BPM_FRAGMENT = 16;
+    public static final int SMART_WEATHER_FLIPPED_FRAGMENT = 17;
+    public static final int SMART_TOD_FLIPPED_FRAGMENT = 18;
+    public static final int SMART_BPM_FLIPPED_FRAGMENT = 19;
+    public static final int SMART_WEATHER_FLIPPED_SONGS_FRAGMENT = 20;
+    public static final int SMART_TOD_FLIPPED_SONGS_FRAGMENT = 21;
+    public static final int SMART_BPM_FLIPPED_SONGS_FRAGMENT = 22;
     //Constants for identifying playback routes.
     public static final int PLAY_ALL_SONGS = 0;
     public static final int PLAY_ALL_BY_ARTIST = 1;
@@ -164,11 +118,12 @@ public class Common extends Application {
     public static final int PLAY_ALL_IN_PLAYLIST = 4;
     public static final int PLAY_ALL_IN_GENRE = 5;
     public static final int PLAY_ALL_IN_FOLDER = 6;
-
+    public static final int PLAY_ALL_IN_WEATHER = 7;
+    public static final int PLAY_ALL_IN_TOD = 8;
+    public static final int PLAY_ALL_IN_BPM = 9;
     //Device orientation constants.
     public static final int ORIENTATION_PORTRAIT = 0;
     public static final int ORIENTATION_LANDSCAPE = 1;
-
     //Device screen size/orientation identifiers.
     public static final String REGULAR = "regular";
     public static final String SMALL_TABLET = "small_tablet";
@@ -181,21 +136,22 @@ public class Common extends Application {
     public static final int LARGE_TABLET_PORTRAIT = 4;
     public static final int LARGE_TABLET_LANDSCAPE = 5;
     public static final int XLARGE_TABLET_PORTRAIT = 6;
+    //    public static final int SMART_PLAYLISTS_FRAGMENT = 14;
+//    public static final int SMART_PLAYLISTS_FLIPPED_FRAGMENT = 15;
     public static final int XLARGE_TABLET_LANDSCAPE = 7;
-
     //Miscellaneous flags/identifiers.
     public static final String SONG_ID = "SongId";
     public static final String SONG_TITLE = "SongTitle";
     public static final String SONG_ALBUM = "SongAlbum";
     public static final String SONG_ARTIST = "SongArtist";
     public static final String SONG_WEATHER = "SongWeather";
-    public static final String SONG_BPM = "SongBpm";
     public static final String SONG_TOD = "SongTod";
+    // PLAY_ALL_IN_SMART_WEATHER?
+    public static final String SONG_BPM = "SongBpm";
     public static final String ALBUM_ART = "AlbumArt";
     public static final String CURRENT_THEME = "CurrentTheme";
     public static final int DARK_THEME = 0;
     public static final int LIGHT_THEME = 1;
-
     //SharedPreferences keys.
     public static final String CROSSFADE_ENABLED = "CrossfadeEnabled";
     public static final String CROSSFADE_DURATION = "CrossfadeDuration";
@@ -212,15 +168,103 @@ public class Common extends Application {
     public static final String ALBUM_ARTISTS_LAYOUT = "AlbumArtistsLayout";
     public static final String ALBUMS_LAYOUT = "AlbumsLayout";
     public static final String PLAYLISTS_LAYOUT = "PlaylistsLayout";
-    public static final String SMART_PLAYLISTS_LAYOUT = "SmartPlaylistsLayout";
+    //    public static final String SMART_PLAYLISTS_LAYOUT = "SmartPlaylistsLayout";
+    public static final String SMART_WEATHER_LAYOUT = "SmartWeatherLayout";
+    public static final String SMART_TOD_LAYOUT = "SmartTodLayout";
+    public static final String SMART_BPM_LAYOUT = "SmartBpmLayout";
     public static final String GENRES_LAYOUT = "GenresLayout";
     public static final String FOLDERS_LAYOUT = "FoldersLayout";
-
     //Repeat mode constants.
     public static final int REPEAT_OFF = 0;
     public static final int REPEAT_PLAYLIST = 1;
     public static final int REPEAT_SONG = 2;
     public static final int A_B_REPEAT = 3;
+    //SharedPreferences.
+    private static SharedPreferences mSharedPreferences;
+    //Database access helper object.
+    private static DBAccessHelper mDBAccessHelper;
+    //Context.
+    private Context mContext;
+    //Service reference and flags.
+    private AudioPlaybackService mService;
+    private boolean mIsServiceRunning = false;
+    //Playback kickstarter object.
+    private PlaybackKickstarter mPlaybackKickstarter;
+    //NowPlayingActivity reference.
+    private NowPlayingActivity mNowPlayingActivity;
+    //Picasso instance.
+    private Picasso mPicasso;
+    //Indicates if the library is currently being built.
+    private boolean mIsBuildingLibrary = false;
+    private boolean mIsScanFinished = false;
+    //Google Play Music access object.
+    private GMusicClientCalls mGMusicClientCalls;
+    private boolean mIsGMusicLoggedIn = false;
+    //ImageManager for asynchronous image downloading.
+    private ImageManager mImageManager;
+    //ImageLoader/ImageLoaderConfiguration objects for ListViews and GridViews.
+    private ImageLoader mImageLoader;
+    private ImageLoaderConfiguration mImageLoaderConfiguration;
+    //Image display options.
+    private DisplayImageOptions mDisplayImageOptions;
+    //Cursor that stores the songs that are currently queued for download.
+    private Cursor mPinnedSongsCursor;
+    //Specifies whether the app is currently downloading pinned songs from the GMusic app.
+    private boolean mIsFetchingPinnedSongs = false;
+    //GAnalytics flag.
+    private boolean mIsGAnalyticsEnabled = true;
+    //Broadcast elements.
+    private LocalBroadcastManager mLocalBroadcastManager;
+
+    /**
+     * Calculates the sample size for the resampling process.
+     *
+     * @param options
+     * @param reqWidth
+     * @param reqHeight
+     * @return The sample size.
+     */
+    private static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
+        final int height = options.outHeight;
+        final int width = options.outWidth;
+        int inSampleSize = 1;
+
+        if (height > reqHeight || width > reqWidth) {
+            if (width > height) {
+                inSampleSize = Math.round((float) height / (float) reqHeight);
+            } else {
+                inSampleSize = Math.round((float) width / (float) reqWidth);
+            }
+        }
+
+        return inSampleSize;
+    }
+
+    /*
+     * Returns the status bar height for the current layout configuration.
+     */
+    public static int getStatusBarHeight(Context context) {
+        int result = 0;
+        int resourceId = context.getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            result = context.getResources().getDimensionPixelSize(resourceId);
+        }
+
+        return result;
+    }
+
+    /*
+     * Returns the navigation bar height for the current layout configuration.
+     */
+    public static int getNavigationBarHeight(Context context) {
+        Resources resources = context.getResources();
+        int resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            return resources.getDimensionPixelSize(resourceId);
+        }
+
+        return 0;
+    }
 
     @Override
     public void onCreate() {
@@ -482,30 +526,6 @@ public class Common extends Application {
     /**
      * Calculates the sample size for the resampling process.
      *
-     * @param options
-     * @param reqWidth
-     * @param reqHeight
-     * @return The sample size.
-     */
-    private static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
-        final int height = options.outHeight;
-        final int width = options.outWidth;
-        int inSampleSize = 1;
-
-        if (height > reqHeight || width > reqWidth) {
-            if (width > height) {
-                inSampleSize = Math.round((float) height / (float) reqHeight);
-            } else {
-                inSampleSize = Math.round((float) width / (float) reqWidth);
-            }
-        }
-
-        return inSampleSize;
-    }
-
-    /**
-     * Calculates the sample size for the resampling process.
-     *
      * @return The sample size.
      */
     public int calculateSampleSize(int width, int height, int targetWidth, int targetHeight) {
@@ -546,32 +566,6 @@ public class Common extends Application {
         is.close();
 
         return resizedBitmap;
-    }
-
-    /*
-     * Returns the status bar height for the current layout configuration.
-     */
-    public static int getStatusBarHeight(Context context) {
-        int result = 0;
-        int resourceId = context.getResources().getIdentifier("status_bar_height", "dimen", "android");
-        if (resourceId > 0) {
-            result = context.getResources().getDimensionPixelSize(resourceId);
-        }
-
-        return result;
-    }
-
-    /*
-     * Returns the navigation bar height for the current layout configuration.
-     */
-    public static int getNavigationBarHeight(Context context) {
-        Resources resources = context.getResources();
-        int resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android");
-        if (resourceId > 0) {
-            return resources.getDimensionPixelSize(resourceId);
-        }
-
-        return 0;
     }
 
     /**
@@ -812,12 +806,20 @@ public class Common extends Application {
         return DBAccessHelper.getInstance(mContext);
     }
 
+    public SmartUDatabase getSmartUDatabase() {
+        return SmartUDatabase.getInstance(mContext);
+    }
+
     public SharedPreferences getSharedPreferences() {
         return mSharedPreferences;
     }
 
     public GMusicClientCalls getGMusicClientCalls() {
         return mGMusicClientCalls;
+    }
+
+    public void setGMusicClientCalls(GMusicClientCalls gMusicClientCalls) {
+        this.mGMusicClientCalls = gMusicClientCalls;
     }
 
     public Picasso getPicasso() {
@@ -844,6 +846,10 @@ public class Common extends Application {
         return mPinnedSongsCursor;
     }
 
+    public void setPinnedSongsCursor(Cursor cursor) {
+        this.mPinnedSongsCursor = cursor;
+    }
+
     public boolean isFetchingPinnedSongs() {
         return mIsFetchingPinnedSongs;
     }
@@ -852,8 +858,16 @@ public class Common extends Application {
         return mService;
     }
 
+    public void setService(AudioPlaybackService service) {
+        mService = service;
+    }
+
     public NowPlayingActivity getNowPlayingActivity() {
         return mNowPlayingActivity;
+    }
+
+    public void setNowPlayingActivity(NowPlayingActivity activity) {
+        mNowPlayingActivity = activity;
     }
 
     public DisplayImageOptions getDisplayImageOptions() {
@@ -888,6 +902,10 @@ public class Common extends Application {
         return getSharedPreferences().getBoolean("GOOGLE_PLAY_MUSIC_ENABLED", false);
     }
 
+	/*
+     * Setter methods.
+	 */
+
     public String getCurrentLibrary() {
         return getSharedPreferences().getString(CURRENT_LIBRARY, mContext.getResources()
                 .getString(R.string.all_libraries));
@@ -905,10 +923,6 @@ public class Common extends Application {
         return getSharedPreferences().getInt(CURRENT_LIBRARY_POSITION, 0);
     }
 
-	/*
-     * Setter methods.
-	 */
-
     public void setIsBuildingLibrary(boolean isBuildingLibrary) {
         mIsBuildingLibrary = isBuildingLibrary;
     }
@@ -919,14 +933,6 @@ public class Common extends Application {
 
     public void setIsGMusicLoggedIn(boolean isGMusicLoggedIn) {
         mIsGMusicLoggedIn = isGMusicLoggedIn;
-    }
-
-    public void setService(AudioPlaybackService service) {
-        mService = service;
-    }
-
-    public void setNowPlayingActivity(NowPlayingActivity activity) {
-        mNowPlayingActivity = activity;
     }
 
     public void setIsServiceRunning(boolean running) {
@@ -948,14 +954,6 @@ public class Common extends Application {
 
         }
 
-    }
-
-    public void setGMusicClientCalls(GMusicClientCalls gMusicClientCalls) {
-        this.mGMusicClientCalls = gMusicClientCalls;
-    }
-
-    public void setPinnedSongsCursor(Cursor cursor) {
-        this.mPinnedSongsCursor = cursor;
     }
 
     public void setIsFetchingPinnedSongs(boolean fetching) {

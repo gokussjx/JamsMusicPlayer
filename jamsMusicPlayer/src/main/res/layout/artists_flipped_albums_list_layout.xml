@@ -7,19 +7,19 @@
         android:id="@+id/artistsFlippedNumberOfSongs"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
-        android:layout_alignParentRight="true"
-        android:layout_marginRight="40dp"
-        android:text="0 songs"
-        android:lines="1"
+        android:layout_marginEnd="40dp"
         android:ellipsize="end"
+        android:lines="1"
+        android:text="0 songs"
         android:textAppearance="?android:attr/textAppearanceSmall" />
 
     <ImageView
         android:id="@+id/artistsFlippedAlbumThumbnail"
         android:layout_width="75dp"
         android:layout_height="75dp"
-        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
         android:src="@drawable/transparent_drawable" />
 
@@ -28,8 +28,8 @@
         android:layout_width="fill_parent"
         android:layout_height="75dp"
         android:layout_centerVertical="true"
-        android:layout_toRightOf="@+id/artistsFlippedAlbumThumbnail"
-        android:layout_toLeftOf="@+id/artistsFlippedNumberOfSongs"
+        android:layout_toEndOf="@+id/artistsFlippedAlbumThumbnail"
+        android:layout_toStartOf="@+id/artistsFlippedNumberOfSongs"
         android:orientation="vertical">
 
         <RelativeLayout
@@ -42,12 +42,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
-                android:layout_alignParentLeft="true"
-                android:layout_marginLeft="10dp"
-                android:text="Album Name"
-                android:maxLines="1"
+                android:layout_alignParentStart="true"
+                android:layout_marginStart="10dp"
                 android:ellipsize="end"
                 android:gravity="bottom"
+                android:maxLines="1"
+                android:text="Album Name"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
         </RelativeLayout>
@@ -61,11 +61,11 @@
                 android:id="@+id/artistsFlippedAlbumYear"
                 android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
+                android:layout_alignParentStart="true"
                 android:layout_alignParentTop="true"
-                android:layout_alignParentLeft="true"
-                android:layout_marginLeft="10dp"
-                android:text="Unknown year"
+                android:layout_marginStart="10dp"
                 android:gravity="top"
+                android:text="Unknown year"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
         </RelativeLayout>
@@ -76,11 +76,11 @@
         android:id="@+id/overflow_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
         android:background="?android:selectableItemBackground"
-        android:src="@drawable/ic_action_overflow_universal"
         android:scaleX="0.70"
-        android:scaleY="0.80" />
+        android:scaleY="0.80"
+        android:src="@drawable/ic_action_overflow_universal" />
 
 </RelativeLayout>

@@ -62,88 +62,7 @@ import java.util.HashMap;
  */
 public class GridViewFragment extends Fragment {
 
-    private Context mContext;
-    private GridViewFragment mFragment;
-    private Common mApp;
-    private View mRootView;
-    private RelativeLayout mGridViewContainer;
-    private int mFragmentId;
-
-    private QuickScrollGridView mQuickScroll;
-    private BaseAdapter mGridViewAdapter;
-    private HashMap<Integer, String> mDBColumnsMap;
-    private GridView mGridView;
-    private TextView mEmptyTextView;
-
     public Handler mHandler = new Handler();
-    private Cursor mCursor;
-    private String mFragmentTitle;
-    private String mQuerySelection = "";
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        mRootView = inflater.inflate(R.layout.fragment_grid_view, container, false);
-        mContext = getActivity().getApplicationContext();
-        mApp = (Common) mContext;
-        mFragment = this;
-
-        //Set the background color and the partial color bleed.
-        mRootView.setBackgroundColor(UIElementsHelper.getBackgroundColor(mContext));
-
-        //Grab the fragment. This will determine which data to load into the cursor.
-        mFragmentId = getArguments().getInt(Common.FRAGMENT_ID);
-        mFragmentTitle = getArguments().getString(MainActivity.FRAGMENT_HEADER);
-        mDBColumnsMap = new HashMap<Integer, String>();
-
-        mQuickScroll = (QuickScrollGridView) mRootView.findViewById(R.id.quickscrollgrid);
-
-        //Set the adapter for the outer gridview.
-        mGridView = (GridView) mRootView.findViewById(R.id.generalGridView);
-        mGridViewContainer = (RelativeLayout) mRootView.findViewById(R.id.fragment_grid_view_frontal_layout);
-        mGridView.setVerticalScrollBarEnabled(false);
-
-        //Set the number of gridview columns based on the screen density and orientation.
-        if (mApp.isPhoneInLandscape() || mApp.isTabletInLandscape()) {
-            mGridView.setNumColumns(4);
-        } else if (mApp.isPhoneInPortrait()) {
-            mGridView.setNumColumns(2);
-        } else if (mApp.isTabletInPortrait()) {
-            mGridView.setNumColumns(3);
-        }
-
-        //KitKat translucent navigation/status bar.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            int topPadding = Common.getStatusBarHeight(mContext);
-
-            //Calculate navigation bar height.
-            int navigationBarHeight = 0;
-            int resourceId = getResources().getIdentifier("navigation_bar_height", "dimen", "android");
-            if (resourceId > 0) {
-                navigationBarHeight = getResources().getDimensionPixelSize(resourceId);
-            }
-
-            mGridViewContainer.setPadding(0, topPadding, 0, 0);
-            mGridView.setClipToPadding(false);
-            mGridView.setPadding(0, mGridView.getPaddingTop(), 0, navigationBarHeight);
-            mQuickScroll.setPadding(0, 0, 0, navigationBarHeight);
-
-        }
-
-        //Set the empty views.
-        mEmptyTextView = (TextView) mRootView.findViewById(R.id.empty_view_text);
-        mEmptyTextView.setTypeface(TypefaceHelper.getTypeface(mContext, "Roboto-Light"));
-        mEmptyTextView.setPaintFlags(mEmptyTextView.getPaintFlags() | Paint.ANTI_ALIAS_FLAG | Paint.SUBPIXEL_TEXT_FLAG);
-
-        //Create a set of options to optimize the bitmap memory usage.
-        final BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
-        options.inJustDecodeBounds = false;
-        options.inPurgeable = true;
-
-        mHandler.postDelayed(queryRunnable, 250);
-        return mRootView;
-    }
-
     /**
      * Query runnable.
      */
@@ -156,7 +75,20 @@ public class GridViewFragment extends Fragment {
         }
 
     };
-
+    private Context mContext;
+    private GridViewFragment mFragment;
+    private Common mApp;
+    private View mRootView;
+    private RelativeLayout mGridViewContainer;
+    private int mFragmentId;
+    private QuickScrollGridView mQuickScroll;
+    private BaseAdapter mGridViewAdapter;
+    private HashMap<Integer, String> mDBColumnsMap;
+    private GridView mGridView;
+    private TextView mEmptyTextView;
+    private Cursor mCursor;
+    private String mFragmentTitle;
+    private String mQuerySelection = "";
     /**
      * Click listener for the "PLAY ALL" text.
      */
@@ -172,7 +104,6 @@ public class GridViewFragment extends Fragment {
         }
 
     };
-
     /**
      * Item click listener for the GridView/ListView.
      */
@@ -204,94 +135,6 @@ public class GridViewFragment extends Fragment {
         }
 
     };
-
-    /**
-     * Determines the next activity's fragment id based on the
-     * current activity's fragment id.
-     */
-    private int getNewFragmentId() {
-        switch (mFragmentId) {
-            case Common.ARTISTS_FRAGMENT:
-                return Common.ARTISTS_FLIPPED_FRAGMENT;
-            case Common.ALBUM_ARTISTS_FRAGMENT:
-                return Common.ALBUM_ARTISTS_FLIPPED_FRAGMENT;
-            case Common.ALBUMS_FRAGMENT:
-                return Common.ALBUMS_FLIPPED_FRAGMENT;
-            case Common.GENRES_FRAGMENT:
-                return Common.GENRES_FLIPPED_FRAGMENT;
-            default:
-                return -1;
-        }
-
-    }
-
-    /**
-     * Runs the correct DB query based on the passed in fragment id and
-     * displays the GridView.
-     *
-     * @author Saravan Pantham
-     */
-    public class AsyncRunQuery extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            mCursor = mApp.getDBAccessHelper().getFragmentCursor(mContext, mQuerySelection, mFragmentId);
-            loadDBColumnNames();
-
-            return null;
-        }
-
-        /**
-         * Populates the DB column names based on the specifed fragment id.
-         */
-        private void loadDBColumnNames() {
-
-            switch (mFragmentId) {
-                case Common.ARTISTS_FRAGMENT:
-                    mDBColumnsMap.put(GridViewCardsAdapter.TITLE_TEXT, DBAccessHelper.SONG_ARTIST);
-                    mDBColumnsMap.put(GridViewCardsAdapter.SOURCE, DBAccessHelper.SONG_SOURCE);
-                    mDBColumnsMap.put(GridViewCardsAdapter.FILE_PATH, DBAccessHelper.SONG_FILE_PATH);
-                    mDBColumnsMap.put(GridViewCardsAdapter.ARTWORK_PATH, DBAccessHelper.SONG_ALBUM_ART_PATH);
-                    mDBColumnsMap.put(GridViewCardsAdapter.FIELD_1, DBAccessHelper.ALBUMS_COUNT);
-                    break;
-                case Common.ALBUM_ARTISTS_FRAGMENT:
-                    mDBColumnsMap.put(GridViewCardsAdapter.TITLE_TEXT, DBAccessHelper.SONG_ALBUM_ARTIST);
-                    mDBColumnsMap.put(GridViewCardsAdapter.SOURCE, DBAccessHelper.SONG_SOURCE);
-                    mDBColumnsMap.put(GridViewCardsAdapter.FILE_PATH, DBAccessHelper.SONG_FILE_PATH);
-                    mDBColumnsMap.put(GridViewCardsAdapter.ARTWORK_PATH, DBAccessHelper.SONG_ALBUM_ART_PATH);
-                    mDBColumnsMap.put(GridViewCardsAdapter.FIELD_1, DBAccessHelper.ALBUMS_COUNT);
-                    break;
-                case Common.ALBUMS_FRAGMENT:
-                    mDBColumnsMap.put(GridViewCardsAdapter.TITLE_TEXT, DBAccessHelper.SONG_ALBUM);
-                    mDBColumnsMap.put(GridViewCardsAdapter.SOURCE, DBAccessHelper.SONG_SOURCE);
-                    mDBColumnsMap.put(GridViewCardsAdapter.FILE_PATH, DBAccessHelper.SONG_FILE_PATH);
-                    mDBColumnsMap.put(GridViewCardsAdapter.ARTWORK_PATH, DBAccessHelper.SONG_ALBUM_ART_PATH);
-                    mDBColumnsMap.put(GridViewCardsAdapter.FIELD_1, DBAccessHelper.SONG_ARTIST);
-                    break;
-                case Common.PLAYLISTS_FRAGMENT:
-                    break;
-                case Common.GENRES_FRAGMENT:
-                    mDBColumnsMap.put(GridViewCardsAdapter.TITLE_TEXT, DBAccessHelper.SONG_GENRE);
-                    mDBColumnsMap.put(GridViewCardsAdapter.SOURCE, DBAccessHelper.SONG_SOURCE);
-                    mDBColumnsMap.put(GridViewCardsAdapter.FILE_PATH, DBAccessHelper.SONG_FILE_PATH);
-                    mDBColumnsMap.put(GridViewCardsAdapter.ARTWORK_PATH, DBAccessHelper.SONG_ALBUM_ART_PATH);
-                    mDBColumnsMap.put(GridViewCardsAdapter.FIELD_1, DBAccessHelper.GENRE_SONG_COUNT);
-                    break;
-                case Common.FOLDERS_FRAGMENT:
-                    break;
-            }
-
-        }
-
-        @Override
-        public void onPostExecute(Void result) {
-            super.onPostExecute(result);
-            mHandler.postDelayed(initGridView, 200);
-
-        }
-
-    }
-
     /**
      * Runnable that loads the GridView after a set interval.
      */
@@ -362,6 +205,98 @@ public class GridViewFragment extends Fragment {
     };
 
     @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        mRootView = inflater.inflate(R.layout.fragment_grid_view, container, false);
+        mContext = getActivity().getApplicationContext();
+        mApp = (Common) mContext;
+        mFragment = this;
+
+        //Set the background color and the partial color bleed.
+        mRootView.setBackgroundColor(UIElementsHelper.getBackgroundColor(mContext));
+
+        //Grab the fragment. This will determine which data to load into the cursor.
+        mFragmentId = getArguments().getInt(Common.FRAGMENT_ID);
+        mFragmentTitle = getArguments().getString(MainActivity.FRAGMENT_HEADER);
+        mDBColumnsMap = new HashMap<Integer, String>();
+
+        mQuickScroll = (QuickScrollGridView) mRootView.findViewById(R.id.quickscrollgrid);
+
+        //Set the adapter for the outer gridview.
+        mGridView = (GridView) mRootView.findViewById(R.id.generalGridView);
+        mGridViewContainer = (RelativeLayout) mRootView.findViewById(R.id.fragment_grid_view_frontal_layout);
+        mGridView.setVerticalScrollBarEnabled(false);
+
+        //Set the number of gridview columns based on the screen density and orientation.
+        if (mApp.isPhoneInLandscape() || mApp.isTabletInLandscape()) {
+            mGridView.setNumColumns(4);
+        } else if (mApp.isPhoneInPortrait()) {
+            mGridView.setNumColumns(2);
+        } else if (mApp.isTabletInPortrait()) {
+            mGridView.setNumColumns(3);
+        }
+
+        //KitKat translucent navigation/status bar.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            int topPadding = Common.getStatusBarHeight(mContext);
+
+            //Calculate navigation bar height.
+            int navigationBarHeight = 0;
+            int resourceId = getResources().getIdentifier("navigation_bar_height", "dimen", "android");
+            if (resourceId > 0) {
+                navigationBarHeight = getResources().getDimensionPixelSize(resourceId);
+            }
+
+            mGridViewContainer.setPadding(0, topPadding, 0, 0);
+            mGridView.setClipToPadding(false);
+            mGridView.setPadding(0, mGridView.getPaddingTop(), 0, navigationBarHeight);
+            mQuickScroll.setPadding(0, 0, 0, navigationBarHeight);
+
+        }
+
+        //Set the empty views.
+        mEmptyTextView = (TextView) mRootView.findViewById(R.id.empty_view_text);
+        mEmptyTextView.setTypeface(TypefaceHelper.getTypeface(mContext, "Roboto-Light"));
+        mEmptyTextView.setPaintFlags(mEmptyTextView.getPaintFlags() | Paint.ANTI_ALIAS_FLAG | Paint.SUBPIXEL_TEXT_FLAG);
+
+        //Create a set of options to optimize the bitmap memory usage.
+        final BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        options.inJustDecodeBounds = false;
+        options.inPurgeable = true;
+
+        mHandler.postDelayed(queryRunnable, 250);
+        return mRootView;
+    }
+
+    /**
+     * Determines the next activity's fragment id based on the
+     * current activity's fragment id.
+     */
+    private int getNewFragmentId() {
+        switch (mFragmentId) {
+            case Common.ARTISTS_FRAGMENT:
+                return Common.ARTISTS_FLIPPED_FRAGMENT;
+            case Common.ALBUM_ARTISTS_FRAGMENT:
+                return Common.ALBUM_ARTISTS_FLIPPED_FRAGMENT;
+            case Common.ALBUMS_FRAGMENT:
+                return Common.ALBUMS_FLIPPED_FRAGMENT;
+            case Common.SMART_WEATHER_FRAGMENT:
+                return Common.SMART_WEATHER_FLIPPED_FRAGMENT;
+            case Common.SMART_TOD_FRAGMENT:
+                return Common.SMART_TOD_FLIPPED_FRAGMENT;
+            case Common.SMART_BPM_FRAGMENT:
+                return Common.SMART_BPM_FLIPPED_FRAGMENT;
+//            case Common.SMART_PLAYLISTS_FRAGMENT:
+//                return Common.SMART_PLAYLISTS_FLIPPED_FRAGMENT;
+            case Common.GENRES_FRAGMENT:
+                return Common.GENRES_FLIPPED_FRAGMENT;
+            default:
+                return -1;
+        }
+
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
         mRootView = null;
@@ -389,13 +324,13 @@ public class GridViewFragment extends Fragment {
 
     }
 
-    /*
-     * Getter methods.
-     */
-
     public GridViewCardsAdapter getGridViewAdapter() {
         return (GridViewCardsAdapter) mGridViewAdapter;
     }
+
+    /*
+     * Getter methods.
+     */
 
     public GridView getGridView() {
         return mGridView;
@@ -405,12 +340,102 @@ public class GridViewFragment extends Fragment {
         return mCursor;
     }
 
+    public void setCursor(Cursor cursor) {
+        this.mCursor = cursor;
+    }
+
 	/*
      * Setter methods.
 	 */
 
-    public void setCursor(Cursor cursor) {
-        this.mCursor = cursor;
+    /**
+     * Runs the correct DB query based on the passed in fragment id and
+     * displays the GridView.
+     *
+     * @author Saravan Pantham
+     */
+    public class AsyncRunQuery extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            mCursor = mApp.getDBAccessHelper().getFragmentCursor(mContext, mQuerySelection, mFragmentId);
+            loadDBColumnNames();
+
+            return null;
+        }
+
+        /**
+         * Populates the DB column names based on the specifed fragment id.
+         */
+        private void loadDBColumnNames() {
+
+            switch (mFragmentId) {
+                case Common.ARTISTS_FRAGMENT:
+                    mDBColumnsMap.put(GridViewCardsAdapter.TITLE_TEXT, DBAccessHelper.SONG_ARTIST);
+                    mDBColumnsMap.put(GridViewCardsAdapter.SOURCE, DBAccessHelper.SONG_SOURCE);
+                    mDBColumnsMap.put(GridViewCardsAdapter.FILE_PATH, DBAccessHelper.SONG_FILE_PATH);
+                    mDBColumnsMap.put(GridViewCardsAdapter.ARTWORK_PATH, DBAccessHelper.SONG_ALBUM_ART_PATH);
+                    mDBColumnsMap.put(GridViewCardsAdapter.FIELD_1, DBAccessHelper.ALBUMS_COUNT);
+                    break;
+                case Common.ALBUM_ARTISTS_FRAGMENT:
+                    mDBColumnsMap.put(GridViewCardsAdapter.TITLE_TEXT, DBAccessHelper.SONG_ALBUM_ARTIST);
+                    mDBColumnsMap.put(GridViewCardsAdapter.SOURCE, DBAccessHelper.SONG_SOURCE);
+                    mDBColumnsMap.put(GridViewCardsAdapter.FILE_PATH, DBAccessHelper.SONG_FILE_PATH);
+                    mDBColumnsMap.put(GridViewCardsAdapter.ARTWORK_PATH, DBAccessHelper.SONG_ALBUM_ART_PATH);
+                    mDBColumnsMap.put(GridViewCardsAdapter.FIELD_1, DBAccessHelper.ALBUMS_COUNT);
+                    break;
+                case Common.ALBUMS_FRAGMENT:
+                    mDBColumnsMap.put(GridViewCardsAdapter.TITLE_TEXT, DBAccessHelper.SONG_ALBUM);
+                    mDBColumnsMap.put(GridViewCardsAdapter.SOURCE, DBAccessHelper.SONG_SOURCE);
+                    mDBColumnsMap.put(GridViewCardsAdapter.FILE_PATH, DBAccessHelper.SONG_FILE_PATH);
+                    mDBColumnsMap.put(GridViewCardsAdapter.ARTWORK_PATH, DBAccessHelper.SONG_ALBUM_ART_PATH);
+                    mDBColumnsMap.put(GridViewCardsAdapter.FIELD_1, DBAccessHelper.SONG_ARTIST);
+                    break;
+                case Common.PLAYLISTS_FRAGMENT:
+                    break;
+                case Common.SMART_WEATHER_FRAGMENT:
+                    mDBColumnsMap.put(GridViewCardsAdapter.TITLE_TEXT, DBAccessHelper.SONG_WEATHER);
+                    mDBColumnsMap.put(GridViewCardsAdapter.SOURCE, DBAccessHelper.SONG_SOURCE);
+                    mDBColumnsMap.put(GridViewCardsAdapter.FILE_PATH, DBAccessHelper.SONG_FILE_PATH);
+                    mDBColumnsMap.put(GridViewCardsAdapter.ARTWORK_PATH, DBAccessHelper.SONG_ALBUM_ART_PATH);
+                    mDBColumnsMap.put(GridViewCardsAdapter.FIELD_1, DBAccessHelper.ALBUMS_COUNT);
+                    break;
+                case Common.SMART_TOD_FRAGMENT:
+                    mDBColumnsMap.put(GridViewCardsAdapter.TITLE_TEXT, DBAccessHelper.SONG_TOD);
+                    mDBColumnsMap.put(GridViewCardsAdapter.SOURCE, DBAccessHelper.SONG_SOURCE);
+                    mDBColumnsMap.put(GridViewCardsAdapter.FILE_PATH, DBAccessHelper.SONG_FILE_PATH);
+                    mDBColumnsMap.put(GridViewCardsAdapter.ARTWORK_PATH, DBAccessHelper.SONG_ALBUM_ART_PATH);
+                    mDBColumnsMap.put(GridViewCardsAdapter.FIELD_1, DBAccessHelper.ALBUMS_COUNT);
+                    break;
+                case Common.SMART_BPM_FRAGMENT:
+                    mDBColumnsMap.put(GridViewCardsAdapter.TITLE_TEXT, DBAccessHelper.SONG_BPM);
+                    mDBColumnsMap.put(GridViewCardsAdapter.SOURCE, DBAccessHelper.SONG_SOURCE);
+                    mDBColumnsMap.put(GridViewCardsAdapter.FILE_PATH, DBAccessHelper.SONG_FILE_PATH);
+                    mDBColumnsMap.put(GridViewCardsAdapter.ARTWORK_PATH, DBAccessHelper.SONG_ALBUM_ART_PATH);
+                    mDBColumnsMap.put(GridViewCardsAdapter.FIELD_1, DBAccessHelper.ALBUMS_COUNT);
+                    break;
+//                case Common.SMART_PLAYLISTS_FRAGMENT:
+//                    break;
+                case Common.GENRES_FRAGMENT:
+                    mDBColumnsMap.put(GridViewCardsAdapter.TITLE_TEXT, DBAccessHelper.SONG_GENRE);
+                    mDBColumnsMap.put(GridViewCardsAdapter.SOURCE, DBAccessHelper.SONG_SOURCE);
+                    mDBColumnsMap.put(GridViewCardsAdapter.FILE_PATH, DBAccessHelper.SONG_FILE_PATH);
+                    mDBColumnsMap.put(GridViewCardsAdapter.ARTWORK_PATH, DBAccessHelper.SONG_ALBUM_ART_PATH);
+                    mDBColumnsMap.put(GridViewCardsAdapter.FIELD_1, DBAccessHelper.GENRE_SONG_COUNT);
+                    break;
+                case Common.FOLDERS_FRAGMENT:
+                    break;
+            }
+
+        }
+
+        @Override
+        public void onPostExecute(Void result) {
+            super.onPostExecute(result);
+            mHandler.postDelayed(initGridView, 200);
+
+        }
+
     }
 
 }

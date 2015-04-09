@@ -15,6 +15,9 @@
     <uses-permission android:name="android.permission.USE_CREDENTIALS" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
+    <uses-feature android:name="android.hardware.sensor.stepcounter" />
+    <uses-feature android:name="android.hardware.sensor.stepdetector" />
+
     <uses-sdk
         android:minSdkVersion="21"
         android:targetSdkVersion="22" />
@@ -244,6 +247,8 @@
         <!-- Main Settings Activity -->
 
         <activity android:name=".SettingsActivity.SettingsActivity"></activity>
+
+        <!-- Yahoo Weather Activity -->
 
         <!-- Dummy activity that launches Fragment dialogs from the Main Settings Activity -->
 

@@ -3,15 +3,15 @@
     android:layout_height="wrap_content">
 
     <LinearLayout
+        android:id="@+id/album_card_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="3dp"
-        android:layout_marginRight="3.5dp"
-        android:layout_marginLeft="3.5dp"
         android:layout_marginBottom="3dp"
+        android:layout_marginEnd="3.5dp"
+        android:layout_marginStart="3.5dp"
+        android:layout_marginTop="3dp"
         android:background="@drawable/card_gridview_dark"
-        android:orientation="vertical"
-        android:id="@+id/album_card_layout">
+        android:orientation="vertical">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -22,8 +22,8 @@
                 android:id="@+id/albumsGridViewImage"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_centerVertical="true"
                 android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
                 android:adjustViewBounds="true"
                 android:scaleType="centerCrop" />
 
@@ -39,8 +39,8 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-                android:layout_marginRight="25dp"
-                android:layout_toRightOf="@+id/overflow_icon"
+                android:layout_marginEnd="25dp"
+                android:layout_toEndOf="@+id/overflow_icon"
                 android:ellipsize="marquee"
                 android:gravity="center"
                 android:singleLine="true"
@@ -52,13 +52,13 @@
                 android:id="@+id/overflow_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="?android:selectableItemBackground"
+                android:layout_alignParentStart="true"
                 android:layout_centerVertical="true"
-                android:layout_alignParentLeft="true"
-                android:src="@drawable/ic_action_overflow_universal"
-                android:layout_marginLeft="-5dp"
+                android:layout_marginStart="-5dp"
+                android:background="?android:selectableItemBackground"
                 android:scaleX="0.75"
-                android:scaleY="0.75" />
+                android:scaleY="0.75"
+                android:src="@drawable/ic_action_overflow_universal" />
 
         </RelativeLayout>
 

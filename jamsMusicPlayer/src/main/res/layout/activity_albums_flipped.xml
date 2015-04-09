@@ -7,13 +7,13 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".AlbumsFlippedActivity"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        tools:context=".AlbumsFlippedActivity">
 
         <RelativeLayout
             android:id="@+id/fragment_albums_flipped_placeholder"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
             android:layout_weight="8">
 
 
@@ -34,15 +34,15 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
-            android:text="@string/queue_is_empty"
             android:layout_marginLeft="25dp"
             android:layout_marginRight="25dp"
-            android:visibility="invisible"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:text="@string/queue_is_empty"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:visibility="invisible" />
 
         <RelativeLayout
-            android:layout_height="wrap_content"
             android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_below="@+id/divider">
 
             <com.mobeta.android.dslv.DragSortListView xmlns:dslv="http://schemas.android.com/apk/res/com.jams.music.player"
@@ -75,8 +75,8 @@
                 android:layout_width="128.0dip"
                 android:layout_height="128.0dip"
                 android:layout_alignParentBottom="true"
+                android:layout_alignParentStart="true"
                 android:layout_alignParentTop="true"
-                android:layout_alignParentLeft="true"
                 android:scaleType="fitXY" />
 
             <LinearLayout
@@ -84,8 +84,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
-                android:layout_alignParentRight="true"
-                android:layout_toRightOf="@+id/notification_expanded_base_image"
+                android:layout_alignParentEnd="true"
+                android:layout_toEndOf="@+id/notification_expanded_base_image"
                 android:divider="?android:listDivider"
                 android:dividerPadding="@dimen/notification_expanded_buttons_divider_padding"
                 android:gravity="center_vertical"
@@ -127,8 +127,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="1dp"
                 android:layout_above="@+id/notification_expanded_buttons"
-                android:layout_alignParentRight="true"
-                android:layout_toRightOf="@+id/notification_expanded_base_image"
+                android:layout_alignParentEnd="true"
+                android:layout_toEndOf="@+id/notification_expanded_base_image"
                 android:background="?android:listDivider" />
 
             <LinearLayout
@@ -136,9 +136,9 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
                 android:layout_gravity="center_vertical"
-                android:layout_toRightOf="@+id/notification_expanded_base_image"
+                android:layout_toEndOf="@+id/notification_expanded_base_image"
                 android:orientation="vertical"
-                android:paddingLeft="@dimen/notification_info_container_padding_left"
+                android:paddingStart="@dimen/notification_info_container_padding_left"
                 android:paddingTop="@dimen/notification_expanded_content_padding_top">
 
                 <TextView
@@ -163,17 +163,17 @@
             android:id="@+id/divider"
             android:layout_width="fill_parent"
             android:layout_height="1dp"
+            android:layout_alignParentEnd="true"
             android:layout_below="@+id/current_queue_now_playing_layout"
-            android:layout_alignParentRight="true"
             android:background="?android:dividerHorizontal" />
 
     </RelativeLayout>
 
     <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/nav_drawer"
         android:layout_width="320dp"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:id="@+id/nav_drawer"
         android:background="#121212">
 
         <RelativeLayout
@@ -184,9 +184,9 @@
                 android:id="@+id/browsers_header_text"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="15dp"
+                android:layout_marginEnd="15dp"
                 android:layout_marginTop="15dp"
-                android:layout_toRightOf="@+id/library_color_tag"
+                android:layout_toEndOf="@+id/library_color_tag"
                 android:ellipsize="end"
                 android:singleLine="true"
                 android:text="@string/browsers_caps"
@@ -196,8 +196,8 @@
 
             <RelativeLayout
                 android:id="@+id/browsers_header_underline"
-                android:layout_height="3dp"
                 android:layout_width="match_parent"
+                android:layout_height="3dp"
                 android:layout_below="@+id/browsers_header_text"
                 android:layout_marginTop="5dp"
                 android:background="#3A3A3A"></RelativeLayout>
@@ -208,17 +208,17 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/browsers_header_underline"
                 android:layout_marginTop="5dp"
-                android:dividerHeight="1.25dp"
-                android:divider="@drawable/list_divider"></ListView>
+                android:divider="@drawable/list_divider"
+                android:dividerHeight="1.25dp"></ListView>
 
             <TextView
                 android:id="@+id/libraries_header_text"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/browsers_list_view"
-                android:layout_marginRight="15dp"
+                android:layout_marginEnd="15dp"
                 android:layout_marginTop="30dp"
-                android:layout_toRightOf="@+id/libraries_icon"
+                android:layout_toEndOf="@+id/libraries_icon"
                 android:text="@string/libraries_caps"
                 android:textSize="13sp">
 
@@ -226,8 +226,8 @@
 
             <RelativeLayout
                 android:id="@+id/libraries_header_underline"
-                android:layout_height="3dp"
                 android:layout_width="match_parent"
+                android:layout_height="3dp"
                 android:layout_below="@+id/libraries_header_text"
                 android:layout_marginTop="5dp"
                 android:background="#3A3A3A"></RelativeLayout>
@@ -238,17 +238,17 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/libraries_header_underline"
                 android:layout_marginTop="5dp"
-                android:listSelector="#00000000"
+                android:divider="@drawable/list_divider"
                 android:dividerHeight="1.25dp"
-                android:divider="@drawable/list_divider"></ListView>
+                android:listSelector="#00000000"></ListView>
 
             <ImageView
                 android:id="@+id/library_color_tag"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_above="@+id/browsers_list_view"
-                android:layout_alignParentLeft="true"
-                android:layout_marginLeft="5dp"
+                android:layout_alignParentStart="true"
+                android:layout_marginStart="5dp"
                 android:scaleX="0.5"
                 android:scaleY="0.5"
                 android:src="@drawable/circle_blue_dark" />
@@ -257,9 +257,9 @@
                 android:id="@+id/libraries_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_marginLeft="10dp"
+                android:layout_alignParentStart="true"
                 android:layout_below="@+id/browsers_list_view"
+                android:layout_marginStart="10dp"
                 android:layout_marginTop="15dp"
                 android:src="@drawable/libraries" />
 
@@ -276,8 +276,8 @@
                     android:id="@+id/imageView1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
                     android:layout_marginTop="15dp"
-                    android:layout_marginLeft="15dp"
                     android:src="@drawable/libraries_light" />
 
                 <TextView
@@ -285,32 +285,32 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignBottom="@+id/imageView1"
-                    android:layout_toRightOf="@+id/imageView1"
+                    android:layout_marginStart="10dp"
+                    android:layout_toEndOf="@+id/imageView1"
                     android:text="@string/libraries"
-                    android:textSize="25sp"
-                    android:layout_marginLeft="10dp"
-                    android:textColor="#FFFFFF" />
+                    android:textColor="#FFFFFF"
+                    android:textSize="25sp" />
 
                 <TextView
                     android:id="@+id/libraries_help_overlay_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignLeft="@+id/libraries_help_overlay_title"
+                    android:layout_alignStart="@+id/libraries_help_overlay_title"
                     android:layout_below="@+id/libraries_help_overlay_title"
-                    android:text="@string/custom_libraries_help_overlay_text"
+                    android:layout_marginEnd="20dp"
                     android:layout_marginTop="15dp"
-                    android:layout_marginRight="20dp"
-                    android:textColor="#FFFFFF"
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
+                    android:text="@string/custom_libraries_help_overlay_text"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="#FFFFFF" />
 
                 <ImageView
                     android:layout_width="70dp"
                     android:layout_height="90dp"
-                    android:src="@drawable/arrow_down"
                     android:layout_below="@+id/libraries_help_overlay_text"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="15dp"
-                    android:scaleType="fitXY">
+                    android:scaleType="fitXY"
+                    android:src="@drawable/arrow_down">
 
                 </ImageView>
 

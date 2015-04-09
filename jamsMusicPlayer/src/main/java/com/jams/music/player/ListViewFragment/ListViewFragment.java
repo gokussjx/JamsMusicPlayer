@@ -61,25 +61,59 @@ import java.util.HashMap;
  */
 public class ListViewFragment extends Fragment {
 
+    public Handler mHandler = new Handler();
+    /**
+     * Query runnable.
+     */
+    public Runnable queryRunnable = new Runnable() {
+
+        @Override
+        public void run() {
+            new AsyncRunQuery().execute();
+
+        }
+
+    };
     private Context mContext;
     private ListViewFragment mFragment;
     private Common mApp;
     private View mRootView;
     private int mFragmentId;
     private String mFragmentTitle;
-
     private QuickScroll mQuickScroll;
     private ListViewCardsAdapter mListViewAdapter;
     private HashMap<Integer, String> mDBColumnsMap;
     private ListView mListView;
     private TextView mEmptyTextView;
-
     private RelativeLayout mSearchLayout;
     private EditText mSearchEditText;
-
-    public Handler mHandler = new Handler();
     private Cursor mCursor;
     private String mQuerySelection = "";
+    /**
+     * Item click listener for the ListView.
+     */
+    private OnItemClickListener onItemClickListener = new OnItemClickListener() {
+
+        @Override
+        public void onItemClick(AdapterView<?> arg0, View view, int index, long id) {
+            switch (mFragmentId) {
+                case Common.SONGS_FRAGMENT:
+                    mApp.getPlaybackKickstarter()
+                            .initPlayback(mContext,
+                                    mQuerySelection,
+                                    Common.PLAY_ALL_SONGS,
+                                    index,
+                                    true,
+                                    false);
+                    break;
+                case Common.PLAYLISTS_FRAGMENT:
+
+                    break;
+            }
+
+        }
+
+    };
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -158,19 +192,6 @@ public class ListViewFragment extends Fragment {
     }
 
     /**
-     * Query runnable.
-     */
-    public Runnable queryRunnable = new Runnable() {
-
-        @Override
-        public void run() {
-            new AsyncRunQuery().execute();
-
-        }
-
-    };
-
-    /**
      * Displays the search field.
      */
     private void showSearch() {
@@ -243,32 +264,6 @@ public class ListViewFragment extends Fragment {
 
     }
 
-    /**
-     * Item click listener for the ListView.
-     */
-    private OnItemClickListener onItemClickListener = new OnItemClickListener() {
-
-        @Override
-        public void onItemClick(AdapterView<?> arg0, View view, int index, long id) {
-            switch (mFragmentId) {
-                case Common.SONGS_FRAGMENT:
-                    mApp.getPlaybackKickstarter()
-                            .initPlayback(mContext,
-                                    mQuerySelection,
-                                    Common.PLAY_ALL_SONGS,
-                                    index,
-                                    true,
-                                    false);
-                    break;
-                case Common.PLAYLISTS_FRAGMENT:
-
-                    break;
-            }
-
-        }
-
-    };
-
     @Override
     public void onDestroyView() {
         super.onDestroyView();
@@ -287,6 +282,43 @@ public class ListViewFragment extends Fragment {
         mHandler = null;
 
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        //Set the ActionBar title.
+        getActivity().getActionBar().setTitle(mFragmentTitle);
+
+    }
+
+    public ListViewCardsAdapter getListViewAdapter() {
+        return (ListViewCardsAdapter) mListViewAdapter;
+    }
+
+    /*
+     * Getter methods.
+     */
+
+    public ListView getListView() {
+        return mListView;
+    }
+
+    public Cursor getCursor() {
+        return mCursor;
+    }
+
+    public void setCursor(Cursor cursor) {
+        this.mCursor = cursor;
+    }
+
+    public int getFragmentId() {
+        return mFragmentId;
+    }
+
+	/*
+	 * Setter methods.
+	 */
 
     /**
      * Runs the correct DB query based on the passed in fragment id and
@@ -343,6 +375,24 @@ public class ListViewFragment extends Fragment {
                     mDBColumnsMap.put(ListViewCardsAdapter.TITLE_TEXT, MediaStore.Audio.Playlists.NAME);
                     mDBColumnsMap.put(ListViewCardsAdapter.FIELD_1, MediaStore.Audio.Playlists._COUNT);
                     break;
+                case Common.SMART_WEATHER_FRAGMENT:
+                    mDBColumnsMap.put(ListViewCardsAdapter.TITLE_TEXT, DBAccessHelper.SONG_WEATHER);
+                    mDBColumnsMap.put(ListViewCardsAdapter.SOURCE, DBAccessHelper.SONG_SOURCE);
+                    mDBColumnsMap.put(ListViewCardsAdapter.FILE_PATH, DBAccessHelper.SONG_FILE_PATH);
+                    mDBColumnsMap.put(ListViewCardsAdapter.ARTWORK_PATH, DBAccessHelper.SONG_ALBUM_ART_PATH);
+                    break;
+                case Common.SMART_TOD_FRAGMENT:
+                    mDBColumnsMap.put(ListViewCardsAdapter.TITLE_TEXT, DBAccessHelper.SONG_TOD);
+                    mDBColumnsMap.put(ListViewCardsAdapter.SOURCE, DBAccessHelper.SONG_SOURCE);
+                    mDBColumnsMap.put(ListViewCardsAdapter.FILE_PATH, DBAccessHelper.SONG_FILE_PATH);
+                    mDBColumnsMap.put(ListViewCardsAdapter.ARTWORK_PATH, DBAccessHelper.SONG_ALBUM_ART_PATH);
+                    break;
+                case Common.SMART_BPM_FRAGMENT:
+                    mDBColumnsMap.put(ListViewCardsAdapter.TITLE_TEXT, DBAccessHelper.SONG_BPM);
+                    mDBColumnsMap.put(ListViewCardsAdapter.SOURCE, DBAccessHelper.SONG_SOURCE);
+                    mDBColumnsMap.put(ListViewCardsAdapter.FILE_PATH, DBAccessHelper.SONG_FILE_PATH);
+                    mDBColumnsMap.put(ListViewCardsAdapter.ARTWORK_PATH, DBAccessHelper.SONG_ALBUM_ART_PATH);
+                    break;
                 case Common.GENRES_FRAGMENT:
                     break;
                 case Common.FOLDERS_FRAGMENT:
@@ -368,7 +418,7 @@ public class ListViewFragment extends Fragment {
             mListView.setOnItemClickListener(onItemClickListener);
 
 	     /* SwingBottomInAnimationAdapter animationAdapter = new SwingBottomInAnimationAdapter(mListViewAdapter);
-	        animationAdapter.setShouldAnimate(true);
+            animationAdapter.setShouldAnimate(true);
 	        animationAdapter.setShouldAnimateFromPosition(0);
 	        animationAdapter.setAbsListView(mListView);
 	        mListView.setAdapter(animationAdapter); */
@@ -414,43 +464,6 @@ public class ListViewFragment extends Fragment {
 
         }
 
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        //Set the ActionBar title.
-        getActivity().getActionBar().setTitle(mFragmentTitle);
-
-    }
-
-    /*
-     * Getter methods.
-     */
-
-    public ListViewCardsAdapter getListViewAdapter() {
-        return (ListViewCardsAdapter) mListViewAdapter;
-    }
-
-    public ListView getListView() {
-        return mListView;
-    }
-
-    public Cursor getCursor() {
-        return mCursor;
-    }
-
-    public int getFragmentId() {
-        return mFragmentId;
-    }
-
-	/*
-	 * Setter methods.
-	 */
-
-    public void setCursor(Cursor cursor) {
-        this.mCursor = cursor;
     }
 
 }
