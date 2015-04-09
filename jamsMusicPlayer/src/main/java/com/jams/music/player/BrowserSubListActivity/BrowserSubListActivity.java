@@ -513,9 +513,9 @@ public class BrowserSubListActivity extends FragmentActivity {
                 case Common.ARTISTS_FLIPPED_SONGS_FRAGMENT:
                 case Common.ALBUM_ARTISTS_FLIPPED_SONGS_FRAGMENT:
                 case Common.ALBUMS_FLIPPED_FRAGMENT:
-                case Common.SMART_WEATHER_FLIPPED_FRAGMENT:
-                case Common.SMART_TOD_FLIPPED_FRAGMENT:
-                case Common.SMART_BPM_FLIPPED_FRAGMENT:
+                case Common.SMART_WEATHER_FLIPPED_SONGS_FRAGMENT:
+                case Common.SMART_TOD_FLIPPED_SONGS_FRAGMENT:
+                case Common.SMART_BPM_FLIPPED_SONGS_FRAGMENT:
                 case Common.GENRES_FLIPPED_SONGS_FRAGMENT:
                     mDBColumnsMap.put(ListViewCardsAdapter.TITLE_TEXT, DBAccessHelper.SONG_TITLE);
                     mDBColumnsMap.put(ListViewCardsAdapter.SOURCE, DBAccessHelper.SONG_SOURCE);
