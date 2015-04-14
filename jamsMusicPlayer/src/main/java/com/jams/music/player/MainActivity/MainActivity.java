@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2014 Saravan Pantham
+ * Copyright (C) 2015 Bidyut Mukherjee
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,12 +21,18 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.graphics.drawable.ColorDrawable;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -55,7 +62,7 @@ import zh.wang.android.apis.yweathergetter4a.YahooWeather;
 import zh.wang.android.apis.yweathergetter4a.YahooWeatherExceptionListener;
 import zh.wang.android.apis.yweathergetter4a.YahooWeatherInfoListener;
 
-public class MainActivity extends FragmentActivity implements Callbacks, YahooWeatherInfoListener, YahooWeatherExceptionListener {
+public class MainActivity extends FragmentActivity implements Callbacks, YahooWeatherInfoListener, YahooWeatherExceptionListener, SensorEventListener {
 
     //Layout flags.
     public static final String CURRENT_FRAGMENT = "CurrentFragment";
@@ -63,7 +70,6 @@ public class MainActivity extends FragmentActivity implements Callbacks, YahooWe
     public static final String ALBUM_ARTISTS_FRAGMENT_LAYOUT = "AlbumArtistsFragmentLayout";
     public static final String ALBUMS_FRAGMENT_LAYOUT = "AlbumsFragmentLayout";
     public static final String PLAYLISTS_FRAGMENT_LAYOUT = "PlaylistsFragmentLayout";
-    //    public static final String SMART_PLAYLISTS_FRAGMENT_LAYOUT = "SmartPlaylistsFragmentLayout";
     public static final String SMART_WEATHER_FRAGMENT_LAYOUT = "SmartWeatherFragmentLayout";
     public static final String SMART_TOD_FRAGMENT_LAYOUT = "SmartTodFragmentLayout";
     public static final String SMART_BPM_FRAGMENT_LAYOUT = "SmartBpmFragmentLayout";
@@ -74,6 +80,14 @@ public class MainActivity extends FragmentActivity implements Callbacks, YahooWe
     public static final int GRID_LAYOUT = 1;
     public static int mCurrentFragmentId;
     public static int mCurrentFragmentLayout;
+    public static int mStepCounter;
+    public boolean tenSecFlag = false;
+
+    private SensorManager mSensorManager;
+    private Sensor mStepCounterSensor;
+    private Sensor mStepDetectorSensor;
+    private SensorEventListener mListener;
+
     //Context and Common object(s).
     private Context mContext;
     private Common mApp;
@@ -105,6 +119,11 @@ public class MainActivity extends FragmentActivity implements Callbacks, YahooWe
 
         // Callback instance
         computeSomething("FRAGMENTS");
+
+//        // BPM Sensors
+        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        mStepCounterSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
+        mStepDetectorSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR);
 
         //Set the theme and inflate the layout.
         setTheme();
@@ -264,6 +283,7 @@ public class MainActivity extends FragmentActivity implements Callbacks, YahooWe
 
     /**
      * YahooWeather Interface methods
+     *
      * @param e
      */
     @Override
@@ -325,8 +345,6 @@ public class MainActivity extends FragmentActivity implements Callbacks, YahooWe
                     mYahooWeather.setExceptionListener(this);
                     searchByGPS();
                     mCurrentFragment = getLayoutFragment(Common.SMART_WEATHER_FRAGMENT);
-//                    Toast.makeText(mContext, "Current Weather is " + smartWeather, Toast.LENGTH_SHORT).show();
-//                    Toast.makeText(mContext, "So we suggest trying the " + smartWeather + " collection!", Toast.LENGTH_SHORT).show();
                     break;
                 case Common.SMART_TOD_FRAGMENT:
                     // Initiate Smart TOD
@@ -337,7 +355,12 @@ public class MainActivity extends FragmentActivity implements Callbacks, YahooWe
                     Toast.makeText(mContext, "So we suggest trying the " + smartTod + " collection!", Toast.LENGTH_SHORT).show();
                     break;
                 case Common.SMART_BPM_FRAGMENT:
+//                    tenSecFlag = true;
+                    mSensorManager.registerListener(this, mStepCounterSensor, SensorManager.SENSOR_DELAY_FASTEST);
+//                    tenSecondBPM();
                     mCurrentFragment = getLayoutFragment(Common.SMART_BPM_FRAGMENT);
+                    mStepCounter = 0;
+                    mSensorManager.unregisterListener(this, mStepCounterSensor);
                     break;
                 case Common.GENRES_FRAGMENT:
                     mCurrentFragment = getLayoutFragment(Common.GENRES_FRAGMENT);
@@ -388,11 +411,6 @@ public class MainActivity extends FragmentActivity implements Callbacks, YahooWe
                 bundle.putInt(Common.FRAGMENT_ID, Common.PLAYLISTS_FRAGMENT);
                 bundle.putString(FRAGMENT_HEADER, mContext.getResources().getString(R.string.playlists));
                 break;
-//            case Common.SMART_PLAYLISTS_FRAGMENT:
-//                mCurrentFragmentLayout = mApp.getSharedPreferences().getInt(SMART_PLAYLISTS_FRAGMENT_LAYOUT, LIST_LAYOUT);
-//                bundle.putInt(Common.FRAGMENT_ID, Common.SMART_PLAYLISTS_FRAGMENT);
-//                bundle.putString(FRAGMENT_HEADER, mContext.getResources().getString(R.string.smart_playlists));
-//                break;
             case Common.SMART_WEATHER_FRAGMENT:
                 mCurrentFragmentLayout = mApp.getSharedPreferences().getInt(SMART_WEATHER_FRAGMENT_LAYOUT, GRID_LAYOUT);
                 bundle.putInt(Common.FRAGMENT_ID, Common.SMART_WEATHER_FRAGMENT);
@@ -674,12 +692,122 @@ public class MainActivity extends FragmentActivity implements Callbacks, YahooWe
     }
 
     @Override
+    protected void onStop() {
+        super.onStop();
+//        mSensorManager.unregisterListener(this, mStepCounterSensor);
+//        mSensorManager.unregisterListener(this, mStepDetectorSensor);
+    }
+
+//    public void tenSecondBPM(final SensorEvent event) {
+//        Handler h = new Handler();
+//        h.postDelayed(new Runnable() {
+//
+//            @Override
+//            public void run() {
+//                // do stuff with sensor values
+//                mSensorManager.registerListener(mListener, mStepCounterSensor, SensorManager.SENSOR_DELAY_FASTEST);
+//                mListener = new SensorEventListener() {
+//                    @Override
+//                    public void onSensorChanged(SensorEvent sensorEvent) {
+//                        sensorEvent = event;
+//                        Sensor sensor = event.sensor;
+//                        float[] values = event.values;
+//
+//                        int value = -1;
+//
+//                        if (values.length > 0) {
+//                            value = (int) values[0];
+//                        }
+//
+//                        mStepCounter = value;
+//
+//                    }
+//
+//                    @Override
+//                    public void onAccuracyChanged(Sensor sensor, int i) {
+//
+//                    }
+//                };
+//                Log.i("BPM: ", "Calculated Steps!");
+//                Toast.makeText(mContext, "Steps taken = " + mStepCounter * 60, Toast.LENGTH_SHORT).show();
+//            }
+//        }, 10000);
+//        tenSecFlag = false;
+//        mSensorManager.unregisterListener(mListener, mStepCounterSensor);
+//    }
+
+    /**
+     * Implement SensorEventListener.onSensorChanged method
+     */
+    public void onSensorChanged(SensorEvent event) {
+//        if(tenSecFlag) {
+//        tenSecondBPM(event);
+//        }
+        final SensorEvent temp = event;
+        Handler h = new Handler();
+        h.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                // do stuff with sensor values
+                mSensorManager.registerListener(mListener, mStepCounterSensor, SensorManager.SENSOR_DELAY_FASTEST);
+                mListener = new SensorEventListener() {
+                    @Override
+                    public void onSensorChanged(SensorEvent sensorEvent) {
+                        sensorEvent = temp;
+                        Sensor sensor = sensorEvent.sensor;
+                        float[] values = sensorEvent.values;
+
+                        int value = -1;
+
+                        if (values.length > 0) {
+                            value = (int) values[0];
+                        }
+
+                        mStepCounter = value;
+
+                    }
+
+                    @Override
+                    public void onAccuracyChanged(Sensor sensor, int i) {
+
+                    }
+                };
+                Log.i("BPM: ", "Calculated Steps!");
+                Toast.makeText(mContext, "Steps taken = " + mStepCounter * 60, Toast.LENGTH_SHORT).show();
+            }
+        }, 10000);
+        tenSecFlag = false;
+        mSensorManager.unregisterListener(mListener, mStepCounterSensor);
+    }
+
+    /**
+     * Implement SensorEventListener.onAccuracyChanged method
+     */
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+        //Do nothing
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         if (Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
             getActionBar().setBackgroundDrawable(UIElementsHelper.getGeneralActionBarBackground(mContext));
             getWindow().setBackgroundDrawable(UIElementsHelper.getGeneralActionBarBackground(mContext));
         }
+
+//        mSensorManager.registerListener(this, mStepCounterSensor, SensorManager.SENSOR_DELAY_FASTEST);
+//        mSensorManager.registerListener(this, mStepDetectorSensor, SensorManager.SENSOR_DELAY_FASTEST);
+
+//        Handler h = new Handler();
+//        h.postDelayed(new Runnable() {
+//
+//            @Override
+//            public void run() {
+//                //    do stuff with sensor values
+//                tenSecFlag = true;
+//            }
+//        }, 5000);
+//        tenSecFlag = false;
 
     }
 

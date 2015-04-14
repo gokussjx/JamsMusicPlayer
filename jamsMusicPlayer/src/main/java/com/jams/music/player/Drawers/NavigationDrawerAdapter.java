@@ -78,9 +78,6 @@ public class NavigationDrawerAdapter extends ArrayAdapter<String> {
         } else if (MainActivity.mCurrentFragmentId == Common.PLAYLISTS_FRAGMENT &&
                 mTitlesList.get(position).equals(mContext.getResources().getString(R.string.playlists))) {
             holder.title.setTextColor(colors[0]);
-//        } else if (MainActivity.mCurrentFragmentId == Common.SMART_PLAYLISTS_FRAGMENT &&
-//                mTitlesList.get(position).equals(mContext.getResources().getString(R.string.smart_playlists))) {
-//            holder.title.setTextColor(colors[0]);
         } else if (MainActivity.mCurrentFragmentId == Common.SMART_WEATHER_FRAGMENT &&
                 mTitlesList.get(position).equals(mContext.getResources().getString(R.string.smart_weather))) {
             holder.title.setTextColor(colors[0]);
