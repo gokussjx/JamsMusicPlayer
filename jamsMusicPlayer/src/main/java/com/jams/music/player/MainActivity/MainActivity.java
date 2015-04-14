@@ -122,7 +122,7 @@ public class MainActivity extends FragmentActivity implements Callbacks, YahooWe
 
         // BPM Sensors
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        mStepCounterSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
+        mStepCounterSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR);
 
         //Set the theme and inflate the layout.
         setTheme();
@@ -706,15 +706,16 @@ public class MainActivity extends FragmentActivity implements Callbacks, YahooWe
      * Implement SensorEventListener.onSensorChanged method
      */
     public void onSensorChanged(SensorEvent event) {
-        Sensor sensor = event.sensor;
-        float[] values = event.values;
-        int value = -1;
-
-        if (values.length >= 0) {
-            value = (int) values[0];
-        }
-
-        mStepCount = value;
+//        Sensor sensor = event.sensor;
+//        float[] values = event.values;
+//        int value = -1;
+//
+//        if (values.length >= 0) {
+//            value = (int) values[0];
+//        }
+//
+//        mStepCount = value;
+        ++mStepCount;
     }
 
     /**
