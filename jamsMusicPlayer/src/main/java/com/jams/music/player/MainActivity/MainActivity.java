@@ -32,7 +32,6 @@ import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.DrawerLayout;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -80,8 +79,9 @@ public class MainActivity extends FragmentActivity implements Callbacks, YahooWe
     public static final int GRID_LAYOUT = 1;
     public static int mCurrentFragmentId;
     public static int mCurrentFragmentLayout;
-    public static int mStepCounter;
-    public boolean tenSecFlag = false;
+    public static int mStepCount;
+    public static int mBpm;
+//    public boolean tenSecFlag = false;
 
     private SensorManager mSensorManager;
     private Sensor mStepCounterSensor;
@@ -120,10 +120,9 @@ public class MainActivity extends FragmentActivity implements Callbacks, YahooWe
         // Callback instance
         computeSomething("FRAGMENTS");
 
-//        // BPM Sensors
+        // BPM Sensors
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mStepCounterSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
-        mStepDetectorSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR);
 
         //Set the theme and inflate the layout.
         setTheme();
@@ -355,12 +354,19 @@ public class MainActivity extends FragmentActivity implements Callbacks, YahooWe
                     Toast.makeText(mContext, "So we suggest trying the " + smartTod + " collection!", Toast.LENGTH_SHORT).show();
                     break;
                 case Common.SMART_BPM_FRAGMENT:
-//                    tenSecFlag = true;
+                    // Initiate Smart BPM
+                    mStepCount = 0;
                     mSensorManager.registerListener(this, mStepCounterSensor, SensorManager.SENSOR_DELAY_FASTEST);
-//                    tenSecondBPM();
                     mCurrentFragment = getLayoutFragment(Common.SMART_BPM_FRAGMENT);
-                    mStepCounter = 0;
-                    mSensorManager.unregisterListener(this, mStepCounterSensor);
+                    Handler handlerTimer = new Handler();
+                    handlerTimer.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            mBpm = mStepCount * 6;
+                            Toast.makeText(mContext, "BPM = " + mBpm, Toast.LENGTH_SHORT).show();
+                            mSensorManager.unregisterListener(MainActivity.this, mStepCounterSensor);
+                        }
+                    }, 10000);
                     break;
                 case Common.GENRES_FRAGMENT:
                     mCurrentFragment = getLayoutFragment(Common.GENRES_FRAGMENT);
@@ -694,90 +700,21 @@ public class MainActivity extends FragmentActivity implements Callbacks, YahooWe
     @Override
     protected void onStop() {
         super.onStop();
-//        mSensorManager.unregisterListener(this, mStepCounterSensor);
-//        mSensorManager.unregisterListener(this, mStepDetectorSensor);
     }
-
-//    public void tenSecondBPM(final SensorEvent event) {
-//        Handler h = new Handler();
-//        h.postDelayed(new Runnable() {
-//
-//            @Override
-//            public void run() {
-//                // do stuff with sensor values
-//                mSensorManager.registerListener(mListener, mStepCounterSensor, SensorManager.SENSOR_DELAY_FASTEST);
-//                mListener = new SensorEventListener() {
-//                    @Override
-//                    public void onSensorChanged(SensorEvent sensorEvent) {
-//                        sensorEvent = event;
-//                        Sensor sensor = event.sensor;
-//                        float[] values = event.values;
-//
-//                        int value = -1;
-//
-//                        if (values.length > 0) {
-//                            value = (int) values[0];
-//                        }
-//
-//                        mStepCounter = value;
-//
-//                    }
-//
-//                    @Override
-//                    public void onAccuracyChanged(Sensor sensor, int i) {
-//
-//                    }
-//                };
-//                Log.i("BPM: ", "Calculated Steps!");
-//                Toast.makeText(mContext, "Steps taken = " + mStepCounter * 60, Toast.LENGTH_SHORT).show();
-//            }
-//        }, 10000);
-//        tenSecFlag = false;
-//        mSensorManager.unregisterListener(mListener, mStepCounterSensor);
-//    }
 
     /**
      * Implement SensorEventListener.onSensorChanged method
      */
     public void onSensorChanged(SensorEvent event) {
-//        if(tenSecFlag) {
-//        tenSecondBPM(event);
-//        }
-        final SensorEvent temp = event;
-        Handler h = new Handler();
-        h.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                // do stuff with sensor values
-                mSensorManager.registerListener(mListener, mStepCounterSensor, SensorManager.SENSOR_DELAY_FASTEST);
-                mListener = new SensorEventListener() {
-                    @Override
-                    public void onSensorChanged(SensorEvent sensorEvent) {
-                        sensorEvent = temp;
-                        Sensor sensor = sensorEvent.sensor;
-                        float[] values = sensorEvent.values;
+        Sensor sensor = event.sensor;
+        float[] values = event.values;
+        int value = -1;
 
-                        int value = -1;
+        if (values.length >= 0) {
+            value = (int) values[0];
+        }
 
-                        if (values.length > 0) {
-                            value = (int) values[0];
-                        }
-
-                        mStepCounter = value;
-
-                    }
-
-                    @Override
-                    public void onAccuracyChanged(Sensor sensor, int i) {
-
-                    }
-                };
-                Log.i("BPM: ", "Calculated Steps!");
-                Toast.makeText(mContext, "Steps taken = " + mStepCounter * 60, Toast.LENGTH_SHORT).show();
-            }
-        }, 10000);
-        tenSecFlag = false;
-        mSensorManager.unregisterListener(mListener, mStepCounterSensor);
+        mStepCount = value;
     }
 
     /**
@@ -794,21 +731,6 @@ public class MainActivity extends FragmentActivity implements Callbacks, YahooWe
             getActionBar().setBackgroundDrawable(UIElementsHelper.getGeneralActionBarBackground(mContext));
             getWindow().setBackgroundDrawable(UIElementsHelper.getGeneralActionBarBackground(mContext));
         }
-
-//        mSensorManager.registerListener(this, mStepCounterSensor, SensorManager.SENSOR_DELAY_FASTEST);
-//        mSensorManager.registerListener(this, mStepDetectorSensor, SensorManager.SENSOR_DELAY_FASTEST);
-
-//        Handler h = new Handler();
-//        h.postDelayed(new Runnable() {
-//
-//            @Override
-//            public void run() {
-//                //    do stuff with sensor values
-//                tenSecFlag = true;
-//            }
-//        }, 5000);
-//        tenSecFlag = false;
-
     }
 
     /**
